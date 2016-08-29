@@ -1,0 +1,28 @@
+{
+  "name": "cycle-driver",
+  "private": true,
+  "license": "ISC",
+  "devDependencies": {
+    "@cycle/base": "^4.1.1",
+    "@cycle/isolate": "^1.4.0",
+    "@cycle/most-adapter": "^4.0.1",
+    "@cycle/most-run": "^4.0.0",
+    "@cycle/rx-adapter": "^3.0.0",
+    "@cycle/rx-run": "^7.0.0",
+    "@cycle/rxjs-adapter": "^3.0.2",
+    "@cycle/xstream-adapter": "^3.0.3",
+    "@cycle/xstream-run": "^3.0.4",
+    "@types/tape": "^4.2.27",
+    "most": "^1.0.1",
+    "rx": "^4.0.7",
+    "source-map-support": "^0.4.2",
+    "tape": "^4.4.0",
+    "typescript": "^2.1.0-dev.20160824",
+    "xstream": "^6.1.0",
+    "browserify": "^13.0.1",
+    "budo": "^8.3.0",
+    "watchify": "^3.7.0"
+  },
+  "scripts": {            
+  }
+}

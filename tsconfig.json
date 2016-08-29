@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "removeComments": false,
+    "strictNullChecks": true,
+    "declaration": true,
+    "target": "es5",
+    "preserveConstEnums": true,
+    "noImplicitAny": false,    
+    "noLib": false,
+    "sourceMap": true    
+  },
+    "formatCodeOptions": {
+    "indentSize": 2,
+    "tabSize": 2
+  },    
+  "exclude": [
+    "*.d.ts",
+    "node_modules"
+  ]
+}

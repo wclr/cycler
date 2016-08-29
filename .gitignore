@@ -1,0 +1,20 @@
+# Editor-specific
+
+# Installed libs
+node_modules
+typings
+
+# Generated
+*.js
+*.js.map
+*.d.ts
+tsconfig.json
+
+# Exclude ignore
+!/tsconfig.json
+!src/**/*
+!make-tsconfig.js
+
+# Misc
+npm-debug.log
+_*
