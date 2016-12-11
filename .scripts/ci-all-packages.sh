@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Install packages deps, build and run tests
 
 BUILD_SOURCE_CMD="../node_modules/.bin/tsc --outDir ."
@@ -24,6 +23,8 @@ git config --global user.name "whitecolor"
 # Url where built packages are located
 BUILT_URL=https://github.com/cycler-built
 
+GITIGNORE_CONTENT="node_modules\nyarn-error.log"
+
 # Create temorary git repo inside the package 
 # and replace cycler-built/<package> repo with new source
 ./.scripts/for-all-packages.sh " \
@@ -31,7 +32,7 @@ BUILT_URL=https://github.com/cycler-built
   git init &&\  
   git remote add built $BUILT_URL/\$d &&\
   git remote show built &&\
-  echo -e node_modules'\\n'yarn-error.log > .gitignore &&\
+  echo $'$GITIGNORE_CONTENT' > .gitignore &&\
   git add . &&\
   git commit -m \"Orginal SHA: $SHA\" &&\
   git push -f built master &&\
