@@ -16,7 +16,6 @@
     "tabSize": 2
   },
   "exclude": [
-    "_*.ts",
-    "**/node_modules"
+    "**/node_modules/*"
   ]
 }

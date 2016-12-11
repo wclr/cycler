@@ -36,7 +36,7 @@
   },
   "scripts": {
     "up": "docker-compose up",
-    "test-ci": "yarn && typings && sh for-all-packages.sh sh -c \"yarn && yarn run test\"",
+    "test-ci": "yarn && typings install && sh for-all-packages.sh sh -c \"yarn && yarn run test\"",
     "up:express": "docker-compose up express-test",
     "up:forage": "docker-compose up forage-test",
     "up:hmr": "docker-compose up hmr-test",
