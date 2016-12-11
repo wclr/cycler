@@ -35,9 +35,7 @@
     "xstream": "^9.0.0"
   },
   "scripts": {
-    "up": "docker-compose up",
-    "install-typings": "typings install",
-    "test-ci": "yarn && typings install && sh for-all-packages.sh sh -c \"yarn && yarn run test\"",
+    "up": "docker-compose up",    
     "up:express": "docker-compose up express-test",
     "up:forage": "docker-compose up forage-test",
     "up:hmr": "docker-compose up hmr-test",
@@ -45,6 +43,8 @@
     "up:mongoose": "docker-compose up mongoose-test",
     "up:spy": "docker-compose up spy-test",
     "up:task": "docker-compose up task-test",
+    "install-typings": "typings install",
+    "test-ci": "yarn && typings install && sh ./.scripts/ci-all-packages.sh",
     "build-dev-image": "docker build -t cycler-dev-node .",
     "rebuild-dev-image": "docker build -t cycler-dev-node --no-cache ."
   },

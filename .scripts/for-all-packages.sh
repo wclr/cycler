@@ -9,7 +9,10 @@ while read d; do
   echo "> $@";
   echo "";
   cd $d;
-  $@ || exitstatus=$?;
+  #sh -c ls && ls
+  sh -c "${@/\$d/$d}"
+  #${@/\$d/$d} || exitstatus=$?;
+  #bash -c ls || exitstatus=$?;
   cd ..;
   if [[ $exitstatus -ne 0 ]]; then
     break;

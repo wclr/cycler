@@ -1,5 +1,6 @@
 # Filter packages
 /*/*
+!/.scripts/*
 !/express/*
 
 # Installed libs
