@@ -6,16 +6,17 @@
     "declaration": true,
     "target": "es5",
     "preserveConstEnums": true,
-    "noImplicitAny": false,    
-    "noLib": false,
-    "sourceMap": true    
+    "noImplicitAny": true,    
+    "lib": ["dom", "es6"],
+    "sourceMap": true,
+    "traceResolution": false        
   },
     "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
-  },    
+  },
   "exclude": [
-    "*.d.ts",
-    "node_modules"
+    "_*.ts",
+    "**/node_modules"
   ]
 }

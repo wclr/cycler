@@ -1,4 +1,6 @@
-# Editor-specific
+# Filter packages
+/*/*
+!/express/*
 
 # Installed libs
 node_modules
@@ -8,7 +10,10 @@ typings
 *.js
 *.js.map
 *.d.ts
-tsconfig.json
+# tsconfig.json
+yarn-error.log
+npm-debug.log
+npm-debug.*.log
 
 # Exclude ignore
 !/tsconfig.json
@@ -16,5 +21,6 @@ tsconfig.json
 !make-tsconfig.js
 
 # Misc
-npm-debug.log
 _*
+README.md
+*docker*

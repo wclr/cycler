@@ -1,10 +1,14 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-	"files.exclude": {
-		//"*/*/*.js": true,
-		//"*/make-tsconfig.js": false,		
+	"files.exclude": {		
+		"express/*.js": true,
+		"forage/*.js": true,
+		"http/*.js": true,
+		"mongoose/*.js": true,
+		"task/*.js": true,
+		"*/make-tsconfig.js": false,		
 		"**/*.js.map": true,						
-		"**/*.d.ts": false		
+		"**/*.d.ts": true		
 	},
 	"search.exclude": {
 		"**/*.js": true,		
