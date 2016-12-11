@@ -15,6 +15,7 @@ typings
 yarn-error.log
 npm-debug.log
 npm-debug.*.log
+*/.gitignore
 
 # Exclude ignore
 !/tsconfig.json

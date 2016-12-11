@@ -4,14 +4,17 @@
 # for all package directories.
 BUILD_SOURCE_CMD="../node_modules/.bin/tsc --outDir ."
 TEST_SOURCE_CMD="node -r source-map-support/register test/test.js"
-sh ./.scripts/for-all-packages.sh "yarn && $BUILD_SOURCE_CMD && $TEST_SOURCE_CMD"
+
+chmod +x ./.scripts/for-all-packages.sh
+
+./.scripts/for-all-packages.sh "yarn && $BUILD_SOURCE_CMD && $TEST_SOURCE_CMD"
 
 SHA=$(git rev-parse HEAD)
 
 # Url where built packages are located
 BUILT_URL=https://github.com/cycler-built
 
-sh ./.scripts/for-all-packages.sh " \
+./.scripts/for-all-packages.sh " \
   rm -rf .git &&\
   git init &&\  
   git remote add built $BUILT_URL/\$d &&\
