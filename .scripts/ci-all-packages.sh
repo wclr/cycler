@@ -21,7 +21,7 @@ git config --global user.email "alexosh@me.com"
 git config --global user.name "whitecolor"
 
 # Url where built packages are located
-BUILT_URL=https://github.com/cycler-built
+BUILT_URL=https://${GH_TOKEN}@github.com/cycler-built
 
 GITIGNORE_CONTENT="node_modules\nyarn-error.log"
 

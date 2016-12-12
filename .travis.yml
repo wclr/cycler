@@ -1,13 +1,16 @@
 sudo: false
 language: node_js
 node_js:
-  - '6.9.1'
+- 6.9.1
 script: npm run test-ci
 branches:
   only:
-    - master
+  - master
 addons:
   sauce_connect: true
   apt:
     packages:
-      - realpath
+    - realpath
+env:
+  global:
+    secure: UuhpYwBQPQV3OUnnI4TKVreP69gQrW41yz/1W0mkoB7JGafY07yixYtZ0602hBJ4tphrsIg4ZwD8CquxRUyMr1KL9V13NBY+jcJRSjsknK7j3LwGjJr0GRGOUUuaTKhvF3PWsMhDAzT4+Jo2i4QFALbrnwMOyfyJejTiK1K9JcmUnYe9ZjjJyx6t74L7ozqtszJnfPRbwDvN/BjdRPcUAV70iBvNcAUVl/tsYr87b6PX8UjWiR/3G7YX59SMCAEAUXu2veBWfUymjsyyoQDRSv6GCIyjmKOYWMsfhzd7uQyacYbYB/g6jPth/ebkIfvlwBAqgBOa7nzt99VgBapbs+V+iDMArYK0X0W3nKCeqiI/OizctRf8F3lOXVcZcRI8d6nBx5HJbxOC/2zbWBczKDXAEzURWLMf0HOhozcc4wxpB3yBdj5/gl+OwDWdMLYB59Hp5kRbaN5N4NpkV+N2ksMtVsDCKjj9GxvPZQkARQxF96EaiOrRvRvQYUJi7moHKHYFTZdgEt3kNy7F/9kOiA1aJb2LYBh30QPxHdsGMHuPHHOSmWfwD+CiDlQjyK9FWHlz08ZuHUgMKMUreJBlaiEto6ABS/ohXRd4LpA0zOaH/mqqi6FlkS11Ftdx/6NyvxqzXRLH7asPUeIQrlh3nOW+qU3wuFHpt+qMVoQ6BJs=
