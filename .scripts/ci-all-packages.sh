@@ -13,9 +13,6 @@ chmod +x ./.scripts/for-all-packages.sh
 
 # "Publish" built packages to github.com/cycler-built/<package>
 
-# Get SHA of current cycler commit
-SHA=$(git rev-parse HEAD)
-
 # Set git identity
 git config --global user.email "alexosh@me.com"
 git config --global user.name "whitecolor"
@@ -24,6 +21,10 @@ git config --global user.name "whitecolor"
 BUILT_URL=https://${GH_TOKEN}@github.com/cycler-built
 
 GITIGNORE_CONTENT="node_modules\nyarn-error.log"
+
+# Get SHA of current cycler commit
+SHA=$(git rev-parse HEAD)
+SHA_BRANCH=$(echo $SHA| cut -c1-7)
 
 # Create temorary git repo inside the package 
 # and replace cycler-built/<package> repo with new source
@@ -35,8 +36,8 @@ GITIGNORE_CONTENT="node_modules\nyarn-error.log"
   git add . &&\
   git commit -m \"Orginal SHA: $SHA\" &&\
   git push -f -q built master &&\
-  git checkout -b $SHA
-  git push -f -q built $SHA &&\
+  git checkout -b $SHA_BRANCH
+  git push -f -q built $SHA_BRANCH &&\
   rm -rf .git .gitignore
   "\
   /
