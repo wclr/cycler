@@ -6,7 +6,8 @@ exitstatus=0
 
 while read d; do
   echo "> $d";
-  echo "> $@";
+  # hide github token
+  echo "> ${BUILT_URL/https:\/\/*@github.com/http://SECRET@github.com}";
   echo "";
   cd $d;
   sh -c "${@/\$d/$d}" || exitstatus=$?;
