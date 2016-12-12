@@ -31,7 +31,6 @@ GITIGNORE_CONTENT="node_modules\nyarn-error.log"
   rm -rf .git &&\
   git init &&\  
   git remote add built $BUILT_URL/\$d > /dev/null &&\
-  git remote show built &&\
   echo '$GITIGNORE_CONTENT' > .gitignore &&\
   git add . &&\
   git commit -m \"Orginal SHA: $SHA\" &&\
