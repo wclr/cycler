@@ -30,12 +30,12 @@ GITIGNORE_CONTENT="node_modules\nyarn-error.log"
 ./.scripts/for-all-packages.sh " \
   rm -rf .git &&\
   git init &&\  
-  git remote add built $BUILT_URL/\$d &&\
+  git remote add built $BUILT_URL/\$d > /dev/null &&\
   git remote show built &&\
   echo '$GITIGNORE_CONTENT' > .gitignore &&\
   git add . &&\
   git commit -m \"Orginal SHA: $SHA\" &&\
-  git push -f built master &&\
+  git push -f built master > /dev/null &&\
   rm -rf .git .gitignore
   "\
   /
