@@ -35,7 +35,7 @@ GITIGNORE_CONTENT="node_modules\nyarn-error.log"
   echo '$GITIGNORE_CONTENT' > .gitignore &&\
   git add . &&\
   git commit -m \"Orginal SHA: $SHA\" &&\
-  git push -f built master > /dev/null &&\
+  git push -f -q built master &&\
   rm -rf .git .gitignore
   "\
   /
