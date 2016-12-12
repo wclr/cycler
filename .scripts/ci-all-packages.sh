@@ -11,6 +11,11 @@ chmod +x ./.scripts/for-all-packages.sh
 
 ./.scripts/for-all-packages.sh "yarn && $BUILD_SOURCE_CMD && $TEST_SOURCE_CMD"
 
+# if $GH_TOKEN not set (untrusted build) just exit
+if [ -z "$GH_TOKEN" ]; then
+  exit 0
+fi
+
 # "Publish" built packages to github.com/cycler-built/<package>
 
 # Set git identity
