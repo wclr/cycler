@@ -2,6 +2,7 @@
 /*/*
 !/.scripts/*
 !/express/*
+!/logger/*
 
 # Installed libs
 node_modules
