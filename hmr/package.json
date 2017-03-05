@@ -1,0 +1,14 @@
+{
+  "name": "@cycler/hmr",
+  "version": "1.0.0-beta.0",
+  "description": "Hmr Cycle.js.",
+  "repository": "http://github.com/whitecolor/cycler",
+  "keywords": [
+    "cyclejs",
+	  "dx",
+    "hmr",
+    "hot reload"
+  ],
+  "author": "whitecolor",
+  "license": "ISC"
+}

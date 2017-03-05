@@ -1,9 +1,4 @@
 # Filter packages
-/*/*
-!/.scripts/*
-!/express/*
-!/logger/*
-/task/*
 
 
 # Installed libs

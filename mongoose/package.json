@@ -1,0 +1,25 @@
+{
+  "name": "@cycler/mongoose",
+  "version": "1.0.0-beta.0",
+  "description": "Mongoose.js driver for Cycle.js.",
+  "repository": "http://github.com/whitecolor/cycler",
+  "keywords": [
+    "cyclejs",
+    "driver",
+    "mongoose",
+    "mongodb"
+  ],
+  "author": "whitecolor",
+  "license": "ISC",
+  "peerDependencies": {
+    "mongoose": "^4.1.0"
+  },
+  "devDependencies": {
+    "@cycler/task": "file:../task",
+    "@types/mongoose": "^4.5.33",
+    "mongoose": "^4.5.10"
+  },
+  "dependencies": {
+    "@types/node": "^6.0.53"
+  }
+}

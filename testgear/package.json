@@ -1,0 +1,14 @@
+{
+  "name": "@cycler/testgear",
+  "version": "1.0.0-beta.0",
+  "description": "Testring utilities for cycle.js dataflows",
+  "repository": "http://github.com/whitecolor/cycler",
+  "keywords": [
+    "cyclejs",
+    "driver",
+    "async", 
+    "task"
+  ],
+  "author": "whitecolor",
+  "license": "ISC"
+}

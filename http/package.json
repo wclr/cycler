@@ -1,0 +1,25 @@
+{
+  "name": "@cycler/http",
+  "version": "1.0.0-beta.0",
+  "description": "(Non-official) HTTP driver for Cycle.js.",
+  "repository": "http://github.com/whitecolor/cycler",
+  "keywords": [
+    "cyclejs",
+    "driver",
+    "async",
+    "task",
+    "http",
+    "superagent",
+    "request"
+  ],
+  "author": "whitecolor",
+  "license": "ISC",
+  "dependencies": {
+    "superagent": "^2.2.0",
+    "@types/superagent": "^2.0.32"
+  },
+  "devDependencies": {    
+    "portfinder": "^1.0.7",
+    "@cycler/task": "file:../task"
+  }
+}
