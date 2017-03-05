@@ -9,13 +9,17 @@
     "noImplicitAny": true,    
     "lib": ["dom", "es6"],
     "sourceMap": true,
-    "traceResolution": false        
+    "traceResolution": false,
+    "types": [
+
+    ]
   },
     "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
-  },
+  },  
   "exclude": [
-    "**/node_modules/*"
+    "**/node_modules/*",
+    "hmr/test/*"
   ]
 }

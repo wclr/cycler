@@ -1,0 +1,1 @@
+nodemon -w yarn.lock */yarn.lock  -L -x "sh .scripts/install-deps.sh --linklocal"

@@ -38,7 +38,7 @@ class RouterSourceObject implements RouterSource<any> {
     private routerOptions: any
   ) {
     
-  }
+  }  
   route(path: RoutePath, options?: any): any {
     const opts = options | this.routerOptions
     const router = Router(opts)
@@ -46,7 +46,6 @@ class RouterSourceObject implements RouterSource<any> {
     return new RouterSourceObject(this.streamAdapter, router, this._responses, opts)
   }
   method(method: string, path: RoutePath) {
-
     return this.streamAdapter.adapt({}, (_: any, observer: Observer<RouterRequest>) => {
       const setId = (req: any, id: string): RouterRequest => {
         req.id = id
@@ -61,7 +60,6 @@ class RouterSourceObject implements RouterSource<any> {
       return () => {}
     })
   }
-
   handleResponse(response: RouterResponse) {
     let res = <any>this._responses[response.id]
     if (res) {

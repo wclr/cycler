@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs'
+import { Observable } from 'rx'
 import { Router } from 'express'
 import adapter from '@cycle/rx-adapter'
 import { StreamAdapter } from '@cycle/base'

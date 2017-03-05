@@ -12,15 +12,6 @@
   ],
   "author": "whitecolor",
   "license": "ISC",
-  "scripts": {
-    "build": "node ../make-tsconfig && ../node_modules/.bin/tsc --outDir .",
-    "build:watch": "npm run build -- -w",
-    "test": "node -r source-map-support/register test/test.js",
-    "test:watch": "node-dev --respawn -r source-map-support/register test/test.js",
-    "prepublish": "npm run build && npm run test",
-    "publish": "npm publish --tag beta",
-    "vmd-readme": "vmd README.md"
-  },
   "dependencies": {
   },
   "devDependencies": {

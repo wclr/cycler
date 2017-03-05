@@ -28,23 +28,20 @@
     "supertest": "^2.0.0",
     "tap-browser-color": "^0.1.2",
     "tape": "^4.4.0",
-    "typescript": "next",
-    "typings": "^2.0.0",
+    "typescript": "2.2.0-dev.20161116",
     "validate-commit-msg": "^2.8.2",
     "watchify": "^3.7.0",
     "xstream": "^9.0.0"
   },
   "scripts": {
-    "up": "docker-compose up",    
-    "up:express": "docker-compose up express-test",
-    "up:forage": "docker-compose up forage-test",
-    "up:hmr": "docker-compose up hmr-test",
-    "up:http": "docker-compose up hmr-http",
-    "up:mongoose": "docker-compose up mongoose-test",
-    "up:spy": "docker-compose up spy-test",
-    "up:task": "docker-compose up task-test",
-    "install-typings": "typings install",
-    "test-ci": "yarn && typings install && sh ./.scripts/ci-all-packages.sh",
+    "start": "sh .scripts/start.sh",    
+    "install-deps": "sh .scripts/install-deps.sh --linklocal",
+    "tsc-build-watch": "sh .scripts/wait-install-deps.sh && sh .scripts/fix-tsc.sh && tsc -w",
+    "tsc-build": "sh .scripts/wait-install-deps.sh && tsc",
+    "up": "docker-compose up",
+    "install-packages-deps": "sh ./.scripts/for-all-packages.sh \"linklocal && yarn\"",
+    "install-all": "yarn && yarn run install-packages-deps",
+    "test-ci": "typings install && yarn && sh ./.scripts/ci-all-packages.sh",
     "build-dev-image": "docker build -t cycler-dev-node .",
     "rebuild-dev-image": "docker build -t cycler-dev-node --no-cache ."
   },
@@ -55,5 +52,8 @@
     "validate-commit-msg": {
       "types": "@northbrook/commit-types"
     }
+  },
+  "dependencies": {
+    "typings": "^2.1.0"
   }
 }

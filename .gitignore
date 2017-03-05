@@ -3,6 +3,8 @@
 !/.scripts/*
 !/express/*
 !/logger/*
+/task/*
+
 
 # Installed libs
 node_modules
@@ -12,16 +14,9 @@ typings
 *.js
 *.js.map
 *.d.ts
-# tsconfig.json
-yarn-error.log
-npm-debug.log
-npm-debug.*.log
-*/.gitignore
 
-# Exclude ignore
-!/tsconfig.json
-!src/**/*
-!make-tsconfig.js
+yarn-error.log
+npm-debug*
 
 # Misc
 _*
