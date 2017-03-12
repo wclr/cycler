@@ -16,4 +16,4 @@ npm-debug*
 # Misc
 _*
 _README.md
-*docker*
+docker-compose.override.yml

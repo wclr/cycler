@@ -1,0 +1,61 @@
+version: '2'
+
+services:
+  mongo:
+    image: mongo:3.4.0
+    command: mongod --quiet --storageEngine mmapv1  
+
+  deps-install:
+    image: cycler-dev-node
+    volumes:
+      - .:/cycler
+      - /cycler/node_modules
+      - /cycler/express/node_modules
+      - /cycler/forage/node_modules
+      - /cycler/graphql/node_modules
+      - /cycler/http/node_modules
+      - /cycler/logger/node_modules
+      - /cycler/mongoose/node_modules
+      - /cycler/task/node_modules
+      - /cycler/hmr/node_modules
+      - /cycler/spy/node_modules  
+    command: sh .scripts/watch-deps.sh
+
+  tsc-build:     
+    image: cycler-dev-node
+    volumes_from:
+      - deps-install    
+    command: yarn run tsc-build-watch
+    depends_on: 
+      - deps-install
+
+  task: &common
+    image: cycler-dev-node    
+    volumes_from:
+      - deps-install    
+    command: yarn test-watch task
+    depends_on: 
+      - tsc-build
+
+  mongoose:  
+    <<: *common
+    command: yarn test-watch mongoose
+    depends_on:
+      - tsc-build
+      - mongo        
+
+  graphql:  
+    <<: *common
+    command: yarn test-watch graphql
+
+  # forage:  
+  #   <<: *common
+  #   command: bash ./.scripts/build-watch.sh forage  
+    
+  http:  
+    <<: *common    
+    command: yarn test-watch http
+    
+  express:  
+    <<: *common    
+    command: yarn test-watch express

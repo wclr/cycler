@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Installs dependencies in all folders with yarn.lock found.
+
 set -e
 
 PRODUCTION_FLAG=""

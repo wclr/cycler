@@ -1,1 +1,8 @@
-nodemon -w yarn.lock */yarn.lock  -L -x "sh .scripts/install-deps.sh --linklocal"
+#!/bin/bash
+
+CMD=".scripts/install-deps.sh"
+
+$CMD --linklocal
+
+chokidar '**/yarn.lock' -i '**/node_modules' --polling \
+  -c "$CMD {path} --linklocal"

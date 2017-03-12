@@ -9,7 +9,9 @@ TEST_SOURCE_CMD="node -r source-map-support/register test/test.js"
 # on windows `bash script.sh` fails
 chmod +x ./.scripts/for-all-packages.sh
 
-./.scripts/for-all-packages.sh "yarn && $BUILD_SOURCE_CMD && $TEST_SOURCE_CMD"
+#./.scripts/for-all-packages.sh "yarn && $BUILD_SOURCE_CMD && $TEST_SOURCE_CMD"
+yarn run install-deps
+yarn run tsc-build
 
 # if $GH_TOKEN not set (untrusted build) just exit
 if [ -z "$GH_TOKEN" ]; then
@@ -31,7 +33,7 @@ GITIGNORE_CONTENT="node_modules\nyarn-error.log"
 SHA=$(git rev-parse HEAD)
 SHA_BRANCH=$(echo $SHA| cut -c1-7)
 
-# Create temorary git repo inside the package 
+# Create temporary git repo inside the package 
 # and replace cycler-built/<package> repo with new source
 ./.scripts/for-all-packages.sh " \
   rm -rf .git &&\

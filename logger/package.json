@@ -11,9 +11,5 @@
     "logger"
   ],
   "author": "whitecolor",
-  "license": "ISC",
-  "dependencies": {
-  },
-  "devDependencies": {
-  }
+  "license": "ISC"  
 }

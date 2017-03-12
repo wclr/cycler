@@ -33,16 +33,14 @@
     "xstream": "^9.0.0"
   },
   "scripts": {
-    "start": "sh .scripts/start.sh",    
-    "install-deps": "sh .scripts/install-deps.sh --linklocal",
-    "tsc-build-watch": "sh .scripts/wait-install-deps.sh && sh .scripts/fix-tsc.sh && tsc -w",
-    "tsc-build": "sh .scripts/wait-install-deps.sh && tsc",
-    "up": "docker-compose up",
-    "install-packages-deps": "sh ./.scripts/for-all-packages.sh \"linklocal && yarn\"",
-    "install-all": "yarn && yarn run install-packages-deps",
-    "test-ci": "typings install && yarn && sh ./.scripts/ci-all-packages.sh",
     "build-dev-image": "docker build -t cycler-dev-node .",
-    "rebuild-dev-image": "docker build -t cycler-dev-node --no-cache ."
+    "rebuild-dev-image": "docker build -t cycler-dev-node --no-cache .",
+    "install-deps": "sh .scripts/install-deps.sh",    
+    "tsc-build": "sh .scripts/wait-install-deps.sh && tsc",
+    "tsc-build-watch": "sh .scripts/wait-install-deps.sh && sh .scripts/fix-tsc-watch.sh && tsc -w",    
+    "test-watch": "sh .scripts/wait-install-deps.sh && sh .scripts/test-watch.sh",
+    "dev": "yarn run build-dev-image && docker-compose up",
+    "test-ci": "typings install && yarn && sh ./.scripts/ci-all-packages.sh"    
   },
   "dependencies": {
     "typings": "^2.1.0"
