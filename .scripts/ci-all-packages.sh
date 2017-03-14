@@ -61,7 +61,7 @@ while read PACKAGE; do
     git checkout -b $BRANCH_NAME
     git push -f -q built $BRANCH_NAME
     rm -rf .git .gitignore
-  if
+  fi
   cd ..
   
 done <$(dirname $0)/PACKAGES
