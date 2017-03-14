@@ -1,12 +1,16 @@
 # cycler
 
+https://travis-ci.org/whitecolor/cycler.svg?branch=master
+
 **All the packages are in beta currenlty.**
 
 
-# Development
+## Development
 
-Will start build, watch, and test for certain packages:
+Start containers for installing deps and building typescript:
+`$ yarn dev-deps` 
 
-`$ yarn run dev task, http, ... ` 
+Start test-watch for needed packages:
 
-If
+`$ yarn dev task, http, ... ` 
+

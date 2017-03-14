@@ -56,10 +56,12 @@ while read PACKAGE; do
     git remote add built $BUILT_URL/\$d > /dev/null
     echo '$GITIGNORE_CONTENT' > .gitignore
     git add .
-    git commit -m \"Orginal SHA: $SHA\"
+    git commit -m "Orginal SHA: $SHA"
     git push -f -q built master
     git checkout -b $BRANCH_NAME
     git push -f -q built $BRANCH_NAME
+    git checkout -b $PACKAGE_VERSION
+    git push -f -q built $PACKAGE_VERSION
     rm -rf .git .gitignore
   fi
   cd ..
