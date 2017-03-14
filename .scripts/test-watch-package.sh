@@ -9,5 +9,3 @@ if [ -f test/test.js ]; then
   echo "Starting test watch in $PACKAGE_FOLDER"
   node-dev --poll --respawn -r source-map-support/register test/test.js
 fi
-
-

@@ -1,50 +1,67 @@
 #!/bin/bash
+set -e
 
 # Install packages deps, build and run tests
 
-BUILD_SOURCE_CMD="../node_modules/.bin/tsc --outDir ."
-TEST_SOURCE_CMD="node -r source-map-support/register test/test.js"
-
 # Make script it executable: on travis CI need to run it with bash (sh doesn't work), 
 # on windows `bash script.sh` fails
-chmod +x ./.scripts/for-all-packages.sh
-
-#./.scripts/for-all-packages.sh "yarn && $BUILD_SOURCE_CMD && $TEST_SOURCE_CMD"
-yarn run install-deps
-yarn run tsc-build
 
 # if $GH_TOKEN not set (untrusted build) just exit
 if [ -z "$GH_TOKEN" ]; then
+  #echo "No GH_TOKEN env variable, exiting."
+  echo "No GH_TOKEN env variable, skiping built git push."
   exit 0
 fi
+
+yarn run install-deps
+yarn run tsc-build
 
 # "Publish" built packages to github.com/cycler-built/<package>
 
 # Set git identity
-git config --global user.email "alexosh@me.com"
-git config --global user.name "whitecolor"
+if [ "$GH_TOKEN" ]; then
+  git config --global user.email "alexosh@me.com"
+  git config --global user.name "whitecolor"
+fi
 
 # Url where built packages are located
 BUILT_URL=https://${GH_TOKEN}@github.com/cycler-built
 
-GITIGNORE_CONTENT="node_modules\nyarn-error.log"
-
+GITIGNORE_CONTENT="node_modules\nyarn-error.log\n*.ts"
 # Get SHA of current cycler commit
 SHA=$(git rev-parse HEAD)
 SHA_BRANCH=$(echo $SHA| cut -c1-7)
 
-# Create temporary git repo inside the package 
-# and replace cycler-built/<package> repo with new source
-./.scripts/for-all-packages.sh " \
-  rm -rf .git &&\
-  git init &&\  
-  git remote add built $BUILT_URL/\$d > /dev/null &&\
-  echo '$GITIGNORE_CONTENT' > .gitignore &&\
-  git add . &&\
-  git commit -m \"Orginal SHA: $SHA\" &&\
-  git push -f -q built master &&\
-  git checkout -b $SHA_BRANCH
-  git push -f -q built $SHA_BRANCH &&\
-  rm -rf .git .gitignore
-  "\
-  /
+declare -A SKIP_TEST_PACKAGES
+SKIP_TEST_PACKAGES["mongoose"]=1
+
+while read PACKAGE; do
+  if [ ! -d $PACKAGE ]; then
+    continue
+  fi
+  echo "> $PACKAGE";
+  # obscrure github token
+  echo "> ${BUILT_URL/https:\/\/*@github.com/http://SECRET@github.com}";  
+  
+  if [[ ! ${SKIP_TEST_PACKAGES[$PACKAGE]} ]]; then 
+    yarn run test-package $PACKAGE    
+  fi
+  cd $PACKAGE
+  PACKAGE_VERSION=$(node -pe "require('./package.json').version")
+  BRANCH_NAME=$PACKAGE_VERSION-$SHA_BRANCH  
+  if [ "$GH_TOKEN" ]; then
+    echo "Creating git repo with branch $BRANCH_NAME"
+    rm -rf .git
+    git init
+    git remote add built $BUILT_URL/\$d > /dev/null
+    echo '$GITIGNORE_CONTENT' > .gitignore
+    git add .
+    git commit -m \"Orginal SHA: $SHA\"
+    git push -f -q built master
+    git checkout -b $BRANCH_NAME
+    git push -f -q built $BRANCH_NAME
+    rm -rf .git .gitignore
+  if
+  cd ..
+  
+done <$(dirname $0)/PACKAGES

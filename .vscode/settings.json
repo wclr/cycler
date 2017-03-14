@@ -5,8 +5,7 @@
 		//"*/make-tsconfig.js": false,		
 		"**/*.js.map": true,						
 		"**/*.d.ts": true,
-		"**/*.js": true,
-		"/task/*.js": false
+		"**/*.js": true		
 	},
 	"search.exclude": {
 		"**/*.js": true,		

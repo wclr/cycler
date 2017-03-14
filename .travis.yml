@@ -2,7 +2,7 @@ sudo: false
 language: node_js
 node_js:
 - 6.9.1
-script: npm run test-ci
+script: npm run ci
 branches:
   only:
   - master

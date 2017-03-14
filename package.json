@@ -38,9 +38,12 @@
     "install-deps": "sh .scripts/install-deps.sh",    
     "tsc-build": "sh .scripts/wait-install-deps.sh && tsc",
     "tsc-build-watch": "sh .scripts/wait-install-deps.sh && sh .scripts/fix-tsc-watch.sh && tsc -w",    
-    "test-watch": "sh .scripts/wait-install-deps.sh && sh .scripts/test-watch.sh",
+    "test-watch-package": "sh .scripts/wait-install-deps.sh && sh .scripts/test-watch-package.sh",
+    "test-package": "sh .scripts/wait-install-deps.sh && sh .scripts/test-package.sh",    
     "dev": "yarn run build-dev-image && docker-compose up",
-    "test-ci": "typings install && yarn && sh ./.scripts/ci-all-packages.sh"    
+    "dev-deps": "yarn run dev deps-install tsc-build",
+    "dev-ci": "docker-compose up dev-ci",
+    "ci": "typings install && bash ./.scripts/ci-all-packages.sh"    
   },
   "dependencies": {
     "typings": "^2.1.0"

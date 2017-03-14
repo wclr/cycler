@@ -17,9 +17,7 @@
   "devDependencies": {
     "@cycler/task": "file:../task",
     "@types/mongoose": "^4.5.33",
-    "mongoose": "^4.5.10"
-  },
-  "dependencies": {
+    "mongoose": "^4.5.10",
     "@types/node": "^6.0.53"
-  }
+  }  
 }

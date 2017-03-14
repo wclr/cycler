@@ -18,9 +18,17 @@ services:
       - /cycler/mongoose/node_modules
       - /cycler/task/node_modules
       - /cycler/hmr/node_modules
-      - /cycler/spy/node_modules  
+      #- /cycler/spy/node_modules  
     command: sh .scripts/watch-deps.sh
 
+  dev-ci:
+    image: cycler-dev-node
+    volumes_from:
+      - deps-install    
+    command: yarn run ci
+    depends_on: 
+      - deps-install
+    
   tsc-build:     
     image: cycler-dev-node
     volumes_from:
@@ -33,20 +41,20 @@ services:
     image: cycler-dev-node    
     volumes_from:
       - deps-install    
-    command: yarn test-watch task
+    command: yarn test-watch-package task
     depends_on: 
       - tsc-build
 
   mongoose:  
     <<: *common
-    command: yarn test-watch mongoose
+    command: yarn test-watch-package mongoose
     depends_on:
       - tsc-build
       - mongo        
 
   graphql:  
     <<: *common
-    command: yarn test-watch graphql
+    command: yarn test-watch-package graphql
 
   # forage:  
   #   <<: *common
@@ -54,8 +62,8 @@ services:
     
   http:  
     <<: *common    
-    command: yarn test-watch http
+    command: yarn test-watch-package http
     
   express:  
     <<: *common    
-    command: yarn test-watch express
+    command: yarn test-watch-package express
