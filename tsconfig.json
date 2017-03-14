@@ -10,9 +10,8 @@
     "lib": ["dom", "es6"],
     "sourceMap": true,
     "traceResolution": false,
-    "types": [
-
-    ]
+    "inlineSourceMap": true,
+    "inlineSources": true
   },
     "formatCodeOptions": {
     "indentSize": 2,

@@ -52,7 +52,7 @@ while read PACKAGE; do
     echo "Creating git repo with branch $BRANCH_NAME"
     rm -rf .git
     git init
-    git remote add built $BUILT_URL/\$PACKAGE > /dev/null
+    git remote add built $BUILT_URL/$PACKAGE > /dev/null
     echo -e $GITIGNORE_CONTENT > .gitignore
     git add .
     git commit -m "Orginal SHA: $SHA"
