@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-
 # Install packages deps, build and run tests
 
 # Make script it executable: on travis CI need to run it with bash (sh doesn't work), 
@@ -53,8 +52,8 @@ while read PACKAGE; do
     echo "Creating git repo with branch $BRANCH_NAME"
     rm -rf .git
     git init
-    git remote add built $BUILT_URL/\$d > /dev/null
-    echo '$GITIGNORE_CONTENT' > .gitignore
+    git remote add built $BUILT_URL/\$PACKAGE > /dev/null
+    echo -e $GITIGNORE_CONTENT > .gitignore
     git add .
     git commit -m "Orginal SHA: $SHA"
     git push -f -q built master
