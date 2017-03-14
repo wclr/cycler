@@ -8,7 +8,7 @@
     "preserveConstEnums": true,
     "noImplicitAny": true,    
     "lib": ["dom", "es6"],
-    "sourceMap": true,
+    "sourceMap": false,
     "traceResolution": false,
     "inlineSourceMap": true,
     "inlineSources": true
