@@ -30,7 +30,8 @@
     "typescript": "2.2.0-dev.20161116",
     "validate-commit-msg": "^2.8.2",
     "watchify": "^3.7.0",
-    "xstream": "^9.0.0"
+    "xstream": "^9.0.0",
+    "typings": "^2.1.0"
   },
   "scripts": {
     "build-dev-image": "docker build -t cycler-dev-node .",
@@ -43,9 +44,6 @@
     "docker-test-package": "docker-compose run -T -e RUN_ONCE=true",
     "dev": "yarn run build-dev-image && docker-compose up",
     "dev-deps": "yarn run dev deps-install tsc-build",
-    "ci": "typings install && bash .scripts/publish-packages.sh"    
-  },
-  "dependencies": {
-    "typings": "^2.1.0"
-  }
+    "ci": "typings install && ./.scripts/publish-packages.sh"    
+  }  
 }

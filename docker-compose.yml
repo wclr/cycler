@@ -50,8 +50,6 @@ services:
 
   task: &common
     image: cycler-dev-node    
-    environment: 
-      CYCLER_TEST_MODE: ${CYCLER_TEST_MODE}
     volumes_from:
       - deps-install    
     command: yarn test-watch-package task
