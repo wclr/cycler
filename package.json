@@ -44,6 +44,6 @@
     "docker-test-package": "docker-compose run -T -e RUN_ONCE=true",
     "dev": "yarn run build-dev-image && docker-compose up",
     "dev-deps": "yarn run dev deps-install tsc-build",
-    "ci": "typings install && ./.scripts/publish-packages.sh"    
+    "ci": "typings install && bash ./.scripts/publish-packages.sh"    
   }  
 }

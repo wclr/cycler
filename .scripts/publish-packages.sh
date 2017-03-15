@@ -2,7 +2,7 @@
 set -e
 # Installs dependencies, builds, runs tests and publishes to NPM
 
-# Make script it executable: on travis CI need to run it with bash (sh doesn't work), 
+# Make script executable: on travis CI need to run it with bash (sh doesn't work), 
 # on windows `bash script.sh` fails
 
 yarn run build-dev-image
