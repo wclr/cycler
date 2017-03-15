@@ -6,7 +6,7 @@ language: node_js
 node_js:
 - 6.9.1
 before_install:
-  - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+  #- echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
   #- chmod +x
 script: npm run ci
 branches:

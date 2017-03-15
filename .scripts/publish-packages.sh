@@ -5,6 +5,8 @@ set -e
 # Make script executable: on travis CI need to run it with bash (sh doesn't work), 
 # on windows `bash script.sh` fails
 
+# NB: this script should be run with `npm` not `yarn` (or npm publish won't work properly)
+
 yarn run build-dev-image
 # run once install end build
 docker-compose run --entrypoint "bash .scripts/install-deps.sh" deps-install
@@ -29,11 +31,6 @@ while read PACKAGE; do
     #docker-compose run -T -e RUN_ONCE=true $PACKAGE
   fi
 
-  # if [[ -z $NPM_TOKEN ]]; then
-  #   echo "No NPM_TOKEN env variable, skiping publication."
-  #   continue
-  # fi
-
   cd $PACKAGE
     
   PACKAGE_VERSION=$(node -pe "require('./package.json').version")
@@ -43,13 +40,17 @@ while read PACKAGE; do
   VERSIONS=$(npm show @cycler/$PACKAGE versions)
   set -e
 
-  if [[ ! $VERSIONS == *\'$PACKAGE_VERSION\'* ]]; then
+  if [[ ! $VERSIONS == *\'$PACKAGE_VERSION\'* ]]; then        
+    if [[ $NPM_TOKEN ]]; then
+      echo "Putting NPM_TOKEN in .npmrc"
+      echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc    
+    fi  
+    
     # copy .npmignore from root
-    #if [[ ! -f .npmignore ]]; then
-      cp ../.npmignore .
-    #fi
-    echo "Publishing $PACKAGE@$PACKAGE_VERSION"
-    #npm publish --access=public
+    cp ../.npmignore .
+    
+    echo "Publishing $PACKAGE@$PACKAGE_VERSION"    
+    npm publish --access=public    
   else
     echo "Version $PACKAGE@$PACKAGE_VERSION already published."
   fi

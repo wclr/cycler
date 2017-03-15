@@ -17,6 +17,7 @@ yarn-error.log
 npm-debug*
 
 # Misc
+.npmrc
 _*
 _README.md
 docker-compose.override.yml
