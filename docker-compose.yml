@@ -8,42 +8,55 @@ services:
   deps-install:
     image: cycler-dev-node
     volumes:
+      # - .:/cycler
+      # - /cycler/node_modules
+      # - /cycler/express/node_modules
+      # - /cycler/forage/node_modules
+      # - /cycler/graphql/node_modules
+      # - /cycler/http/node_modules
+      # - /cycler/logger/node_modules
+      # - /cycler/mongoose/node_modules
+      # - /cycler/task/node_modules
+      # - /cycler/hmr/node_modules
       - .:/cycler
-      - /cycler/node_modules
-      - /cycler/express/node_modules
-      - /cycler/forage/node_modules
-      - /cycler/graphql/node_modules
-      - /cycler/http/node_modules
-      - /cycler/logger/node_modules
-      - /cycler/mongoose/node_modules
-      - /cycler/task/node_modules
-      - /cycler/hmr/node_modules
-      #- /cycler/spy/node_modules  
-    command: sh .scripts/watch-deps.sh
+      - node_modules:/cycler/node_modules
+      - express_node_modules:/cycler/express/node_modules
+      - forage_node_modules:/cycler/forage/node_modules
+      - graphql_node_modules:/cycler/graphql/node_modules
+      - http_node_modules:/cycler/http/node_modules
+      - logger_node_modules:/cycler/logger/node_modules
+      - mongoose_node_modules:/cycler/mongoose/node_modules
+      - task_node_modules:/cycler/task/node_modules
+      - hmr_node_modules:/cycler/hmr/node_modules
+    entrypoint: sh .scripts/watch-deps.sh
+    #command: sh .scripts/watch-deps.sh
 
-  dev-ci:
-    image: cycler-dev-node
-    volumes_from:
-      - deps-install    
-    command: yarn run ci
-    depends_on: 
-      - deps-install
+  # dev-ci:
+  #   image: cycler-dev-node
+  #   volumes_from:
+  #     - deps-install    
+  #   command: yarn run ci
+  #   depends_on: 
+  #     - deps-install
     
   tsc-build:     
     image: cycler-dev-node
     volumes_from:
       - deps-install    
-    command: yarn run tsc-build-watch
-    depends_on: 
-      - deps-install
+    #command: yarn run tsc-build-watch
+    entrypoint: yarn run tsc-build-watch
+    # depends_on: 
+    #   - deps-install
 
   task: &common
     image: cycler-dev-node    
+    environment: 
+      CYCLER_TEST_MODE: ${CYCLER_TEST_MODE}
     volumes_from:
       - deps-install    
     command: yarn test-watch-package task
-    depends_on: 
-      - tsc-build
+    # depends_on: 
+    #   - tsc-build
 
   mongoose:  
     <<: *common
@@ -67,3 +80,14 @@ services:
   express:  
     <<: *common    
     command: yarn test-watch-package express
+
+volumes:  
+  node_modules:
+  express_node_modules:
+  forage_node_modules:
+  graphql_node_modules:
+  http_node_modules:
+  logger_node_modules:
+  mongoose_node_modules:
+  task_node_modules:
+  hmr_node_modules:

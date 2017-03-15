@@ -46,10 +46,21 @@ while read PACKAGE; do
     yarn run test-package $PACKAGE    
   fi
   cd $PACKAGE
+  
   PACKAGE_VERSION=$(node -pe "require('./package.json').version")
   BRANCH_NAME=$PACKAGE_VERSION-$SHA_BRANCH  
+  VERSIONS=$(npm show @cycler/$PACKAGE versions)
+
+  if [[ $VERSIONS == *\'$PACKAGE_VERSION\'* ]]; then
+    echo "exists"
+  else
+    echo "doesn't"
+  fi
+
+  echo VERSION: $PACKAGE_VERSION  
+
   if [ "$GH_TOKEN" ]; then
-    echo "Creating git repo with branch $BRANCH_NAME"
+    echo "Creating git repo with branch $BRANCH_NAME"    
     rm -rf .git
     git init
     git remote add built $BUILT_URL/$PACKAGE > /dev/null

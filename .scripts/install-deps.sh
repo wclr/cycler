@@ -33,7 +33,9 @@ for f in $(ls $DEPSFILE */$DEPSFILE */*/$DEPSFILE */*/*/$DEPSFILE | grep -v "$EX
   d=$(dirname "${f}")
   echo "Installing dependencies in $ROOT/$d..."
   cd "$ROOT/$d"  
-  sh -c "$LINKLOCAL_CMD yarn --ignore-engines $PRODUCTION_FLAG"
+  # echo "list of node_modules:"
+  # ls node_modules
+  sh -c "$LINKLOCAL_CMD yarn --ignore-engines $PRODUCTION_FLAG"  
 done
 
 cd $ROOT

@@ -40,10 +40,10 @@
     "tsc-build-watch": "sh .scripts/wait-install-deps.sh && sh .scripts/fix-tsc-watch.sh && tsc -w",    
     "test-watch-package": "sh .scripts/wait-install-deps.sh && sh .scripts/test-watch-package.sh",
     "test-package": "sh .scripts/wait-install-deps.sh && sh .scripts/test-package.sh",    
+    "docker-test-package": "docker-compose run -T -e RUN_ONCE=true",
     "dev": "yarn run build-dev-image && docker-compose up",
     "dev-deps": "yarn run dev deps-install tsc-build",
-    "dev-ci": "docker-compose up dev-ci",
-    "ci": "typings install && bash ./.scripts/ci-all-packages.sh"    
+    "ci": "typings install && bash .scripts/publish-packages.sh"    
   },
   "dependencies": {
     "typings": "^2.1.0"

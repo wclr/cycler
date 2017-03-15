@@ -1,6 +1,10 @@
 {
   "name": "@cycler/mongoose",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-diversity.0",
+  "publishConfig": {
+    "tag": "diversity",
+    "access": "public"
+  },  
   "description": "Mongoose.js driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
   "keywords": [

@@ -5,6 +5,9 @@
 node_modules
 typings
 
+# ignore .npmignore in packages (if copied there for publishing)
+*/.npmignore
+
 # Generated
 *.js
 *.js.map

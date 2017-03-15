@@ -1,11 +1,19 @@
 #!/bin/bash
 
-if [ $1 ]; then
-  PACKAGE_FOLDER=$1
-  cd $PACKAGE_FOLDER
+PACKAGE=$1
+
+if [[ -z $PACKAGE ]]; then
+  exit 1
 fi
 
+cd $PACKAGE
+
 if [ -f test/test.js ]; then
-  echo "Starting test watch in $PACKAGE_FOLDER"
-  node-dev --poll --respawn -r source-map-support/register test/test.js
+  if [[ $RUN_ONCE ]]; then
+    echo "Starting test for $PACKAGE_FOLDER"  
+    node -r source-map-support/register test/test.js
+  else  
+    echo "Starting test watch in $PACKAGE_FOLDER"  
+    node-dev --poll --respawn -r source-map-support/register test/test.js
+  fi
 fi
