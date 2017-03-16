@@ -317,7 +317,7 @@ test('xstream run (isolation, cancellation)', (t) => {
 
   const Main = ({source}: { source: any }) => {
     const dataflow0 = isolate(Dataflow, 'scope0')({
-      request$: xs.fromArray(requests0),
+      request$: xs.fromArray(requests0).compose(delay(0)),
       source
     }, '0')
     const dataflow1 = isolate(Dataflow, 'scope1')({
