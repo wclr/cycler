@@ -9,7 +9,7 @@ set -e
 
 yarn run build-dev-image
 # run once install end build
-docker-compose run --entrypoint "bash .scripts/install-deps.sh" deps-install
+docker-compose run --entrypoint "bash .scripts/install-deps.sh --linklocal" deps-install
 
 echo "Removing all previously built files..."
 rm -rf  *.js.map *.d.ts *.js **/*.js.map **/*.d.ts **/*.js
