@@ -1,6 +1,9 @@
 {
   "name": "@cycler/express",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-diversity.0",
+  "publishConfig": {
+    "tag": "diversity"
+  },
   "description": "Express driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
   "keywords": [

@@ -1,6 +1,9 @@
 {
   "name": "@cycler/logger",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-diversity.0",
+  "publishConfig": {
+    "tag": "diversity"
+  },
   "description": "Logger driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
   "keywords": [
@@ -11,5 +14,5 @@
     "logger"
   ],
   "author": "whitecolor",
-  "license": "ISC"  
+  "license": "ISC"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@cycler/graphql",
-  "version": "1.0.0-beta.0",
+  "_version": "1.0.0-beta.0",
   "description": "Graphql driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
   "keywords": [

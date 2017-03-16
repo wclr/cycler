@@ -67,9 +67,9 @@ services:
     <<: *common
     command: yarn test-watch-package graphql
 
-  # forage:  
-  #   <<: *common
-  #   command: bash ./.scripts/build-watch.sh forage  
+  forage:  
+    <<: *common
+    command: yarn test-watch-package forage
     
   http:  
     <<: *common    

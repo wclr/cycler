@@ -1,5 +1,6 @@
-_express
-_logger
-_http
+express
+logger
+http
+hmr
 task
 mongoose

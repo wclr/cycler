@@ -1,20 +1,9 @@
-import * as test from 'tape'
-import { makeTest } from './makeTest'
-import { makeForageDriver, ForageSource, ForageRequest } from '../xstream'
-import { forageDrivers } from '../'
-//require('node-localstorage')
-//console.log('localStorage', localStorage)
+// To make it work
+// we need to make `localStorage` available in global context 
+// before loading localforage module
 if (typeof localStorage === 'undefined' || localStorage === null) {
-  var LocalStorage = require('node-localstorage').LocalStorage;
-  (<any>global).window = (<any>{localStorage: new LocalStorage('./scratch')})
-  (<any>global).window.localStorage = new LocalStorage('./scratch');
-  //console.log('localStorage', (<any>global).localStorage)
+  const anyGlobal = (global as any)
+  const LocalStorage: any = require('node-localstorage').LocalStorage
+  anyGlobal.localStorage = new LocalStorage('./scratch')
+  require('./runTest')
 }
-const localstorageForageDriver = makeForageDriver({
-  driver: forageDrivers.localStorage,
-  name: 'test',
-})
-
-test('LOCALSTORAGE: setItems, getItems, removeItems', (t) => {
-  makeTest(localstorageForageDriver, t, true)
-})

@@ -1,6 +1,6 @@
 {
   "name": "@cycler/task",
-  "version": "1.0.0-diversity.0",
+  "version": "1.0.0-diversity.3",
   "description": "Factory for creating async task cycle.js driver",
   "repository": "http://github.com/whitecolor/cycler",
   "publishConfig": {
