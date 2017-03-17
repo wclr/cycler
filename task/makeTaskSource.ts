@@ -1,64 +1,72 @@
-import { StreamAdapter, Observer } from '@cycle/base'
-import { MakeTaskSourceOptions } from './interfaces'
+import xs, { Stream, MemoryStream } from 'xstream';
+import { Driver, FantasyObservable } from '@cycle/run';
+import { adapt } from '@cycle/run/lib/adapt';
+import { MakeTaskSourceOptions, ResponsesStream } from './interfaces'
 
-const makeFilter = (streamAdapter: StreamAdapter) =>
-  (stream: any, predicate: (r$: any) => boolean) =>
-    streamAdapter.adapt({}, (_: any, observer: Observer<any>) =>
-      streamAdapter.streamSubscribe(stream, {
-        next: (r$) => {
-          if (predicate(r$)) {
-            observer.next(r$)
-          }
-        },
-        error: observer.error.bind(observer),
-        complete: observer.complete.bind(observer)
-      })
-    )
 
-const isolateField = '_namespace'
-type NameSpaced = {_namespace?: string[]}
-export function makeTaskSource<RequestInput, Request>(
-  runStreamAdapter: StreamAdapter,
-  response$$: any,
+type NameSpaced = { _namespace?: string[] }
+
+let _isolateRequest = <Request>(requestToIsolate: Request & NameSpaced, scope: string):
+  Request & NameSpaced => {
+  if (scope) {
+    requestToIsolate._namespace = requestToIsolate._namespace || []
+    if (requestToIsolate._namespace.indexOf(scope) === -1) {
+      requestToIsolate._namespace.push(scope)
+    }
+  }
+  return requestToIsolate
+}
+
+let _filterIsolatedRequest =
+  <Request>(req: Request & NameSpaced, scope: string) => {
+    return Array.isArray(req._namespace) &&
+      req._namespace.indexOf(scope) !== -1
+  }
+
+export function setIsolate<Request>(
+  isolateRequest: (request: Request) => Request,
+  filterIsolatedRequest?: (request: Request, scope: string) => boolean
+) {
+  _isolateRequest = isolateRequest
+  if (filterIsolatedRequest) {
+    _filterIsolatedRequest = filterIsolatedRequest
+  }
+}
+
+export function makeTaskSource<RequestInput, Request, Response>(
+  response$$: ResponsesStream<Request, Response>,
   options: MakeTaskSourceOptions<RequestInput, Request> = {}
 ) {
 
-  let filterStream = makeFilter(runStreamAdapter)
-
-  let driverSource = {
-    filter(predicate: any): any {
-      const filteredResponse$$ = filterStream(
-        response$$, (r$: any) => predicate(r$.request)
+  const driverSource = {
+    filter(predicate: (any)): any {
+      const filteredResponse$$ = response$$.filter(
+        (r$: any) => predicate(r$.request)
       )
-      return makeTaskSource(runStreamAdapter, filteredResponse$$, options)
+      return makeTaskSource(filteredResponse$$, options)
     },
     isolateSink(request$: any, scope: string) {
-      return request$.map((req: RequestInput | Request) => {        
-        let isolatedReq: Request & NameSpaced =
+      return request$.map((req: RequestInput | Request) => {
+        const requestToIsolate: Request & NameSpaced =
           options.isolateMap ? options.isolateMap(<RequestInput>req) : <Request>req
-        isolatedReq._namespace = isolatedReq._namespace || []
-        if (isolatedReq._namespace.indexOf(scope) === -1) {
-          isolatedReq._namespace.push(scope)  
-        }        
-        return isolatedReq
+
+        return _isolateRequest(requestToIsolate, scope)
       })
     },
     isolateSource: (source: any, scope: any) => {
       let requestPredicate = (req: Request & NameSpaced) => {
-        return Array.isArray(req._namespace) &&
-          req._namespace.indexOf(scope) !== -1
+        return _filterIsolatedRequest(req, scope)
       }
-
       return source.filter(requestPredicate)
-    },    
+    },
     select(category: string) {
       if (!category) {
-        return response$$
+        return adapt(response$$)
       }
       if (typeof category !== 'string') {
         throw new Error(`category should be a string`)
-      }      
-      let requestPredicate =
+      }
+      const requestPredicate =
         (request: any) => request && request.category === category
       return driverSource.filter(requestPredicate).select()
     }

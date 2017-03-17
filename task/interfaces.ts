@@ -1,23 +1,37 @@
-import { StreamAdapter } from '@cycle/base'
+import xs, { Stream, MemoryStream } from 'xstream';
+import { Driver } from '@cycle/run';
+import { adapt } from '@cycle/run/lib/adapt';
 
-export interface ResponseStreamExtra<Request> {
-  request: Request;
-}
-export type RequestStream = any
-export type ResponsesStream = any
+// export interface ResponseStreamExtra<Request> {
+//   request: Request;
+// }
+
+//export type RequestStream<Request> = Stream<Request>
+export type ResponseStream<Response, Request> = Stream<Response> & { request: Request }
+
+export type ResponsesStream<Response, Request> =
+  Stream<Stream<Response> & { request: Request }>
 
 export interface MakeTaskSourceOptions<RequestInput, Request> {
   isolateMap?(request: RequestInput): Request
 }
 
+// export interface TaskSource<Request, Response> {
+//   filter(predicate: (request: Request) => boolean): TaskSource<Request, Response>
+//   select(category?: string): ResponsesStream<Response, Request>
+// }
+
 export interface TaskSource<Request, Response> {
-  filter(predicate: (request: Request) => boolean): TaskSource<Request, Response>
-  select(category?: string): ResponsesStream
+  filter<Req>(predicate: (request: Request & Req) => boolean): TaskSource<Request & Req, Response>
+  select<Res>(category?: string):
+    Stream<ResponseStream<Response & Res, Request>>
+  select<Res, Req>(category?: string):
+    Stream<ResponseStream<Response & Res, Request & Req>>
 }
 
-export type TaskDriver<Request, Response> =
-  (request$: RequestStream, runSA: StreamAdapter) => TaskSource<Request, Response>
 
+export type TaskDriver<Request, Response> =
+  (request$: Stream<Request>) => TaskSource<Request, Response>
 
 export interface Thenable<R, Error> {
   then: (resolve: (result: R) => any, reject: (error: any, ...rest: any[]) => any) => any

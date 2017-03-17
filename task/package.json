@@ -4,15 +4,10 @@
   "description": "Factory for creating async task cycle.js driver",
   "repository": "http://github.com/whitecolor/cycler",
   "publishConfig": {
-    "tag": "diversity",
+    "tag": "unified",
     "access": "public"
   },
-  "keywords": [
-    "cyclejs",
-    "driver",
-    "async",
-    "task"
-  ],
-  "author": "whitecolor",
-  "license": "ISC"
+  "peerDependencies": {
+    "xstream": "*"
+  }
 }

@@ -1,13 +1,9 @@
-# task driver
+# Task
 > Higher order factory for creating [cycle.js](http://cycle.js.org) async request/response drivers.
 
 ![npm (scoped)](https://img.shields.io/npm/v/@cycler/task.svg?maxAge=86400)
 
-> Notice that API of version 2.x has significantly changed since 
-[1.x](https://github.com/whitecolor/cycle-async-driver/tree/e1edceb28fc808e755449c3dbf0073184135dfa8),
- which where using `rxjs4` and has some excessive features that where removed in 2.x.
-
-**Currently in beta, so use:**
+**Currently in beta:**
 ```bash
 npm install cycler/task@beta -S
 ```
@@ -27,7 +23,7 @@ Such driver will work in the same manner as
 
 ## API
 
-### `makeAsyncDriver`
+### `makeTaskDriver`
 
 Async driver factory.
 
