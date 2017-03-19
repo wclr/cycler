@@ -1,17 +1,9 @@
 {
   "name": "@cycler/hmr",
-  "version": "1.0.0-diversity.0",
+  "version": "1.0.0-unified.0",
   "publishConfig": {
-    "tag": "diversity"
+    "tag": "latest"
   },
-  "description": "Hmr Cycle.js.",
-  "repository": "http://github.com/whitecolor/cycler",
-  "keywords": [
-    "cyclejs",
-	  "dx",
-    "hmr",
-    "hot reload"
-  ],
-  "author": "whitecolor",
-  "license": "ISC"
+  "description": "HMR for Cycle.js.",
+  "repository": "http://github.com/whitecolor/cycler"
 }

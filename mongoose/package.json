@@ -16,7 +16,8 @@
   "author": "whitecolor",
   "license": "ISC",
   "peerDependencies": {
-    "mongoose": "^4.1.0"
+    "mongoose": "^4.1.0",
+    "@cycler/task": "*"
   },
   "devDependencies": {
     "@cycler/task": "file:../task",

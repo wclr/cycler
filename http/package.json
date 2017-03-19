@@ -1,28 +1,22 @@
 {
   "name": "@cycler/http",
-  "version": "1.0.0-diversity.0",
+  "version": "1.0.0-unified.0",
   "publishConfig": {
-    "tag": "diversity"
+    "tag": "latest"
   },
   "description": "(Non-official) HTTP driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
-  "keywords": [
-    "cyclejs",
-    "driver",
-    "async",
-    "task",
-    "http",
-    "superagent",
-    "request"
-  ],
   "author": "whitecolor",
   "license": "ISC",
-  "dependencies": {
-    "superagent": "^2.2.0",
-    "@types/superagent": "^2.0.32"
+  "dependencies": {    
+    "superagent": "^3.5.1"
+  },
+  "peerDependencies": {
+    "@cycler/task": "*"
   },
   "devDependencies": {
-    "portfinder": "^1.0.7",
-    "@cycler/task": "file:../task"
+    "@types/superagent": "^2.0.36",
+    "@cycler/task": "file:../task",
+    "portfinder": "^1.0.7"
   }
 }

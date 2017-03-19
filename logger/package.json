@@ -2,8 +2,7 @@
   "name": "@cycler/logger",
   "version": "1.0.0-unified.0",
   "publishConfig": {
-    "access": "public",
-    "tag": "unified"
+    "tag": "latest"
   },
   "description": "Logger driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",

@@ -1,5 +1,7 @@
-import { Observable } from 'rxjs'
+import { Observable } from 'rxjs/Observable'
 import { RouterRequest, RouterResponse } from './index'
+
+export { RouterRequest, RouterResponse }
 
 export interface RouterSource {
   /**

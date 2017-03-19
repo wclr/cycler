@@ -33,7 +33,6 @@ const isTerminateMethod = (methodName: string) => {
   return !!terminateMethodsIndexMap[methodName]
 }
 
-
 type ResponsesIndexMap = { [index: string]: ExpressResponse }
 
 class RouterSourceObject implements RouterSource {
@@ -44,13 +43,13 @@ class RouterSourceObject implements RouterSource {
   ) {
 
   }
-  route(path: RoutePath, options?: any): any {
+  public route(path: RoutePath, options?: any): any {
     const opts = options | this.routerOptions
     const router = Router(opts)
     this._router.use(path, router)
     return new RouterSourceObject(router, this._responses, opts)
   }
-  method(method: string, path: RoutePath) {
+  public method(method: string, path: RoutePath) {
     const request$ = xs.create<RouterRequest>({
       start: (observer) => {
         const setId = (req: any, id: string): RouterRequest => {

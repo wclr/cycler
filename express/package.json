@@ -2,18 +2,10 @@
   "name": "@cycler/express",
   "version": "1.0.0-unified.0",
   "publishConfig": {    
-    "tag": "latest unified"
+    "tag": "latest"
   },
   "description": "Express driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
-  "keywords": [
-    "cyclejs",
-    "driver",
-    "express",
-    "http"
-  ],
-  "author": "whitecolor",
-  "license": "ISC",
   "dependencies": {
     "cuid": "^1.3.8"
   },

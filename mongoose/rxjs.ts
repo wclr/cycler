@@ -1,20 +1,9 @@
-import { makeTaskDriver, TaskSource } from '@cycler/task/rxjs'
-
-import { Observable } from 'rx'
-import { MongooseRequest, MongooseResponse } from './index'
-import * as mongoose from 'mongoose'
+import { TaskSource } from '@cycler/task/rxjs'
+import { Observable } from 'rxjs/Observable'
+import { MongooseRequest, MongooseResponse, ConnectionEvent } from './index'
 
 export type MongooseSource = TaskSource<MongooseRequest, MongooseResponse> & {
-  on: (event: ConnectionEvent) => Observable<any>
+  on: <T>(event: ConnectionEvent) => Observable<T>
 }
+
 export { MongooseRequest, MongooseResponse }
-export type MongooseDriver = (
-  request$: Observable<MongooseRequest>, runSA: StreamAdapter
-) => MongooseSource
-
-export function makeMongooseDriver(mongoUrl: string, options?: mongoose.ConnectionOptions): MongooseDriver
-export function makeMongooseDriver(connection: mongoose.Connection): MongooseDriver
-
-export function makeMongooseDriver (...args: any[]) {
-  return (<any>_makeMongooseDriver)(...args)
-}

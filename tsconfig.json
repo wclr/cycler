@@ -17,7 +17,6 @@
     "tabSize": 2
   },  
   "exclude": [
-    "**/node_modules/*",    
-    "hmr/test/*"
+    "**/node_modules/*"
   ]
 }

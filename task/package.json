@@ -1,12 +1,12 @@
 {
   "name": "@cycler/task",
-  "version": "1.0.0-diversity.3",
-  "description": "Factory for creating async task cycle.js driver",
-  "repository": "http://github.com/whitecolor/cycler",
+  "version": "1.0.0-unified.0",
   "publishConfig": {
-    "tag": "unified",
+    "tag": "latest",
     "access": "public"
   },
+  "description": "Factory for creating async task cycle.js driver",
+  "repository": "http://github.com/whitecolor/cycler",
   "peerDependencies": {
     "xstream": "*"
   }

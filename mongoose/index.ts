@@ -1,11 +1,19 @@
-import { makeTaskDriver, TaskDriver, GetResponseCallback, TaskRequest } from '@cycler/task'
+import {
+  makeTaskDriver,
+  TaskDriver,
+  GetResponseCallback,
+  TaskRequest,
+  TaskSource
+} from '@cycler/task'
 import * as mongoose from 'mongoose'
-import { StreamAdapter, Observer } from '@cycle/base'
+import xs, { Stream } from 'xstream'
+import { adapt } from '@cycle/run/lib/adapt'
 
 export interface QueryRootCall { [method: string]: any | any[] }
 export interface QueryCall { [method: string]: any | any[] }
 export type QueryChain = (QueryRootCall | QueryCall)[]
-export type ConnectionEvent = 'error' | 'connected' | 'connecting' | 'disconnected' | 'disconnecting'
+export type ConnectionEvent = 'error' |
+  'connected' | 'connecting' | 'disconnected' | 'disconnecting'
 
 export interface MongooseModelRequest extends TaskRequest, QueryRootCall {
   model: string,
@@ -111,7 +119,11 @@ export const makeGetResponse = (connection: mongoose.Connection) => {
 
 export interface MongooseResponse { }
 
-export type MongooseDriver = TaskDriver<MongooseRequest, MongooseResponse>
+export type MongooseSource = TaskSource<MongooseRequest, MongooseResponse> & {
+  on: <T>(event: ConnectionEvent) => Stream<T>
+}
+
+export type MongooseDriver = (request$: Stream<MongooseRequest>) => MongooseSource
 
 export function makeMongooseDriver(mongoUrl: string, options?: mongoose.ConnectionOptions): MongooseDriver
 export function makeMongooseDriver(connection: mongoose.Connection): MongooseDriver
@@ -122,16 +134,19 @@ export function makeMongooseDriver(connection: mongoose.Connection | string, opt
   }
   const taskDriver = makeTaskDriver<MongooseRequest, MongooseResponse, any>(makeGetResponse(connection))
 
-  return function (request$: any, runSA: any) {
+  return function (request$: Stream<MongooseRequest>) {
     const registerEvent = (event: ConnectionEvent) => {
-      return runSA.adapt({}, (_: any, observer: Observer<any>) => {
-        (connection as any).on(event, (val: any) => {
-          observer.next(val)
-        })
-      })
+      return adapt(xs.create({
+        start: (observer) => {
+          (connection as any).on(event, (val: any) => {
+            observer.next(val)
+          })
+        },
+        stop: () => { }
+      }))
     }
-    taskDriver(request$, runSA)
-    const driverSource = taskDriver(request$, runSA) as any
+    taskDriver(request$)
+    const driverSource = taskDriver(request$) as any
     driverSource.on = registerEvent
     return driverSource
   }

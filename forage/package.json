@@ -1,8 +1,8 @@
 {
   "name": "@cycler/forage",
   "version": "1.0.0-unified.0",
-  "publishConfig": {
-    "tag": "unified"
+  "publishConfig": {    
+    "tag": "latest"
   },
   "description": "Mozilla localForage driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",

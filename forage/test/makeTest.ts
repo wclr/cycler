@@ -1,16 +1,17 @@
 import * as test from 'tape'
-import { ForageSource, ForageRequest } from '../xstream'
+import { ForageSource, ForageRequest } from '../.'
 import xs, { Stream, Listener } from 'xstream'
-import { run } from '@cycle/xstream-run'
+import { run } from '@cycle/run'
 import delay from 'xstream/extra/delay'
 
 interface Sources {
   forage: ForageSource
 }
 
-interface Sinks {
+type Sinks = {
   forage: Stream<ForageRequest>
 }
+
 const testValue = (t: test.Test, testValue: any, testName?: string) =>
   <T>(val: T): T => {
     t.deepEqual(val, testValue, testName)

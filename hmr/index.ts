@@ -1,31 +1,36 @@
-import { StreamAdapter, Observer } from '@cycle/base'
+import xs, { Stream } from 'xstream'
+import {
+  FantasyObserver,
+  FantasyObservable,
+  FantasySubscription,
+} from '@cycle/run'
+import { adapt } from '@cycle/run/lib/adapt'
 
-export type GenericStream = {__GenericStream: true}
+const isObservable = (target: any) => {
+  return target &&
+    (typeof (target as FantasyObservable).subscribe === 'function')
+}
+
 type DebugHelper = ((message?: string) => void) & {
   error?: (message: string) => void
 }
 
-export interface HmrProxyOptions {
-  debug?: boolean | string
-}
-
-type ProxyObserver = Observer<any> & {
+type ProxyObserver = FantasyObserver & {
   dispose: () => void
 }
 
-export type Sink = GenericStream | Sinks
+export type Sink = FantasyObservable | Sinks
 
 export type Sinks = {
   [index: string]: Sink
 }
 
-type StreamProxy = {  
-  adapter: StreamAdapter,
+type StreamProxy = {
   key: string,
-  subs: any[],
+  //subs: any[],
   observers: any[],
   sink: Sink
-  stream: GenericStream
+  stream: FantasyObservable
 }
 
 type FnProxy = {
@@ -37,7 +42,7 @@ type ObjProxy = {
   obj: SinkProxies | undefined
 }
 
-type Proxy = StreamProxy | FnProxy | ObjProxy 
+type Proxy = StreamProxy | FnProxy | ObjProxy
 
 type SinkProxies = {
   [index: string]: Sink | Proxy
@@ -49,37 +54,33 @@ type ProxiesStore = {
   }[]
 }
 
-export type Dataflow = (sources: any, ...rest: any[]) => Sinks
-
 const proxiesStore: ProxiesStore = {}
 let cycleHmrEnabled = true
 
+const anyGlobal = global as any
+
 if (typeof global !== 'undefined') {
-  (<any>global).cycleHmrProxiesStore = proxiesStore
-  if ((<any>global).noCycleHmr) {
+  anyGlobal.cycleHmrProxiesStore = proxiesStore
+  if (anyGlobal.noCycleHmr) {
     console.warn('[Cycle HMR] disabled')
     cycleHmrEnabled = false
   }
 }
 
-const findValidAdapter = (adapters: StreamAdapter[], stream: Sink) =>
-  stream && adapters
-    .filter(adapter => adapter.isValidStream(stream))[0]
-
-const getDebugMethod = (value: string | boolean) =>
-  typeof console === 'object' && typeof value === 'string'
-    ? typeof (<any>console)[value] === 'function' ? value
-      : console['log'] ? 'log' : ''
-    : ''
+const getDebugMethod = (value: string | boolean) => {
+  if (typeof console === 'object') {
+    return (typeof value === 'string' && typeof (console as any)[value] === 'function')
+      ? value
+      : (console['log'] ? 'log' : '')
+  }
+}
 
 const makeDebugOutput = (method: string, proxyId: string) =>
-  (message?: string) => (<any>console)[method](`[Cycle HMR] proxy ${proxyId}: ${message}`)
+  (message?: string) =>
+    (console as any)[method](`[Cycle HMR] proxy ${proxyId}: ${message}`)
 
-export const hmrProxy = (
-  adapters: StreamAdapter[],
-  dataflow: Dataflow,
-  proxyId: string,
-  options: HmrProxyOptions = {}) => {
+export const hmrProxy = <Df>
+  (dataflow: Df, proxyId: string): Df => {
 
   if (!cycleHmrEnabled || typeof dataflow !== 'function') {
     return dataflow
@@ -88,11 +89,11 @@ export const hmrProxy = (
   if (typeof proxyId !== 'string') {
     throw Error('You should provide string value of proxy id')
   }
-  const getAdapter = (stream: Sink) => findValidAdapter(adapters, stream)
 
   let debug: DebugHelper = () => { }
-  if (options.debug) {
-    const debugMethod = getDebugMethod(options.debug)
+  if (anyGlobal.cycleHmrDebug) {
+    const debugMethod = getDebugMethod(anyGlobal.cycleHmrDebug)
+    console.log('getDebugMethod', debugMethod)
     debug = debugMethod
       ? makeDebugOutput(debugMethod, proxyId)
       : debug
@@ -100,7 +101,7 @@ export const hmrProxy = (
   debug.error = makeDebugOutput('error', proxyId)
 
   const subscribeObserver = (proxy: StreamProxy, observer: ProxyObserver) => {
-    const dispose = proxy.adapter.streamSubscribe(proxy.sink, {
+    const subscribtion = (proxy.sink as FantasyObservable).subscribe({
       next: observer.next.bind(observer),
       error: (err: Error) => {
         debug.error!(`sink ${proxy.key} error: ${err.message}`)
@@ -109,38 +110,42 @@ export const hmrProxy = (
         debug(`sink ${proxy.key} completed`)
       }
     })
+    // here we mutate observer, probably should not cause problems
     observer.dispose = () => {
-      if (typeof dispose === 'function') {
-        dispose()
-      }
+      subscribtion.unsubscribe()
     }
   }
 
-  const makeSinkProxies = (sinks: Sinks, keyPrefix = '') : SinkProxies | undefined => {
-    let proxies: SinkProxies = {}
+  const makeSinkProxies = (sinks: Sinks, keyPrefix = ''): SinkProxies | undefined => {
+    const proxies: SinkProxies = {}
+    const keys = Object.keys(sinks)
     let validSinks = false
-    let keys = Object.keys(sinks)
     keys.forEach((key) => {
-      let sink = sinks[key]
-      let adapter = sink && getAdapter(sink)
-      if (adapter) {
+      const sink = sinks[key]
+      if (isObservable(sink)) {
         validSinks = true
         let proxy: StreamProxy
-        const stream = adapter.adapt({}, (_: any, observer: ProxyObserver) => {
-          proxy.observers.push(observer)
-          let sub = subscribeObserver(proxy, observer)
-          proxy.subs.push(sub)
-          debug(`stream for sink ${proxy.key} created, observers: ${proxy.observers.length}`)
-          return () => {
-            observer.dispose()
-            let index = proxy.observers.indexOf(observer)
+        const stream = adapt(xs.create({
+          start: function (this: { observer: ProxyObserver }, observer: ProxyObserver) {
+            this.observer = observer
+            proxy.observers.push(observer)
+            // TODO: maybe return subscribtion and get rid of observer mutation
+            let sub = subscribeObserver(proxy, observer)
+            //proxy.subs.push(sub)
+            debug(`stream for sink ${proxy.key} created, observers: ${proxy.observers.length}`)
+          },
+          stop: function (this: { observer: ProxyObserver }) {
+            this.observer.dispose()
+            let index = proxy.observers.indexOf(this.observer)
             proxy.observers.splice(index, 1)
             debug(`stream for sink ${proxy.key} disposed, observers: ${proxy.observers.length}`)
           }
-        })
+        }))
         proxy = {
-          key: keyPrefix + key, subs: [], observers: [],
-          sink, adapter, stream
+          key: keyPrefix + key,
+          //subs: [],
+          observers: [],
+          sink, stream
         }
         proxies[key] = proxy
       } else {
@@ -149,7 +154,7 @@ export const hmrProxy = (
           const fnProxyId = proxyId + '_' + key
           proxies[key] = {
             fnProxyId,
-            fn: hmrProxy(adapters, sink, fnProxyId, options)
+            fn: hmrProxy(sink, fnProxyId)
           }
         } else if (sink && sink.constructor === Object) {
           validSinks = true
@@ -175,7 +180,7 @@ export const hmrProxy = (
   }
 
   const SubscribeProxies = (proxies: SinkProxies, sinks: Sinks) => {
-    if (getAdapter(sinks)) {
+    if (isObservable(sinks)) {
       sinks = { default: sinks }
     }
     return Object.keys(proxies).forEach((key) => {
@@ -184,16 +189,16 @@ export const hmrProxy = (
         return
       }
       if ((proxy as FnProxy).fn) {
-        hmrProxy(adapters, sinks[key] as any, (proxy as FnProxy).fnProxyId, options)
+        hmrProxy(sinks[key] as any, (proxy as FnProxy).fnProxyId)
       } else if ((proxy as ObjProxy).obj) {
         SubscribeProxies((proxy as ObjProxy).obj!, sinks[key] as any)
       } if ((proxy as StreamProxy).observers) {
         (proxy as StreamProxy).sink = sinks[key]
-        ;(proxy as StreamProxy).observers.map(observer => {
-          const dispose = observer.dispose
-          subscribeObserver((proxy as StreamProxy), observer)
-          dispose()
-        })
+          ; (proxy as StreamProxy).observers.map(observer => {
+            const dispose = observer.dispose
+            subscribeObserver((proxy as StreamProxy), observer)
+            dispose()
+          })
       }
     })
   }
@@ -201,24 +206,25 @@ export const hmrProxy = (
   let proxiedInstances = proxiesStore[proxyId]
 
   if (proxiedInstances) {
-    proxiedInstances.forEach(({proxies, sources, rest}) => {
+    proxiedInstances.forEach(({ proxies, sources, rest }) => {
       debug('reload')
       //UnsubscribeProxies(proxies)
-      let sinks = dataflow(sources, ...rest)
+      const sinks = dataflow(sources, ...rest)
       sinks && SubscribeProxies(proxies, sinks)
     })
   } else {
     proxiedInstances = proxiesStore[proxyId] = []
   }
 
-  return (sources: any, ...rest: any[]) => {
+  const proxiedDataflow: any = (sources: any, ...rest: any[]) => {
     debug('execute')
-    let sinks = dataflow(sources, ...rest)
+    let sinks = (dataflow(sources, ...rest)) as Sinks
+
     if (!sinks) {
       return sinks
     }
-    const simple = getAdapter(sinks)
-    if (simple) {
+    const isStreamSink = isObservable(sinks)
+    if (isStreamSink) {
       sinks = { default: sinks }
     }
     if (typeof sinks === 'object') {
@@ -230,10 +236,11 @@ export const hmrProxy = (
       proxiedInstances.push({ sources, proxies, rest })
       debug('created')
       const proxiedSinks = getProxySinks(proxies)
-      return simple ? proxiedSinks.default : proxiedSinks
+      return isStreamSink ? proxiedSinks.default : proxiedSinks
     } else {
       debug('sink not a stream result')
       return sinks
     }
   }
+  return proxiedDataflow
 }
