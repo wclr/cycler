@@ -1,4 +1,4 @@
-import xs, { Stream, MemoryStream } from 'xstream';
+import xs, { Stream } from 'xstream';
 import { adapt } from '@cycle/run/lib/adapt';
 import makeTaskSource from './makeTaskSource'
 import attachRequest from './attachRequest'

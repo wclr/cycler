@@ -1,10 +1,10 @@
+import { Stream } from 'xstream'
 import {
   Request as ExpressRequest,
-  Response as ExpressResponse
 } from 'express'
 
 export type RoutePath = string | RegExp | (string | RegExp)[];
-export type RequestId = string & {__RequestId: true}
+export type RequestId = string & { __RequestId: true }
 export type RouterRequest = ExpressRequest & { id: RequestId }
 
 export interface RouterResponseParams {
@@ -13,34 +13,49 @@ export interface RouterResponseParams {
   status?: number
 }
 
+export interface RouterOptions { }
+
 export type RouterResponse =
   RouterResponseParams |
   RouterResponseParams & { send: any } |
   RouterResponseParams & { end: any } |
   RouterResponseParams & { sendStatus: number }
 
-  export interface RouterSource<RequestStream> {
+export interface RouterSource {
   /**
-   * Returns the stream of all request handled by the router
+   * Returns the stream of all requests comming thought the router
    * @param  {string|RegExp} path
    */
-  all(path: string | RegExp): RequestStream
-  get(path: string | RegExp): RequestStream
-  post(path: string | RegExp): RequestStream
-  put(path: string | RegExp): RequestStream
-  delete(path: string | RegExp): RequestStream
-    /**
-   * Returns the stream of request for give HTTP method
+  all<R>(path: string | RegExp): Stream<RouterRequest & R>
+  /**
+   * Returns the stream of GET request scomming thought the router
    * @param  {string|RegExp} path
    */
-  method(name: string, path: string | RegExp): RequestStream
-    /**
-   * Returns returns new router source for given path
+  get<R>(path: string | RegExp): Stream<RouterRequest & R>
+  /**
+   * Returns the stream of POST requests comming thought the router
    * @param  {string|RegExp} path
-   * @param  {} options Options passed to created express router   
    */
-  route(path: string | RegExp, options?: any): RouterSource<RequestStream>
-
+  post<R>(path: string | RegExp): Stream<RouterRequest & R>
+  /**
+   * Returns the stream of PUT requests comming thought the router
+   * @param  {string|RegExp} path
+   */
+  put<R>(path: string | RegExp): Stream<RouterRequest & R>
+  /**
+   * Returns the stream of DELETE requests comming thought the router
+   * @param  {string|RegExp} path
+   */
+  delete<R>(path: string | RegExp): Stream<RouterRequest & R>
+  /**
+ * Returns the stream of request for given HTTP method
+ * @param  {string|RegExp} path
+ */
+  method<R>(name: string, path: string | RegExp): Stream<RouterRequest & R>
+  /**
+ * Returns returns new router source for given path
+ * @param  {string|RegExp} path
+ * @param  {} options Options passed to created express router   
+ */
+  route(path: string | RegExp, options?: any): RouterSource
 }
-
-export interface RouterOptions { }

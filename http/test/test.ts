@@ -1,12 +1,11 @@
-import { makeHTTPDriver } from '../xstream'
+import { makeHTTPDriver } from '../.'
 import xs from 'xstream'
 import delay from 'xstream/extra/delay'
-import xsAdapter from '@cycle/xstream-adapter'
 import * as test from 'tape'
 import * as express from 'express'
 
-var getPort = require('get-port')
-var app = express()
+const getPort = require('get-port')
+const app = express()
 
 app.get('/user', function (req, res) {
   res.status(200).json({ name: 'john' })
@@ -28,11 +27,11 @@ test('#start', (t) => {
 })
 
 
-let xsDriver = makeHTTPDriver()
+let driver = makeHTTPDriver()
 let getHostUrl = (): string => 'http://localhost:' + testPort
 
 test('Url as String', (t) => {
-  xsDriver(xs.of(getHostUrl() + '/user').compose(delay(0)), xsAdapter)
+  driver(xs.of(getHostUrl() + '/user').compose(delay(0)))
     .select<{ body: { name: string } }>()
     .flatten()
     .addListener({
@@ -44,7 +43,7 @@ test('Url as String', (t) => {
 
 test('Delete method', (t) => {
   let request = { method: 'delete', url: getHostUrl() + '/user' }
-  xsDriver(xs.of(request).compose(delay(0)), xsAdapter)
+  driver(xs.of(request).compose(delay(0)))
     .select<{ body: { data: string } }>()
     .flatten()
     .addListener({

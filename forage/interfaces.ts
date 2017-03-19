@@ -1,6 +1,6 @@
 import { TaskRequest } from '@cycler/task'
 
-export type LocalForageDriverName = 'localStorageWrapper' | 'webSQLStorage' | 'asyncStorage' 
+export type ForageDriverName = 'localStorageWrapper' | 'webSQLStorage' | 'asyncStorage' 
 
 export type ForageMethod = 'getItem' | 'setItem' | 'removeItem'
   | 'keys' | 'length' | 'clear' | 'iterage'
@@ -66,7 +66,7 @@ export type ForageRequest =
 
 export type ForageResponse = {}
 
-export type ForageDriverOption = LocalForageDriverName | { _driver: string }
+export type ForageDriverOption = ForageDriverName | { _driver: string }
 
 export interface CreateForageOptions {
   driver?: ForageDriverOption

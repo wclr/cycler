@@ -1,23 +1,11 @@
 {
   "name": "@cycler/forage",
-  "version": "1.0.0-diversity.0",
+  "version": "1.0.0-unified.0",
   "publishConfig": {
-    "tag": "diversity"
+    "tag": "unified"
   },
   "description": "Mozilla localForage driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
-  "keywords": [
-    "cyclejs",
-    "driver",
-    "async",
-    "task",
-    "localforage",
-    "localstorage",
-    "indexeddb",
-    "websql"
-  ],
-  "author": "whitecolor",
-  "license": "ISC",
   "scripts": {
     "test:browser": "../node_modules/.bin/budo test/browser.js --live --open"
   },

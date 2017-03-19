@@ -1,6 +1,6 @@
 import * as test from 'tape'
 import { makeTest } from './makeTest'
-import { makeForageDriver, ForageSource, ForageRequest } from '../xstream'
+import { makeForageDriver, ForageSource, ForageRequest } from '../.'
 import { forageDrivers } from '../'
 
 const indexeddbForageDriver = makeForageDriver({

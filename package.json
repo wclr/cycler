@@ -1,13 +1,11 @@
 {
   "name": "cycler",
-  "private": true,
   "license": "ISC",
   "devDependencies": {
     "@cycle/isolate": "^2.1.0",
     "@cycle/most-run": "^7.1.0",
     "@cycle/run": "^3.0.0",
     "@cycle/rxjs-run": "^7.0.0",
-    "@cycle/xstream-run": "^4.1.0",
     "@types/express": "^4.0.32",
     "@types/ramda": "^0.0.4",
     "@types/superagent": "^2.0.32",
@@ -24,7 +22,7 @@
     "supertest": "^2.0.0",
     "tap-browser-color": "^0.1.2",
     "tape": "^4.4.0",
-    "typescript": "2.2.0-dev.20161116",
+    "typescript": "^2.2.1",
     "validate-commit-msg": "^2.8.2",
     "watchify": "^3.7.0",
     "xstream": "^10.3.0"
@@ -32,14 +30,14 @@
   "scripts": {
     "build-dev-image": "docker build -t cycler-dev-node .",
     "rebuild-dev-image": "docker build -t cycler-dev-node --no-cache .",
-    "install-deps": "sh .scripts/install-deps.sh",
-    "tsc-build": "sh .scripts/wait-install-deps.sh && tsc",
-    "tsc-build-watch": "sh .scripts/wait-install-deps.sh && sh .scripts/fix-tsc-watch.sh && tsc -w",
-    "test-watch-package": "sh .scripts/wait-install-deps.sh && sh .scripts/test-watch-package.sh",
-    "test-package": "sh .scripts/wait-install-deps.sh && sh .scripts/test-package.sh",
+    "install-deps": ".scripts/install-deps.sh",
+    "tsc-build": ".scripts/wait-install-deps.sh && tsc",
+    "tsc-build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
+    "test-watch-package": ".scripts/wait-install-deps.sh && .scripts/test-watch-package.sh",
+    "test-package": ".scripts/wait-install-deps.sh && .scripts/test-package.sh",
     "docker-test-package": "docker-compose run -T -e RUN_ONCE=true",
     "dev": "yarn run build-dev-image && docker-compose up",
     "dev-deps": "yarn run dev deps-install tsc-build",
-    "ci": "bash ./.scripts/publish-packages.sh"
+    "ci": ".scripts/publish-packages.sh"
   }
 }

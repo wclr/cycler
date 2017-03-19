@@ -11,8 +11,7 @@ yarn run build-dev-image
 # run once install end build
 docker-compose run --entrypoint "bash .scripts/install-deps.sh --linklocal" deps-install
 
-echo "Removing all previously built files..."
-rm -rf  *.js.map *.d.ts *.js **/*.js.map **/*.d.ts **/*.js
+sh .scripts/remove-built.sh
 
 docker-compose run -T --entrypoint "yarn run tsc-build" tsc-build
 

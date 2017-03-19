@@ -1,5 +1,5 @@
 import { makeTaskDriver, TaskSource, TaskDriver } from '@cycler/task'
-//import { StreamAdapter } from '@cycle/base'
+import { Stream } from 'xstream'
 import { getProgressiveResponse, normalizeRequest } from './getResponse'
 import {
   HTTPRequest, HTTPRequestInput, HTTPResponse
@@ -7,12 +7,12 @@ import {
 
 export type HTTPSource = TaskSource<HTTPRequest, HTTPResponse>
 
-export function makeHTTPDriver() {  
+export function makeHTTPDriver() {
   return makeTaskDriver
     <HTTPRequestInput, HTTPRequest, HTTPResponse, any>({
       normalizeRequest,
       getProgressiveResponse
-    })    
+    })
 }
 
 export * from './interfaces'

@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-"@cycle/base@4.2":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@cycle/base/-/base-4.2.0.tgz#ed6043c3c92ed2442d0e4b9ae603aec05e960f0b"
-
 "@cycle/isolate@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@cycle/isolate/-/isolate-2.1.0.tgz#8db1c6a068dc1d3fc709d5adbe838083577ad0e0"
@@ -27,17 +23,6 @@
   resolved "https://registry.yarnpkg.com/@cycle/rxjs-run/-/rxjs-run-7.0.0.tgz#f4c95d9a1b390e3a2e61706284f9e737e7de8aa8"
   dependencies:
     "@cycle/run" "3.x"
-
-"@cycle/xstream-adapter@3.x.x":
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/@cycle/xstream-adapter/-/xstream-adapter-3.0.4.tgz#54c440b02ef3c8433cdb2d31082c8e5d0dd4d93a"
-
-"@cycle/xstream-run@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@cycle/xstream-run/-/xstream-run-4.1.0.tgz#3bded1ba85f682991c5abd83ba3dae965ff92d29"
-  dependencies:
-    "@cycle/base" "4.2"
-    "@cycle/xstream-adapter" "3.x.x"
 
 "@most/multicast@^1.2.3":
   version "1.2.4"
@@ -2586,9 +2571,9 @@ typedarray@~0.0.5:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@2.2.0-dev.20161116:
-  version "2.2.0-dev.20161116"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.0-dev.20161116.tgz#30be49322b4ff71bae979a334c155e61e3934e60"
+typescript@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.1.tgz#4862b662b988a4c8ff691cc7969622d24db76ae9"
 
 uid-number@~0.0.6:
   version "0.0.6"

@@ -5,5 +5,6 @@ if (typeof localStorage === 'undefined' || localStorage === null) {
   const anyGlobal = (global as any)
   const LocalStorage: any = require('node-localstorage').LocalStorage
   anyGlobal.localStorage = new LocalStorage('./scratch')
-  require('./runTest')
 }
+
+require('./runTest')

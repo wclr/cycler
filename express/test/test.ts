@@ -1,8 +1,10 @@
 import * as test from 'tape'
-import { Observable } from 'rx'
+import { Observable } from 'rxjs'
 import * as express from 'express'
-import { run } from '@cycle/rx-run'
-import { makeRouterDriver, RouterSource, RouterResponse, RequestId } from '../rx'
+import { Sinks } from '@cycle/run'
+import { run } from '@cycle/rxjs-run'
+import { makeRouterDriver, RouterRequest, RouterResponse, RequestId } from '../index'
+import { RouterSource } from '../rxjs'
 import * as request from 'supertest'
 
 const app = express()
@@ -11,34 +13,39 @@ interface Sources {
   router: RouterSource
 }
 
-interface Sinks {
+interface MainSinks extends Sinks {
   router: Observable<RouterResponse>
 }
+interface MyRequest extends RouterRequest {
+  
+}
 
-const Main = ({router}: Sources): Sinks => {    
-  return {    
+const Main = ({router}: Sources): MainSinks => {
+  return {
     router: Observable.merge<RouterResponse>(
       router.all('/all').map(x => ({
         id: x.id,
         send: { all: 'John' }
       })),
-      router.get('/user').map<RouterResponse>(r => ({
+      router.get('/user').map(r => ({
         id: r.id,
         send: { name: 'John' }
-      })),      
+      })),
       router.route('/nested')
         .method('options', '/something').map(({id}) => ({
           id,
           status: 201,
-          send: {nested: true}
+          send: { nested: true }
         }))
     )
   }
 }
 
-run(Main, {
+run<Sources, MainSinks>(Main, {
   router: makeRouterDriver(app)
 })
+
+
 
 test('get request', (t) => {
   request(app)
@@ -47,12 +54,12 @@ test('get request', (t) => {
     .expect({ name: 'John' })
     .end((err: Error) => {
       if (err) {
-        throw err  
-      }      
+        throw err
+      }
       t.pass()
       t.end()
     })
-}) 
+})
 
 test('all method', (t) => {
   request(app)
@@ -61,12 +68,12 @@ test('all method', (t) => {
     .expect({ all: 'John' })
     .end((err: Error) => {
       if (err) {
-        throw err  
-      }      
+        throw err
+      }
       t.pass()
       t.end()
     })
-}) 
+})
 
 test('nested router and custom method', (t) => {
   request(app)
@@ -75,7 +82,7 @@ test('nested router and custom method', (t) => {
     .expect({ nested: true })
     .end((err: Error) => {
       if (err) {
-        throw err  
+        throw err
       }
       t.pass()
       t.end()
