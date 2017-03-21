@@ -32,7 +32,7 @@
     "build-dev-image": "docker build -t cycler-dev-node .",
     "rebuild-dev-image": "docker build -t cycler-dev-node --no-cache .",
     "install-deps": ".scripts/install-deps.sh",
-    "tsc-build": ".scripts/wait-install-deps.sh && tsc",
+    "tsc-build": "bash .scripts/wait-install-deps.sh && tsc",
     "tsc-build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
     "test-watch-package": ".scripts/wait-install-deps.sh && .scripts/test-watch-package.sh",
     "test-package": ".scripts/wait-install-deps.sh && .scripts/test-package.sh",
