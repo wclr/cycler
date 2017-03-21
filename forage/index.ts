@@ -1,4 +1,5 @@
 import { makeTaskDriver, TaskSource } from '@cycler/task'
+import {Stream} from 'xstream'
 import {
   ForageDriverOptions, ForageRequest, ForageResponse, ForageDriverName
 } from './interfaces'
@@ -14,7 +15,7 @@ export const forageDrivers = {
 export interface ForageSource
   extends TaskSource<ForageRequest, ForageResponse> {}
 
-export function makeForageDriver(options: ForageDriverOptions = {}): any {
+export function makeForageDriver(options: ForageDriverOptions = {}) {
   return makeTaskDriver
     <ForageRequest, ForageResponse, any>(makeGetResponse(options))
 }

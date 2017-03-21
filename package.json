@@ -39,5 +39,8 @@
     "dev": "yarn run build-dev-image && docker-compose up",
     "dev-deps": "yarn run dev deps-install tsc-build",
     "ci": ".scripts/publish-packages.sh"
+  },
+  "dependencies": {
+    "tslint": "^4.5.1"
   }
 }

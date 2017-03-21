@@ -36,12 +36,16 @@ services:
     volumes_from:
       - deps-install    
     entrypoint: yarn run tsc-build-watch
+    depends_on:
+      - deps-install
 
   task: &common
     image: cycler-dev-node    
     volumes_from:
       - deps-install    
-    command: yarn test-watch-package task
+    command: yarn test-watch-package task    
+    depends_on:
+      - tsc-build
 
   mongoose:  
     <<: *common

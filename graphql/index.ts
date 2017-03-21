@@ -56,7 +56,7 @@ export const makeGraphQLDriver = (schema: GraphQLSchema) => {
     let typeName = type.name
     let typeFields = type.getFields()
     let field = typeFields[fieldName]
-    if (!field.resolve) {
+    if (!field.resolve) {      
       field.resolve = (root, args, context, resolveInfo) => {
         return new Promise((resolve, reject) => {
           let id = cuid()

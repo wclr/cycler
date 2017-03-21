@@ -8,7 +8,7 @@ import * as test from 'tape'
 import { basicDriver } from './driver'
 
 test('Set most adapt', (t) => {
-  setAdapt(stream => most.from(stream))
+  setAdapt(most.from)
   t.end()
 })
 

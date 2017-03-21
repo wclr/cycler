@@ -1,16 +1,17 @@
 {
   "name": "@cycler/express",
-  "version": "1.0.0-unified.0",
-  "publishConfig": {    
+  "version": "1.0.0-unified.1",
+  "publishConfig": {
     "tag": "latest"
   },
   "description": "Express driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
   "dependencies": {
+    "@types/cuid": "^0.0.30",
     "cuid": "^1.3.8"
   },
   "peerDependencies": {
-    "xstream": "*",
-    "express": "*"
+    "express": "*",
+    "xstream": "*"
   }
 }

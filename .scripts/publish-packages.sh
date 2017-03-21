@@ -11,7 +11,7 @@ yarn run build-dev-image
 # run once install end build
 docker-compose run --entrypoint "bash .scripts/install-deps.sh --linklocal" deps-install
 
-sh .scripts/remove-built.sh
+bash .scripts/cleanup-built-files.sh
 
 docker-compose run -T --entrypoint "yarn run tsc-build" tsc-build
 
