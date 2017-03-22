@@ -25,6 +25,10 @@ export type Sinks = {
   [index: string]: Sink
 }
 
+export interface ProxyOptions {
+  debug?: string | boolean
+}
+
 type StreamProxy = {
   key: string,
   //subs: any[],
@@ -80,7 +84,7 @@ const makeDebugOutput = (method: string, proxyId: string) =>
     (console as any)[method](`[Cycle HMR] proxy ${proxyId}: ${message}`)
 
 export const hmrProxy = <Df>
-  (dataflow: Df, proxyId: string): Df => {
+  (dataflow: Df, proxyId: string, options: ProxyOptions = {}): Df => {
 
   if (!cycleHmrEnabled || typeof dataflow !== 'function') {
     return dataflow
@@ -89,11 +93,13 @@ export const hmrProxy = <Df>
   if (typeof proxyId !== 'string') {
     throw Error('You should provide string value of proxy id')
   }
-
+  
   let debug: DebugHelper = () => { }
-  if (anyGlobal.cycleHmrDebug) {
-    const debugMethod = getDebugMethod(anyGlobal.cycleHmrDebug)
-    console.log('getDebugMethod', debugMethod)
+  const debugOption = options.debug === undefined
+    ? anyGlobal.cycleHmrDebug
+    : options.debug
+  if (debugOption) {
+    const debugMethod = getDebugMethod(debugOption)
     debug = debugMethod
       ? makeDebugOutput(debugMethod, proxyId)
       : debug

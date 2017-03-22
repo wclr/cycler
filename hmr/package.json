@@ -5,5 +5,9 @@
     "tag": "latest"
   },
   "description": "HMR for Cycle.js.",
-  "repository": "http://github.com/whitecolor/cycler"
+  "repository": "http://github.com/whitecolor/cycler",
+  "devDependencies": {
+    "@types/webpack": "^2.2.12",
+    "webpack": "^2.3.0"
+  }
 }
