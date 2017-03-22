@@ -1,3 +1,4 @@
+#!/bin/bash
 # This fixes tsc watch capabilities of files on the attached volumes in docker container
 # https://github.com/Microsoft/TypeScript/issues/13242
 

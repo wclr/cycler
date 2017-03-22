@@ -7,17 +7,7 @@
 
 ## Development
 
-You need Docker and Docker Compose installed. Start containers with common dev tasks: for installing deps and building typescript:
-
-`$ yarn dev-deps` 
-
-Start test-watch for needed packages:
-
-`$ yarn dev task http ... `
-
-To stop all the services:
-
-`docker-compose stop`
+`$ yarn dev` and follow the black rabbit.
 
 ## NPM publication
 

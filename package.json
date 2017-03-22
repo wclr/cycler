@@ -29,16 +29,13 @@
     "tslint": "^4.5.1"
   },
   "scripts": {
-    "build-dev-image": "docker build -t cycler-dev-node .",
-    "rebuild-dev-image": "docker build -t cycler-dev-node --no-cache .",
+    "dev": ".scripts/dev.sh",
     "install-deps": ".scripts/install-deps.sh",
     "tsc-build": "bash .scripts/wait-install-deps.sh && tsc",
     "tsc-build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
     "test-watch-package": "bash .scripts/wait-install-deps.sh && bash .scripts/test-watch-package.sh",
     "test-package": ".scripts/wait-install-deps.sh && .scripts/test-package.sh",
-    "docker-test-package": "docker-compose run -T -e RUN_ONCE=true",
-    "dev": "yarn run build-dev-image && docker-compose up",
-    "dev-deps": "yarn run dev deps-install tsc-build",
+    "docker-test-package": "docker-compose run -T -e RUN_ONCE=true",    
     "ci": "bash .scripts/publish-packages.sh"
   }  
 }
