@@ -7,6 +7,11 @@ set -e
 
 # NB: this script should be run with `npm` not `yarn` (or npm publish won't work properly)
 
+if [[ ! $NPM_TOKEN ]]; then
+  echo "You need to have NPM_TOKEN env variable set."
+  exit 0
+fi
+
 yarn run build-dev-image
 # run once install end build
 docker-compose run --entrypoint "bash .scripts/install-deps.sh --linklocal" deps-install

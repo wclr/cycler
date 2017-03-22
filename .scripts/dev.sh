@@ -3,7 +3,7 @@
 BUILD_IMAGE_CMD="docker build -t cycler-dev-node ."
 
 echo "What would you linke to do?"
-echo "1) Start deps/build services"
+echo "1) Start deps/build services (you need to do it first)"
 echo "2) Start package develpment test services"
 echo "3) Test package test once"
 echo "4) Test all packages"
@@ -32,7 +32,7 @@ case $ACTION in
 4)
   echo "Not implemented"
   ;;
-5)
+5)  
   bash .scripts/publish-packages.sh
   ;;
 6)
