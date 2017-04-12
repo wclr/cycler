@@ -7,59 +7,13 @@ import { makeTaskDriver, TaskSource, TaskRequest, GetResponse } from '../index'
 import isolate from '@cycle/isolate'
 import { success, failure, pair } from '../helpers'
 import * as test from 'tape'
-
-export type Request = {
-  name: string
-  type?: string
-  aborted?: boolean
-  _namespace?: string[]
-} & TaskRequest
-
-export type Response = string
-export type RequestInput = Request | string
-
-const getResponse: GetResponse<Request, Response, any> =
-  (request, _, onDispose) => {
-    let completed = false
-    onDispose(() => completed ? '' : request.aborted = true)
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        request.name
-          ? resolve('async ' + request.name)
-          : reject('async error')
-        completed = true
-      }, 10)
-    })
-  }
-
-export const basicDriver = makeTaskDriver<Request, Response, any>(getResponse)
-export const isolationDiver = makeTaskDriver<RequestInput, Request, Response, any>({
-  normalizeRequest: (r) => typeof r === 'string' ? { name: r } : r,  
-  getResponse
-})
-const lazyDriver = makeTaskDriver<Request, Response, any>({
-  getResponse: (request, callback) => {
-    setTimeout(() =>
-      callback(null, 'async ' + request.name + Math.random())
-    )
-  },
-  lazy: true
-})
-
-export const progressiveDriver = makeTaskDriver<any, any, any>({
-  getProgressiveResponse: (request, observer) => {
-    setTimeout(() => {
-      observer.next(1)
-      setTimeout(() => {
-        observer.next(2)
-      })
-      setTimeout(() => {
-        observer.next(3)
-        observer.complete()
-      })
-    })
-  }
-})
+import {
+  Request, RequestInput, Response,
+  basicDriver,
+  lazyDriver,
+  isolationDiver,
+  progressiveDriver
+} from './make-drivers'
 
 test('Set xstream adapt', (t) => {
   setAdapt(x => x)
@@ -206,7 +160,7 @@ test('Basic driver isolation', (t) => {
 
   const expected = { name: 'asyncJohn' }
 
-  const dataflow = ({source}: { source: TaskSource<Request, Response> }) => {
+  const dataflow = ({ source }: { source: TaskSource<Request, Response> }) => {
     source.select()
       .map(r$ => {
         t.same(r$.request.name, 'John', 'request is correct')
@@ -276,7 +230,7 @@ test('Progressive response driver', (t) => {
 test('xstream run (isolation, cancellation)', (t) => {
   const requests0 = [{ name: 'John', lazy: true, aborted: false }, { name: 'Alex', lazy: true, aborted: false }]
   const requests1 = [{ name: 'Jane', aborted: false }]
-  const Dataflow = ({source, request$}: { source: any, request$: any }, num: number) => {
+  const Dataflow = ({ source, request$ }: { source: any, request$: any }, num: number) => {
     return {
       result: source.select()
         .flatten().map((data: any) => ({
@@ -286,7 +240,7 @@ test('xstream run (isolation, cancellation)', (t) => {
     }
   }
 
-  const Main = ({source}: { source: any }) => {
+  const Main = ({ source }: { source: any }) => {
     const dataflow0 = isolate(Dataflow, 'scope0')({
       request$: xs.fromArray(requests0).compose(delay(0)),
       source

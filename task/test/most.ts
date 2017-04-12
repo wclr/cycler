@@ -5,7 +5,7 @@ import { setAdapt } from '@cycle/run/lib/adapt'
 
 import isolate from '@cycle/isolate'
 import * as test from 'tape'
-import { basicDriver } from './driver'
+import { basicDriver } from './make-drivers'
 
 test('Set most adapt', (t) => {
   setAdapt(most.from)
