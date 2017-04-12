@@ -65,5 +65,6 @@ export interface DriverOptions<RequestInput, Request, Response, Error> {
   getProgressiveResponse?: GetProgressiveResponse<Request, Response, Error>
   normalizeRequest?(request: RequestInput): Request
   isolateMap?(request: RequestInput): Request
-  lazy?: boolean
+  lazy?: boolean,
+  dispose?(): any
 }

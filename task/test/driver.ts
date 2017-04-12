@@ -150,7 +150,6 @@ test('Lazy driver - should make request when subscribed to response$', (t) => {
         }
       })
   }, 50)
-
 })
 
 
@@ -256,7 +255,7 @@ test('xstream run (isolation, cancellation)', (t) => {
     }
   }
   let count = 0
-  run(Main, {
+  const dispose = run(Main, {
     result: (result$: any) => {
       result$.addListener({
         next: (res: any) => {
@@ -275,6 +274,9 @@ test('xstream run (isolation, cancellation)', (t) => {
               t.ok(requests0[0].aborted, 'first lazy request aborted')
               t.notOk(requests0[1].aborted, 'second not aborted')
               t.notOk(requests1[0].aborted, 'third not aborted')
+              dispose()
+              t.ok((isolationDiver as any).__disposeCalled,
+                'source disposed method called when when cycle disposed')
               t.end()
             }, 50)
           }
@@ -284,7 +286,7 @@ test('xstream run (isolation, cancellation)', (t) => {
       })
       return {}
     },
-    source: basicDriver
+    source: isolationDiver
   })
 })
 

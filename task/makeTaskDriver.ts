@@ -33,8 +33,9 @@ export interface MakeTaskDriver {
    */
   <Request, Response, Error>(
     params: {
-      getResponse: GetResponse<Request, Response, Error>
+      getResponse: GetResponse<Request, Response, Error>      
       lazy?: boolean
+      dispose?(): void
     }): TaskDriver<Request, Response>
   /**
    *  Task driver with progressive response.
@@ -42,7 +43,8 @@ export interface MakeTaskDriver {
   <Request, Response, Error>(
     params: {
       getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
-      lazy?: boolean
+      lazy?: boolean,
+      dispose?(): void
     }): TaskDriver<Request, Response>
 
   /**
@@ -53,7 +55,8 @@ export interface MakeTaskDriver {
       getResponse: GetResponse<Request, Response, Error>
       normalizeRequest(request: RequestInput): Request,
       isolateMap?(request: RequestInput): RequestInput,
-      lazy?: boolean
+      lazy?: boolean,
+      dispose?(): void
     }): InputTaskDriver<RequestInput, Request, Response>
 
   /**
@@ -65,7 +68,8 @@ export interface MakeTaskDriver {
       getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
       normalizeRequest(request: RequestInput): Request,
       isolateMap?(request: RequestInput): Request,
-      lazy?: boolean
+      lazy?: boolean,
+      dispose?(): void
     }): InputTaskDriver<RequestInput, Request, Response>
 }
 
@@ -133,8 +137,13 @@ export const makeTaskDriver: MakeTaskDriver = function
   return (request$) => {
     const response$$ = request$.map(createResponse$)
     emptySubscribe(response$$)
-    return makeTaskSource(response$$, { isolateMap })
+    const source = makeTaskSource(response$$, { isolateMap })
+    if (options.dispose) {
+      (source as any).dispose = options.dispose
+    }
+    return source
   }
 }
 
 export default makeTaskDriver
+
