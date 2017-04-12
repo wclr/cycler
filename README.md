@@ -2,10 +2,9 @@
 
 [![Build Status](https://travis-ci.org/whitecolor/cycler.svg?branch=master)](https://travis-ci.org/whitecolor/cycler)
 
-Packages for [cycle.js](http://cycle.js.org) apps writtern in Typescript. 
+Packages for [cycle.js](http://cycle.js.org) apps writtern in Typescript. [rxjs](https://github.com/ReactiveX/rxjs)/[most](https://github.com/cujojs/most) support.
 
 **All the packages are in beta currenlty.**
-
 
 ## Packages
 

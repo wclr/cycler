@@ -17,7 +17,7 @@
     "prefer-const": true,
     "no-empty-interface": true,
     "no-string-throw": true,
-    "unified-signatures": true,
+    "unified-signatures": false,
     "typeof-compare": true,
     "space-before-function-paren": [
       true,
@@ -30,7 +30,7 @@
       }
     ],
     "prefer-method-signature": true,
-    "arrow-return-shorthand": [true, "multiline"],
+    "_arrow-return-shorthand": [true, "multiline"],
     "no-duplicate-variable": true,
     "no-inferrable-types": [true, "ignore-params"],
     "no-var-keyword": true,
@@ -51,7 +51,7 @@
       "check-else",
       "check-whitespace",
       "check-open-brace"],
-    "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
+    "_trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
     "quotemark": [true,
       "single",
       "avoid-escape"],

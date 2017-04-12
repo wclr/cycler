@@ -33,12 +33,15 @@ case $ACTION in
   echo "Not implemented"
   ;;
 5)  
+  $BUILD_IMAGE_CMD
   bash .scripts/publish-packages.sh
   ;;
 6)
+  $BUILD_IMAGE_CMD
   bash .scripts/install-deps.sh
   ;;
 7)
+  $BUILD_IMAGE_CMD
   docker build -t cycler-dev-node --no-cache .
   ;;
 *)

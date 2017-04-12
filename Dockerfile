@@ -3,8 +3,8 @@ FROM mhart/alpine-node:7.1.0
 RUN apk update && apk upgrade && \
    apk add --no-cache bash git openssh
 
-#RUN npm i yarn -g
-RUN npm i @whitecolor/yarn -g
+RUN npm i yarn -g
+#RUN npm i @whitecolor/yarn -g
 RUN npm i linklocal -g
 RUN npm i node-dev -g 
 RUN npm i nodemon -g 

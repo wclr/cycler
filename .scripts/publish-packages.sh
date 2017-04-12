@@ -12,7 +12,7 @@ if [[ ! $NPM_TOKEN ]]; then
   exit 0
 fi
 
-yarn run build-dev-image
+#yarn run build-dev-image
 # run once install end build
 docker-compose run --entrypoint "bash .scripts/install-deps.sh --linklocal" deps-install
 

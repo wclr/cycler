@@ -1,5 +1,7 @@
 #!/bin/bash
 
+.scripts/fix-yarn.sh
+
 CMD=".scripts/install-deps.sh"
 
 $CMD --linklocal
