@@ -16,10 +16,6 @@ export interface MakeTaskSourceOptions<RequestInput, Request> {
   isolateMap?(request: RequestInput): Request
 }
 
-// export interface TaskSource<Request, Response> {
-//   filter(predicate: (request: Request) => boolean): TaskSource<Request, Response>
-//   select(category?: string): ResponsesStream<Response, Request>
-// }
 
 export interface TaskSource<Request, Response> {
   filter<Req>(predicate: (request: Request & Req) => boolean): TaskSource<Request & Req, Response>
@@ -32,6 +28,10 @@ export interface TaskSource<Request, Response> {
 
 export type TaskDriver<Request, Response> =
   (request$: Stream<Request>) => TaskSource<Request, Response>
+
+export type InputTaskDriver<RequestInput, Request, Response> =
+  (request$: Stream<RequestInput>) => TaskSource<Request, Response>
+
 
 export interface Thenable<R, Error> {
   then: (resolve: (result: R) => any, reject: (error: any, ...rest: any[]) => any) => any

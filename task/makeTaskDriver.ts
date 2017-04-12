@@ -11,6 +11,7 @@ const emptySubscribe = (stream: Stream<any>) =>
 import {
   DriverOptions,
   TaskDriver,
+  InputTaskDriver,
   TaskSource,
   TaskRequest,
   GetResponse,
@@ -18,84 +19,55 @@ import {
   ResponseObserver
 } from './interfaces'
 
-export function makeTaskDriver<Request, Response, Error>
-  (getResponse: GetResponse<Request, Response, Error>):
-  (request$: Stream<Request>) => TaskSource<Request, Response>
-
-export function makeTaskDriver
+export interface MakeTaskDriver {
+  /**
+   *  Task driver.
+   *  Takes getResponse function as a single parameter.
+   */
+  <Request, Response, Error>(getResponse: GetResponse<Request, Response, Error>):
+    TaskDriver<Request, Response>
+  /**
+   *  Task driver.
+   */
   <Request, Response, Error>(
-  params: {
-    getResponse: GetResponse<Request, Response, Error>
-    lazy?: boolean
-  }):
-  (request$: Stream<Request>) => TaskSource<Request, Response>
-
-export function makeTaskDriver
+    params: {
+      getResponse: GetResponse<Request, Response, Error>
+      lazy?: boolean
+    }): TaskDriver<Request, Response>
+  /**
+   *  Task driver with progressive response.
+   */
   <Request, Response, Error>(
-  params: {
-    getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
-    lazy?: boolean
-  }):
-  (request$: Stream<Request>) => TaskSource<Request, Response>
+    params: {
+      getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
+      lazy?: boolean
+    }): TaskDriver<Request, Response>
 
-export function makeTaskDriver
+  /**
+   *  Task driver with request input that should be normalized.
+   */
   <RequestInput, Request, Response, Error>(
-  params: {
-    getResponse: GetResponse<Request, Response, Error>
-    normalizeRequest(request: RequestInput): RequestInput,
-    isolateMap?(request: RequestInput): RequestInput,
-    lazy?: boolean
-  }):
-  (request$: Stream<RequestInput>) =>
-    TaskSource<RequestInput, Response>
+    params: {
+      getResponse: GetResponse<Request, Response, Error>
+      normalizeRequest(request: RequestInput): Request,
+      isolateMap?(request: RequestInput): RequestInput,
+      lazy?: boolean
+    }): InputTaskDriver<RequestInput, Request, Response>
 
-export function makeTaskDriver
+  /**
+   *  Task driver with progressive response and request input that should be normalized.
+   *
+   */
   <RequestInput, Request, Response, Error>(
-  params: {
-    getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
-    normalizeRequest(request: RequestInput): Request,
-    isolateMap?(request: RequestInput): Request,
-    lazy?: boolean
-  }):
-  (request$: Stream<RequestInput>) =>
-    TaskSource<Request, Response>
+    params: {
+      getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
+      normalizeRequest(request: RequestInput): Request,
+      isolateMap?(request: RequestInput): Request,
+      lazy?: boolean
+    }): InputTaskDriver<RequestInput, Request, Response>
+}
 
-export function makeTaskDriver<Request, Response, Error>
-  (getResponse: GetResponse<Request, Response, Error>): TaskDriver<Request, Response>
-
-export function makeTaskDriver
-  <Request, Response, Error>(
-  params: {
-    getResponse: GetResponse<Request, Response, Error>
-    lazy?: boolean
-  }): TaskDriver<Request, Response>
-
-export function makeTaskDriver
-  <Request, Response, Error>(
-  params: {
-    getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
-    lazy?: boolean
-  }): TaskDriver<Request, Response>
-
-export function makeTaskDriver
-  <RequestInput, Request, Response, Error>(
-  params: {
-    getResponse: GetResponse<Request, Response, Error>
-    normalizeRequest(request: RequestInput): Request,
-    isolateMap?(request: RequestInput): Request,
-    lazy?: boolean
-  }): TaskDriver<Request, Response>
-
-export function makeTaskDriver
-  <RequestInput, Request, Response, Error>(
-  params: {
-    getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
-    normalizeRequest(request: RequestInput): Request,
-    isolateMap?(request: RequestInput): Request,
-    lazy?: boolean
-  }): TaskDriver<Request, Response>
-
-export function makeTaskDriver
+export const makeTaskDriver: MakeTaskDriver = function
   <RequestInput, Request, Response, Error>
   (options: DriverOptions<RequestInput & TaskRequest, Request & TaskRequest, Response, Error>):
   ((request$: any) => any) {
@@ -137,7 +109,7 @@ export function makeTaskDriver
               observer.complete()
             }
           }
-          let res = getResponse(normalizedRequest, callback, disposeCallback)
+          const res = getResponse(normalizedRequest, callback, disposeCallback)
           if (res && isFunction(res.then)) {
             res.then((result: Response) => callback(null, result), callback)
           }
