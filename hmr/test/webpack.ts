@@ -69,9 +69,3 @@ samples.forEach((sample) => {
     t.end()
   })
 })
-
-let fs = require('fs')
-
-let text = fs.readFileSync('./UsersTableCard.js', 'utf-8')
-let trandformed = loader.call(context, text)
-fs.writeFileSync('./UsersTableCard_transformed.js', trandformed)

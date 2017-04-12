@@ -1,0 +1,5 @@
+{
+  "importFrom": "../..",
+  "testExportName": "^[A-Z]\\w",
+  "testFileName": ["hmr-test"]
+}

@@ -2,6 +2,7 @@ import * as webpack from 'webpack'
 import * as qs from 'querystring'
 import * as fs from 'fs'
 import { ProxyOptions } from '../.'
+import { Transformer } from '../transform'
 
 export type Module = {
   id: number | null
@@ -11,6 +12,7 @@ export type supportedFormat = 'cjs'
 
 export interface LoaderOptions extends ProxyOptions {
   testExportName?: string,
+  importFrom?: string,
   format?: supportedFormat
 }
 
@@ -40,39 +42,20 @@ export default function (this: LoaderContext, source: string) {
     const queryObj: LoaderOptions = this.query || {}
     options = { ...queryObj }
   }
-  const proxyOptions: ProxyOptions = {
-    debug: options.debug
-  }
-  if (!proxyOptions.debug) {
-    var debugMatch = source.match(/@hmr-debug (\w*)/)
-    if (debugMatch) {
-      proxyOptions.debug = debugMatch[1] || true
-    }
+
+  const format = options.format || 'cjs'
+  const transformer: Transformer =
+    require('../transform/' + format).transformer
+
+  const transformOptions = Object.assign({
+    sourceIdentifier: 'module.id'
+  }, options)
+
+  let transformed = transformer(source, transformOptions)
+
+  if (transformed !== source) {
+    transformed = transformed + '\n' + hotAcceptCode() + '\n'
   }
 
-  const regEx = /\nexports\.(\S*) = |\nexports() = /g
-  const exportsToAdd: string[] = []
-  const testExportName = options.testExportName
-    ? new RegExp(options.testExportName) : null
-  
-  source = source.replace(regEx,
-    (exportAssign: string, exportName: string): string => {
-      exportName = exportName || 'default'
-      const validExportName = !testExportName || testExportName.test(exportName)
-      if (validExportName) {
-        const hmrName = '__hmr_' + exportName
-        exportsToAdd.push(exportAssign +
-          `_hmrProxy(${hmrName}, module.id + "${hmrName}_", ${JSON.stringify(proxyOptions)});\n`)
-        return `\nvar ${hmrName} = `
-      }
-      return exportAssign
-    })
-  if (exportsToAdd.length) {
-    const importFrom = '@cycler/hmr'
-    source = source.replace(/^("use strict";)?/, (whole) => {
-      return whole +
-        `\nvar _hmrProxy = require("${importFrom}").hmrProxy;\n`
-    }) + '\n' + exportsToAdd.join('\n') + '\n' + hotAcceptCode() + '\n'
-  }
-  return source
+  return transformed
 }

@@ -29,6 +29,10 @@ export interface ProxyOptions {
   debug?: string | boolean
 }
 
+export interface HmrEnabledDataflow {
+  __hmrOriginalDataflow: Function
+}
+
 type StreamProxy = {
   key: string,
   //subs: any[],
@@ -248,5 +252,6 @@ export const hmrProxy = <Df>
       return sinks
     }
   }
+  proxiedDataflow.__hmrOriginalDataflow = dataflow
   return proxiedDataflow
 }
