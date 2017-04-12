@@ -34,7 +34,7 @@ const getResponse: GetResponse<Request, Response, any> =
 
 export const basicDriver = makeTaskDriver<Request, Response, any>(getResponse)
 export const isolationDiver = makeTaskDriver<RequestInput, Request, Response, any>({
-  normalizeRequest: (r) => typeof r === 'string' ? { name: r } : r,
+  normalizeRequest: (r) => typeof r === 'string' ? { name: r } : r,  
   getResponse
 })
 const lazyDriver = makeTaskDriver<Request, Response, any>({
