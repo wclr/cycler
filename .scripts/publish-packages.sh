@@ -54,7 +54,7 @@ while read PACKAGE; do
     cp ../.npmignore .
     
     echo "Publishing $PACKAGE@$PACKAGE_VERSION"    
-    npm publish --access=public    
+    npm publish --access=public
   else
     echo "Version $PACKAGE@$PACKAGE_VERSION already published."
   fi

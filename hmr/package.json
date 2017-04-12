@@ -1,6 +1,6 @@
 {
   "name": "@cycler/hmr",
-  "version": "1.0.0-unified.0",
+  "version": "1.0.0-unified.1",
   "publishConfig": {
     "tag": "latest"
   },
