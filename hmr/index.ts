@@ -11,6 +11,11 @@ const isObservable = (target: any) => {
     (typeof (target as FantasyObservable).subscribe === 'function')
 }
 
+interface GlobalHmr {
+  noCycleHmr: boolean,
+  cycleHmrDebug: string | boolean
+}
+
 type DebugHelper = ((message?: string) => void) & {
   error?: (message: string) => void
 }
@@ -75,12 +80,13 @@ if (typeof global !== 'undefined') {
   }
 }
 
-const getDebugMethod = (value: string | boolean) => {
+const getDebugMethod = (value: string | boolean): string | undefined => {
   if (typeof console === 'object') {
     return (typeof value === 'string' && typeof (console as any)[value] === 'function')
       ? value
       : (console['log'] ? 'log' : '')
   }
+  return undefined
 }
 
 const makeDebugOutput = (method: string, proxyId: string) =>

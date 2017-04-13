@@ -1,58 +1,77 @@
 import { Transformer, TransformOptions } from '../transform'
 import * as fs from 'fs'
 
-type Options = {
-  testExportName: string,
-  testFileName: string[]
-  importFrom?: string
+export type Options = {
+  testExportName?: string,
+  testFileName?: string[]
+  importFrom?: string,
+  noHotAccept?: boolean,
+  debug?: string | boolean
 }
 
-let options = {} as Options
 const configFiles = ['.hmr', '.hmr.json', '.cycle-hmr', '.cycle-hmr.json']
 
-configFiles.forEach((configFile) => {
-  try {
-    options = JSON.parse(fs.readFileSync(configFile, 'utf-8'))
-  } catch (e) { }
-})
+export function register(options?: Options) {
 
-const format = 'cjs'
-const transformer = require('../transform/' + format)
-  .transformer as Transformer
+  if (!options) {
+    options = {}
+    configFiles.forEach((configFile) => {
+      try {
+        options = JSON.parse(fs.readFileSync(configFile, 'utf-8'))
+      } catch (e) { }
+    })
 
-const originalJsHandler =
-  require.extensions['.js'] as (m: NodeModule, filename: string) => any
+    if (options.debug) {
+      const anyConsole = console as any
+      const method =
+        typeof anyConsole[options.debug as string] === 'function'
+          ? options.debug as string : 'log'
+      anyConsole[method]('Registred HMR options', options)
+    }
+  }
 
-const testFileName = (testers: string[], fileName: string) =>
-  testers.map(tester => new RegExp(tester))
-    .reduce((prev, tester) => prev || tester.test(fileName), false)
+  const format = 'cjs'
+  const transformer = require('../transform/' + format)
+    .transformer as Transformer
 
-function registerExtension(
-  ext: string,    
-) {
-  const old = require.extensions[ext] || originalJsHandler
+  const originalJsHandler =
+    require.extensions['.js'] as (m: NodeModule, filename: string) => any
 
-  require.extensions[ext] = function (m: any, filename: string) {
-    if (options.testFileName
-      && !testFileName(options.testFileName, filename)) {
+  const testFileName = (testers: string[], fileName: string) =>
+    testers.map(tester => new RegExp(tester))
+      .reduce((prev, tester) => prev || tester.test(fileName), false)
+
+  function registerExtension(
+    ext: string,
+  ) {
+    const old = require.extensions[ext] || originalJsHandler
+
+    require.extensions[ext] = function (m: any, filename: string) {
+      if (options!.testFileName
+        && !testFileName(options!.testFileName || [], filename)) {
+        return old(m, filename)
+      }
+
+      const _compile = m._compile
+
+      m._compile = function (this: any, code: string, fileName: string) {
+        const moduleId = fileName.replace(/\\/g, '/').replace(/\//g, '_')
+        const transformed = transformer(code, {
+          testExportName: options!.testExportName,
+          sourceIdentifier: `"${moduleId}"`,
+          addHotAccept: !options!.noHotAccept,
+          importFrom: options!.importFrom,
+          debug: options!.debug
+        })
+        return _compile.call(this, transformed, fileName)
+      }
+
       return old(m, filename)
     }
-
-    const _compile = m._compile
-
-    m._compile = function (code: string, fileName: string) {
-      const moduleId = fileName.replace(/\\/g, '/').replace(/\//g, '_')
-      const transformed = transformer(code, {
-        testExportName: options.testExportName,
-        sourceIdentifier: `"${moduleId}"`,
-        importFrom: options.importFrom
-      })
-      return _compile.call(this, transformed, fileName)
-    }
-
-    return old(m, filename)
   }
+
+  registerExtension('.js')
+  registerExtension('.ts')
 }
 
-registerExtension('.js')
-registerExtension('.ts')
+register()

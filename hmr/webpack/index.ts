@@ -21,18 +21,10 @@ export interface LoaderContext {
   query: string | LoaderOptions
 }
 
-const hotAcceptCode = () => {
-  return `if (module.hot) {` +
-    `module.hot.accept(function(err) {` +
-    `err && console.error("Can not accept module: ", err)` +
-    `});` +
-    `}`
-}
-
 export default function (this: LoaderContext, source: string) {
   let options: LoaderOptions = {}
   if (typeof this.query === 'string') {
-    let queryStr = this.query.slice(1)
+    const queryStr = this.query.slice(1)
     try {
       options = JSON.parse(queryStr)
     } catch (e) {
@@ -48,14 +40,9 @@ export default function (this: LoaderContext, source: string) {
     require('../transform/' + format).transformer
 
   const transformOptions = Object.assign({
-    sourceIdentifier: 'module.id'
+    sourceIdentifier: 'module.id',
+    addHotAccept: true
   }, options)
 
-  let transformed = transformer(source, transformOptions)
-
-  if (transformed !== source) {
-    transformed = transformed + '\n' + hotAcceptCode() + '\n'
-  }
-
-  return transformed
+  return transformer(source, transformOptions)
 }

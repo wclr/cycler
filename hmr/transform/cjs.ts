@@ -1,7 +1,15 @@
 import { ProxyOptions } from '../.'
 import { Transformer, TransformOptions } from '.'
 
-export const transformer: Transformer = (source: string, options) => {  
+export const hotAcceptCode = () => {
+  return `if (module.hot) {` +
+    `module.hot.accept(function(err) {` +
+    `err && console.error("Can not accept module: ", err)` +
+    `});` +
+    `}`
+}
+
+export const transformer: Transformer = (source: string, options) => {
   const proxyOptions: ProxyOptions = {
     debug: options.debug
   }
@@ -37,6 +45,10 @@ export const transformer: Transformer = (source: string, options) => {
       return whole +
         `\nvar _hmrProxy = require("${importFrom}").hmrProxy;\n`
     }) + '\n' + exportsToAdd.join('\n') + '\n'
+
+    if (options.addHotAccept) {
+      source = source + '\n' + hotAcceptCode() + '\n'
+    }
   }
   return source
 }
