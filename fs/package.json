@@ -1,0 +1,21 @@
+{
+  "name": "@cycler/fs",
+  "version": "1.0.0-pre.0",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "description": "",
+  "repository": "http://github.com/whitecolor/cycler",
+  "author": "whitecolor",
+  "license": "ISC",
+  "dependencies": {
+    "fs-extra": "^2.1.2"
+  },
+  "peerDependencies": {
+    "@cycler/task": "*"
+  },
+  "devDependencies": {
+    "@cycler/task": "file:../task",
+    "@types/fs-extra": "^2.0.0"
+  }
+}
