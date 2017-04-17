@@ -11,12 +11,18 @@
     "traceResolution": false,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true
   },
     "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
-  },  
+  },    
+	"include": [
+		"**/*",
+		".scripts/**/*"
+	],
   "exclude": [
     "**/node_modules/*"
   ]
