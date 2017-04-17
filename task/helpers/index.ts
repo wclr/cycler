@@ -17,3 +17,5 @@ export function pair<Request, T>(r$: ResponseStream<T, Request>)
   : Stream<[Request, T]> {
   return r$.map<[Request, T]>(response => [r$.request, response])
 }
+
+export * from './common'

@@ -28,3 +28,5 @@ export function pair<Request, T>(r$: ResponseStream<T, Request>)
   : Observable<[Request, T]> {  
   return r$.map<T, [Request, T]>((response: T) => [r$.request, response])
 }
+
+export * from './common'

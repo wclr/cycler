@@ -1,5 +1,5 @@
-// import { TaskSource } from '../xstream'
-// import { success, failure, pair } from '../xstream'
+// import { TaskSource } from '..'
+// import { success, failure, pair } from '../helpers'
 // import { MemoryStream, Stream, default as xs } from 'xstream'
 
 // export type SequenceSink<Request, Response, Error> = [
