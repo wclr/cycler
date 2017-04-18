@@ -5,6 +5,8 @@ volumes:
   express_node_modules:
   forage_node_modules:
   graphql_node_modules:
+  fs_node_modules:
+  inquirer_node_modules:
   http_node_modules:
   logger_node_modules:
   mongoose_node_modules:
@@ -18,12 +20,16 @@ services:
 
   deps-install:
     image: cycler-dev-node
+    # environment:
+    #   NPM_TOKEN: ${NPM_TOKEN}
     volumes:      
       - .:/cycler
       - node_modules:/cycler/node_modules
       - express_node_modules:/cycler/express/node_modules
       - forage_node_modules:/cycler/forage/node_modules
       - graphql_node_modules:/cycler/graphql/node_modules
+      - inquirer_node_modules:/cycler/graphql/node_modules
+      - fs_node_modules:/cycler/graphql/node_modules
       - http_node_modules:/cycler/http/node_modules
       - logger_node_modules:/cycler/logger/node_modules
       - mongoose_node_modules:/cycler/mongoose/node_modules
@@ -32,7 +38,7 @@ services:
     entrypoint: sh .scripts/watch-deps.sh
     
   tsc-build:     
-    image: cycler-dev-node
+    image: cycler-dev-node    
     volumes_from:
       - deps-install    
     entrypoint: yarn run tsc-build-watch

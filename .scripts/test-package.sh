@@ -1,12 +1,17 @@
 #!/bin/bash
 set -e 
 
-if [ $1 ]; then
-  PACKAGE_FOLDER=$1
-  cd $PACKAGE_FOLDER
+PACKAGE_FOLDER=$1
+
+if [[ -z $PACKAGE_FOLDER ]]; then
+  exit 1
 fi
+
+cd $PACKAGE_FOLDER
+
+NODE_CMD="node"
 
 if [ -f test/test.js ]; then
   echo "Starting test in $PACKAGE_FOLDER"
-  node -r source-map-support/register test/test.js
+  $NODE_CMD -r source-map-support/register test/test.js
 fi

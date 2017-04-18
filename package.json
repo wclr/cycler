@@ -7,6 +7,7 @@
     "@cycle/run": "^3.0.0",
     "@cycle/rxjs-run": "^7.0.0",
     "@types/express": "^4.0.32",
+    "@types/minimist": "^1.2.0",
     "@types/ramda": "^0.0.4",
     "@types/superagent": "^2.0.32",
     "@types/supertest": "^1.1.30",
@@ -29,15 +30,22 @@
   },
   "scripts": {
     "dev": ".scripts/dev.sh",
+    "propagate-config": "node .scripts/propagate-config",
+    "test": ".scripts/test-package.sh",
+    "watch": ".scripts/watch-package.sh",
+    "release": "node .scripts/release-package",
+    "docker-release": "node .scripts/docker-run \"node .scripts/release-package\"",
+    "docker-test": "node .scripts/docker-run \"yarn test\"",
+    "docker-watch": "docker-compose run -T --entrypoint \"yarn watch\" deps-install",
     "install-deps": ".scripts/install-deps.sh",
-    "tsc-build": "bash .scripts/wait-install-deps.sh && tsc",
-    "tsc-build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
-    "test-watch-package": "bash .scripts/wait-install-deps.sh && bash .scripts/test-watch-package.sh",
-    "test-package": ".scripts/wait-install-deps.sh && .scripts/test-package.sh",
-    "docker-test-package": "docker-compose run -T -e RUN_ONCE=true",
+    "build": "bash .scripts/wait-install-deps.sh && tsc",
+    "clean-built": "del-cli **/*.js **/*.js.map **/*.d.ts \"!node_modules/**\"",
+    "build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
     "ci": "bash .scripts/publish-packages.sh"
   },
   "dependencies": {
+    "del-cli": "^0.2.1",
+    "minimist": "^1.2.0",
     "typescript": "2.2.2"
   }
 }
