@@ -33,7 +33,7 @@ export interface MakeTaskDriver {
    */
   <Request, Response, Error>(
     params: {
-      getResponse: GetResponse<Request, Response, Error>      
+      getResponse: GetResponse<Request, Response, Error>
       lazy?: boolean
       dispose?(): void
     }): TaskDriver<Request, Response>

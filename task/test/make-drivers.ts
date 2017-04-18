@@ -1,5 +1,8 @@
 import {Stream} from 'xstream'
-import { makeTaskDriver, TaskSource, TaskRequest, GetResponse } from '../index'
+import {
+  makeTaskDriver,
+  TaskSource, TaskRequest, GetResponse
+} from '../index'
 
 export type Request = {
   name: string

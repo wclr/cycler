@@ -2,8 +2,10 @@ import xs, { Stream } from 'xstream'
 import { run } from '@cycle/run'
 import { setAdapt } from '@cycle/run/lib/adapt'
 import delay from 'xstream/extra/delay'
+import concat from 'xstream/extra/concat'
 import flattenConcurrently from 'xstream/extra/flattenConcurrently'
-import { makeTaskDriver, TaskSource, TaskRequest, GetResponse } from '../index'
+import flattenSequentially from 'xstream/extra/flattenSequentially'
+import { makeTaskDriver, TaskSource, TaskRequest } from '../index'
 import isolate from '@cycle/isolate'
 import { success, failure, pair } from '../helpers'
 import * as test from 'tape'
@@ -290,3 +292,37 @@ test('xstream run (isolation, cancellation)', (t) => {
   })
 })
 
+test('Sequential lazy requests run', (t) => {
+  const actions: string[] = []
+  const driver = makeTaskDriver<{ num: number }, number, any>({
+    getResponse: ((request, cb) => {
+      actions.push('request' + request.num)
+      setTimeout(() => {
+        cb(null, request.num)
+      }, 50)
+    })
+  })
+
+  run((sources: { driver: TaskSource<{ num: number }, number> }) => {
+    const readRequest$ = xs.from([1, 2])
+      .map(num => ({ num, lazy: true }))
+    return {
+      driver: readRequest$,
+      result: sources.driver.select<number>().compose(flattenSequentially)
+    }
+  }, {
+      driver,
+      result: (result$) => result$.addListener({
+        next: (res: number) => {
+          actions.push('response' + res)
+          if (res === 2) {
+            t.deepEqual(actions, [
+              'request1', 'response1',
+              'request2', 'response2'
+            ])
+            t.end()
+          }
+        }
+      })
+    })
+})
