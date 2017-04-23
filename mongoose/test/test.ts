@@ -1,16 +1,25 @@
 import xs, { Stream } from 'xstream'
 import { run, Sinks as RunSinks } from '@cycle/run'
 import * as mongoose from 'mongoose'
-import { makeMongooseDriver, MongooseSource, MongooseRequest } from '../.'
+import {
+  makeMongooseDriver,
+  MongooseSource,
+  MongooseRequest
+} from '../.'
 import * as test from 'tape'
 import delay from 'xstream/extra/delay'
 import * as R from 'ramda'
 
 (<any>mongoose).Promise = Promise
 
-const {of, empty, merge} = xs
+const { of, empty, merge } = xs
 
-mongoose.connect('mongodb://mongo')
+mongoose.connect('mongodb://mongo', (err) => {
+  if (err) {
+    console.log('Error connect trying to connect to localhost')
+    mongoose.connect('mongodb://localhost')
+  }
+})
 
 let mongooseDriver = makeMongooseDriver(mongoose.connection)
 
@@ -37,7 +46,7 @@ const testValue = (t: test.Test, testValue: any, testName?: string) =>
   }
 
 test('basic', (t) => {
-  const Main = ({mongoose}: Sources): Sinks => {
+  const Main = ({ mongoose }: Sources): Sinks => {
     return {
       mongoose: merge<MongooseRequest>(
         mongoose.on('connected').map(() =>

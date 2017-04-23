@@ -1,6 +1,6 @@
 {
   "name": "@cycler/mongoose",
-  "version": "1.0.0-unified.0",
+  "version": "1.0.0-pre.0",
   "publishConfig": {
     "tag": "latest"
   },  
@@ -19,7 +19,6 @@
     "@cycler/task": "*"
   },
   "devDependencies": {
-    "@cycler/task": "file:../task",
     "@types/mongoose": "^4.5.33",
     "mongoose": "^4.5.10",
     "@types/node": "^6.0.53"
