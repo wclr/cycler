@@ -28,14 +28,16 @@ services:
       - express_node_modules:/cycler/express/node_modules
       - forage_node_modules:/cycler/forage/node_modules
       - graphql_node_modules:/cycler/graphql/node_modules
-      - inquirer_node_modules:/cycler/graphql/node_modules
-      - fs_node_modules:/cycler/graphql/node_modules
+      - inquirer_node_modules:/cycler/inquirer/node_modules
+      - fs_node_modules:/cycler/fs/node_modules
       - http_node_modules:/cycler/http/node_modules
       - logger_node_modules:/cycler/logger/node_modules
       - mongoose_node_modules:/cycler/mongoose/node_modules
       - task_node_modules:/cycler/task/node_modules
       - hmr_node_modules:/cycler/hmr/node_modules
     entrypoint: sh .scripts/watch-deps.sh
+    depends_on:
+      - mongo
     
   tsc-build:     
     image: cycler-dev-node    

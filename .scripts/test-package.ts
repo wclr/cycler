@@ -11,11 +11,17 @@ if (!packageName) {
   exit(1)
 }
 
-chdir(packageName)
+const mochaTestModule = packageName + '/test/mocha.js'
+const cwd = packageName + '/test'
+if (exists(mochaTestModule)) {
+  const nodeCmd = 'yarn run mocha' + (argv.watch ? ' --watch' : '')
+  log(`Starting mocha test in ${packageName}`)
+  exec(nodeCmd + ' -r source-map-support/register mocha', cwd)
+}
 
-const nodeCmd = argv.watch ? 'node-dev --poll --respawn' : 'node'
-
-if (exists('test/test.js')) {
+const testModule = packageName + '/test/test.js'
+if (exists(testModule)) {
+  const nodeCmd = argv.watch ? 'node-dev --poll --respawn' : 'node'
   log(`Starting test in ${packageName}`)
-  exec(nodeCmd + ' -r source-map-support/register test/test.js')
+  exec(nodeCmd + ' -r source-map-support/register test', cwd)
 }

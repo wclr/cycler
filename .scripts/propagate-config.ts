@@ -4,7 +4,7 @@ import * as path from 'path'
 import { run } from '@cycle/run'
 import xs, { Stream } from 'xstream'
 import flattenConcurrently from 'xstream/extra/flattenConcurrently'
-import { pair, addCategory } from '../task/helpers'
+import { pair, setCategory } from '../task/helpers'
 import {
   FileSystemSource,
   FileSystemRequest,
@@ -62,7 +62,7 @@ const PropagateConfig = ({ fs }: { fs: FileSystemSource }) => {
         method: 'readJson',
         args: [packageConfig.name + '/package.json'],
         packageConfig
-      })).map(addCategory('read')),
+      })).map(setCategory('read')),
 
       fs.select<PackageManifest, { packageConfig: PackageConfig }>('read')
         .map(pair)
@@ -70,7 +70,7 @@ const PropagateConfig = ({ fs }: { fs: FileSystemSource }) => {
         .map(([{ args: [filePath], packageConfig }, json]) =>
           [filePath, updatePackageJson(json, packageConfig)]
         ).map(args => ({ method: 'writeJson', args }))
-        .map(addCategory('write')),
+        .map(setCategory('write')),
     ),
     log: fs.select('write').map(pair)
       .compose(flattenConcurrently)

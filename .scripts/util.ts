@@ -15,10 +15,10 @@ export const readJSON = readJSONSync
 export const copy = copySync
 export const writeFile = writeFileSync
 
-export const argv = minimist(process.argv.slice(2))
+export const argv = minimist(process.argv.slice(2), { boolean: true })
 export const firstArg = argv._[0]
 
-export const exec = (cmd: string) => execSync(cmd, { stdio: 'inherit' })
+export const exec = (cmd: string, cwd?: string) => execSync(cmd, { stdio: 'inherit', cwd })
 export const execSilent = (cmd: string) =>
   execSync(cmd, { stdio: ['pipe', 'pipe', 'pipe'] }).toString()
 

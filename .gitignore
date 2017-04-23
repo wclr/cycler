@@ -21,3 +21,6 @@ npm-debug*
 _*
 _README.md
 docker-compose.override.yml
+
+.yalc
+yalc.lock

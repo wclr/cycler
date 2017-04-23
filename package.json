@@ -4,18 +4,23 @@
   "devDependencies": {
     "@cycle/isolate": "^2.1.0",
     "@cycle/most-run": "^7.1.0",
-    "@cycle/run": "^3.0.0",
+    "@cycle/run": "^3.1.0",
     "@cycle/rxjs-run": "^7.0.0",
+    "@cycler/task": "file:.yalc/@cycler/task",
     "@types/express": "^4.0.32",
     "@types/minimist": "^1.2.0",
+    "@types/mocha": "^2.2.41",
     "@types/ramda": "^0.0.4",
     "@types/superagent": "^2.0.32",
     "@types/supertest": "^1.1.30",
     "@types/tape": "^4.2.27",
     "browserify": "^13.0.1",
     "budo": "^8.4.0",
+    "del-cli": "^0.2.1",
     "express": "^4.15.2",
     "get-port": "^2.1.0",
+    "minimist": "^1.2.0",
+    "mocha": "^3.2.0",
     "most": "^1.0.1",
     "ramda": "^0.23.0",
     "rxjs": "^5.2.0",
@@ -24,28 +29,24 @@
     "tap-browser-color": "^0.1.2",
     "tape": "^4.4.0",
     "tslint": "^4.5.1",
+    "typescript": "2.2.2",
     "validate-commit-msg": "^2.8.2",
     "watchify": "^3.7.0",
-    "xstream": "^10.3.0"
+    "xstream": "^10.5.0"
   },
   "scripts": {
     "dev": ".scripts/dev.sh",
     "propagate-config": "node .scripts/propagate-config",
-    "test": ".scripts/test-package.sh",
-    "watch": ".scripts/watch-package.sh",
-    "release": "node .scripts/release-package",
-    "docker-release": "node .scripts/docker-run \"node .scripts/release-package\"",
-    "docker-test": "node .scripts/docker-run \"yarn test\"",
-    "docker-watch": "docker-compose run -T --entrypoint \"yarn watch\" deps-install",
-    "install-deps": ".scripts/install-deps.sh",
+    "test": "node .scripts/test-package",
+    "watch": "node .scripts/test-package --watch",
+    "release": "node .scripts/docker-run \"node .scripts/release-package\"",
+    "docker-test": "node .scripts/docker-run \"node .scripts/test-package\"",
+    "docker-watch": "node .scripts/docker-run \"node .scripts/test-package --watch\"",    
     "build": "bash .scripts/wait-install-deps.sh && tsc",
     "clean-built": "del-cli **/*.js **/*.js.map **/*.d.ts \"!node_modules/**\"",
+    "install-deps": ".scripts/install-deps.sh",
     "build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
     "ci": "bash .scripts/publish-packages.sh"
   },
-  "dependencies": {
-    "del-cli": "^0.2.1",
-    "minimist": "^1.2.0",
-    "typescript": "2.2.2"
-  }
+  "dependencies": {}
 }
