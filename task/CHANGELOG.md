@@ -1,6 +1,6 @@
 # @cycler/task change log
 
-## 1.0.0-pre.0 *
+## 1.0.0-pre.0 (2017-04-23)
 
 - Added `setCategory`, `makeLazy` helpers
 - Handle getResponse returned promise with `catch`
