@@ -2,13 +2,6 @@
 # yarn lockfile v1
 
 
-"@cycler/task@file:../task":
-  version "1.0.0-beta.0"
-
-"@types/localforage@0.0.29":
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/@types/localforage/-/localforage-0.0.29.tgz#5ded9e4339251ab777afeb6db3c4bc79fbf85070"
-
 acorn@^1.0.3:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-1.2.2.tgz#c8ce27de0acc76d896d2b1fad3df588d9e82f014"

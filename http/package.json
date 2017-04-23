@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@types/superagent": "^2.0.36",
-    "@cycler/task": "file:../task",
     "portfinder": "^1.0.7"
   }
 }
