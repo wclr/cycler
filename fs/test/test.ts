@@ -10,10 +10,11 @@ test('First go!', (t) => {
     method: 'readJSON',
     args: [__dirname + '/../package.json']
   })
-  driver(readRequest$).select<{ name: string }>().flatten().addListener({
-    next: (json) => {
-      t.is(json.name, '@cycler/fs')
-      t.end()
-    }
-  })
+  driver(readRequest$).select<{ name: string }>().flatten()
+    .addListener({
+      next: (json) => {
+        t.is(json.name, '@cycler/fs')
+        t.end()
+      }
+    })
 })

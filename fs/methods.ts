@@ -24,6 +24,8 @@ export interface CopyFilterFunction {
 
 export type CopyFilter = CopyFilterFunction | RegExp;
 
+// copy
+
 export interface CopyOptions {
   clobber?: boolean
   preserveTimestamps?: boolean
@@ -45,7 +47,6 @@ export interface Copy {
   (src: string, dest: string): CopyRequest
   (src: string, dest: string, filter: CopyFilter): CopyRequest
   (src: string, dest: string, options: CopyOptions): CopyRequest
-  // (params: CopyParams): CopyRequest
 }
 
 const getCopyOptionalParamName = (arg: any) =>
@@ -54,6 +55,8 @@ const getCopyOptionalParamName = (arg: any) =>
 
 export const copy =
   makeMethod<CopyParams>('copy', ['src', 'dest', getCopyOptionalParamName]) as Copy
+
+// move
 
 export interface MoveOptions {
   clobber?: boolean;
@@ -75,6 +78,24 @@ export interface Move {
 
 export const move = makeMethod<MoveParams>('move', ['src', 'dest', 'options']) as Move
 
+// remove
+
+export interface RemoveParams {
+  path: string,
+}
+
+export type RemoveRequest = FileSystemRequest & { params: RemoveParams }
+
+export interface Remove {
+  (path: string): RemoveRequest
+}
+
+/*
+  Removes a file or directory. The directory can have contents. Like rm -rf.
+**/
+export const remove = makeMethod<RemoveParams>('remove', ['path']) as Remove
+
+// export declare function removeSync(dir: string): void;
 
 // export interface OpenOptions {
 //   encoding?: string;
@@ -116,7 +137,7 @@ export const move = makeMethod<MoveParams>('move', ['src', 'dest', 'options']) a
 
 
 
-// // fs 
+// fs 
 
 // export function readFileSync(filename: string, encoding: string): string;
 // export function readFileSync(filename: string, options: { encoding: string; flag?: string; }): string;
@@ -128,6 +149,6 @@ export const move = makeMethod<MoveParams>('move', ['src', 'dest', 'options']) a
 
 // export function appendFileSync(filename: string, data: any, options?: { encoding?: string; mode?: number; flag?: string; }): void;
 // export function appendFileSync(filename: string, data: any, options?: { encoding?: string; mode?: string; flag?: string; }): void;
-        
+
 
 // export function accessSync(path: string | Buffer, mode?: number): void;
