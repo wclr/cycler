@@ -1,18 +1,16 @@
 FROM mhart/alpine-node:7.1.0
-#install git
-RUN apk update && apk upgrade && \
-   apk add --no-cache bash git openssh
 
-RUN npm i yarn -g
-#RUN npm i @whitecolor/yarn -g
-RUN npm i linklocal -g
-RUN npm i node-dev -g 
-RUN npm i nodemon -g 
+# RUN npm i yarn -g
+# fix yarn bin links creation concurrency
+# npm: /usr/lib/node_modules/yarn/lib/package-linker.js
 
-RUN npm i chokidar-cli -g
-# $SHELL needed for chokidar-cli to work
-ENV SHELL /bin/bash 
+# for apk version will be: /usr/share/node_modules/yarn/lib
 
-RUN mkdir /cycler
-WORKDIR /cycler
-
+# yarn
+RUN apk update && apk upgrade && apk add --no-cache tar  && \
+  apk add --no-cache --virtual .yarn-deps curl gnupg && \
+  curl -o- -L https://yarnpkg.com/install.sh | sh && \
+  apk del .yarn-deps && \
+  apk del tar
+RUN sed -i -e 's/})(), 4);/})(), 1);/g' /root/.yarn/lib/package-linker.js
+ENV PATH /root/.yarn/bin:$PATH

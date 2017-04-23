@@ -5,6 +5,7 @@ volumes:
   express_node_modules:
   forage_node_modules:
   graphql_node_modules:
+  child_node_modules:
   fs_node_modules:
   inquirer_node_modules:
   http_node_modules:
@@ -18,16 +19,17 @@ services:
     image: mongo:3.4.0
     command: mongod --quiet --storageEngine mmapv1  
 
-  deps-install:
-    image: cycler-dev-node
-    # environment:
-    #   NPM_TOKEN: ${NPM_TOKEN}
+  node:
+    #image: cycler-dev-node
+    build: . 
+    working_dir: /cycler
     volumes:      
       - .:/cycler
       - node_modules:/cycler/node_modules
       - express_node_modules:/cycler/express/node_modules
       - forage_node_modules:/cycler/forage/node_modules
       - graphql_node_modules:/cycler/graphql/node_modules
+      - child_node_modules:/cycler/child/node_modules
       - inquirer_node_modules:/cycler/inquirer/node_modules
       - fs_node_modules:/cycler/fs/node_modules
       - http_node_modules:/cycler/http/node_modules
@@ -39,50 +41,4 @@ services:
     depends_on:
       - mongo
     
-  tsc-build:     
-    image: cycler-dev-node    
-    volumes_from:
-      - deps-install    
-    entrypoint: yarn run tsc-build-watch
-    # depends_on:
-    #   - deps-install
-
-  task: &common
-    image: cycler-dev-node    
-    volumes_from:
-      - deps-install    
-    command: yarn test-watch-package task    
-    # depends_on:
-    #   - tsc-build
-
-  mongoose:  
-    <<: *common
-    command: yarn test-watch-package mongoose
-    depends_on:
-      # - tsc-build
-      - mongo        
-
-  graphql:  
-    <<: *common
-    command: yarn test-watch-package graphql
-
-  forage:  
-    <<: *common
-    command: yarn test-watch-package forage
-
-  logger:  
-    <<: *common
-    command: yarn test-watch-package logger
-    
-  http:  
-    <<: *common    
-    command: yarn test-watch-package http
-    
-  express:  
-    <<: *common    
-    command: yarn test-watch-package express
-
-  hmr:  
-    <<: *common    
-    command: yarn test-watch-package hmr
     

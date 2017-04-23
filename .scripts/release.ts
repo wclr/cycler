@@ -1,3 +1,4 @@
+#!/bin/node
 import {
   env, exit, log,
   firstArg as packageName,

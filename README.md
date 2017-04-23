@@ -1,14 +1,11 @@
 # @cycler
 
+> Packages for [cycle.js](http://cycle.js.org) apps written with Typescript.
+
 [![Build Status](https://travis-ci.org/whitecolor/cycler.svg?branch=master)](https://travis-ci.org/whitecolor/cycler)
-
-Packages for [cycle.js](http://cycle.js.org) apps writtern in Typescript. [rxjs](https://github.com/ReactiveX/rxjs)/[most](https://github.com/cujojs/most) support.
-
-**All the packages are in beta currenlty.**
 
 ## Packages
 
-Below you will find a summary of each package and publication state.
 
 | Package | Type | Description | Version |
 |--------|-------|------------|----------|
@@ -21,18 +18,9 @@ Below you will find a summary of each package and publication state.
 
 ## Development
 
-Development workflow is base on docker-compose services, so you need to have `docker` and `docker-compose` installed, also you need `yarn` package manager installed.
-
-`$ yarn dev` and follow the gray rabbit :rabbit:.
-
-
-## NPM Publication
-
-Npm publication is done automatically on each commit after tests have passed.
-Script checks if current `version` of a package is already presents in the NPM registry, if it is not it tries to publish it.
-
-`NPM_TOKEN` is set in Travis-CI equal to `_authToken` from `~/.npmrc`
+- `yarn test` (`yarn docker-test`)
+- `yarn wath package` (`yarn docker-watch package`)
 
 ## Licence
 
-Fair play.
+WFT.

@@ -1,5 +1,5 @@
 import { config } from '../config'
-import * as fs from 'fs-extra'
+import * as fs from 'fs'
 import * as path from 'path'
 import { run } from '@cycle/run'
 import xs, { Stream } from 'xstream'
@@ -35,8 +35,8 @@ const updatePackageJson = (json: PackageManifest, packageConfig: PackageConfig) 
 const propagateConfigSync = () => {
   config.packages.forEach(packageConfig => {
     const filePath = packageConfig.name + '/package.json'
-    const json = fs.readJsonSync(filePath) as PackageManifest
-    fs.writeJson(filePath, updatePackageJson(json, packageConfig))
+    const json = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PackageManifest
+    fs.writeFileSync(filePath, JSON.stringify(updatePackageJson(json, packageConfig), null, 2))
     console.log(filePath, 'updated')
   })
 }
