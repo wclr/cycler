@@ -1,6 +1,6 @@
-import {Stream} from 'xstream'
+import xs, { Stream } from 'xstream'
 import {
-  makeTaskDriver,
+  makeTaskDriver, makeTaskSource,
   TaskSource, TaskRequest, GetResponse
 } from '../index'
 
@@ -60,3 +60,27 @@ export const progressiveDriver = makeTaskDriver<any, any, any>({
     })
   }
 })
+
+export interface CustomSource extends TaskSource<Request, Response> {
+  upperCase(category?: string): Stream<string>
+}
+
+export const customSourceDiver =
+  makeTaskDriver<CustomSource, Request, Response, any>({
+    getResponse: (request, cb, onDispose, response$: any) => {
+      response$.upperCase$ = xs.of(request.name.toUpperCase())
+      setTimeout(() => {
+        cb(null, request.name)
+      }, 50)
+    },
+    makeSource: (response$$, options) => {
+      const source = makeTaskSource(response$$, options)
+      return Object.assign(
+        makeTaskSource(response$$, options), {
+          upperCase: (category?: string) => source
+            .select().map<Stream<string>>((r$: any) => r$.upperCase$)
+            .flatten()
+        }
+      )      
+    }
+  })

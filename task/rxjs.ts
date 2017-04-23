@@ -21,14 +21,15 @@ export interface TaskSource<Request, Response> {
 }
 
 export function makeTaskSource<Request, Response>(
-  response$$: ResponsesStream<Response, Request>,
+  response$$: ResponsesStream<Request, Response>,
+  options: MakeTaskSourceOptions<Request, Request, Response>
 ): TaskSource<Request, Response>
 
 export function makeTaskSource<RequestInput, Request, Response>(
   response$$: ResponsesStream<Response, Request>,
-  options?: MakeTaskSourceOptions<Request, Request>
+  options?: MakeTaskSourceOptions<RequestInput, Request, Request>
 ): TaskSource<Request, Response>
 
-export function makeTaskSource(response$$: any, options?: any) {
+export function makeTaskSource(response$$: any, options?: any): any {
   return _makeTaskSource(response$$, options)
 }

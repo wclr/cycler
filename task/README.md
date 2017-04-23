@@ -1,25 +1,29 @@
-# Task
-> Higher order factory for creating [cycle.js](http://cycle.js.org) async request/response drivers.
+# @cycler/task
+> Higher order factory for creating [cycle.js](http://cycle.js.org) request/response based drivers.
 
-![npm (scoped)](https://img.shields.io/npm/v/@cycler/task.svg?maxAge=86400)
+## What
 
-**Currently in beta:**
-```bash
-npm install cycler/task@beta -S
-```
-
-Allows you easily create fully functional **cycle.js driver** 
+Allows you easily create fully functional [**cycle.js driver**](https://cycle.js.org/drivers.html)
 which side effect is executed using async function with **promise or callback**.
 It also can serve as a simple backbone for your more sophisticated driver.
 
 Such driver will work in the same manner as 
-[official cycle HTTP driver](https://github.com/cyclejs/cyclejs/tree/master/http), so basically:
+[official cycle HTTP driver](https://cycle.js.org/api/http.html), so basically:
 
 * driver sink will expect stream of requests
 * driver source will provide you with "metastream" of responses
 * driver source will provide  standard *isolate* mechanics (`@cycle/isolate`)
 * driver will be compatible with any stream library that cycle.js can work with 
 (it doesn't use any under the hood, but uses cyclejs stream adapter's API).
+
+## Install
+
+![npm (scoped)](https://img.shields.io/npm/v/@cycler/task.svg?maxAge=86400)
+
+```bash
+yarn add cycler/task
+```
+
 
 ## API
 
@@ -51,12 +55,12 @@ Let's create cycle.js driver which will be able to read files
 using node.js `fs` module:
 
 ```js
-import {makeAsyncDriver} from 'cycle-async-driver'
+import {makeAsyncDriver} from '@cycler/task'
 import fs from 'fs'
 import {run} from '@cycle/rx-run' 
 import {Observable as O} from 'rx'
  
-let readFileDriver = makeAsyncDriver((request, callback) => {
+const readFileDriver = makeAsyncDriver((request, callback) => {
   fs.readFile(requst.path, request.encoding || 'utf-8', callback)
   // instead of using `callback` param you may return Promise 
 })
@@ -120,7 +124,7 @@ Also driver source has method `filter` witch takes filtering function for
 ```js
 // is some cases you may want to get filtered source
 Driverstream
-  .filter(r$$ => r$$.request.method === 'DELETE') // returns filtered driver source
+  .filter(request => request.method === 'DELETE') // returns filtered driver source
   .select() // gets all response$$ stream  
 ```
 
@@ -320,10 +324,3 @@ let myCoolDriver = makeAsyncDriver({
 })
 ```
 Note that `onDispose` handler will be called always when request completed successfully.
-
-## Tests
-```
-npm install
-npm run test
-```
-For running test in dev mode with watching `node-dev` should be installed globally (`npm i node-dev -g`) 

@@ -1,6 +1,6 @@
 {
   "name": "@cycler/task",
-  "version": "1.0.0-unified.2",
+  "version": "1.0.0-pre.0",
   "publishConfig": {
     "tag": "latest",
     "access": "public"

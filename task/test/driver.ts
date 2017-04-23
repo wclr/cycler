@@ -14,7 +14,8 @@ import {
   basicDriver,
   lazyDriver,
   isolationDiver,
-  progressiveDriver
+  progressiveDriver,
+  customSourceDiver
 } from './make-drivers'
 
 test('Set xstream adapt', (t) => {
@@ -304,11 +305,12 @@ test('Sequential lazy requests run', (t) => {
   })
 
   run((sources: { driver: TaskSource<{ num: number }, number> }) => {
-    const readRequest$ = xs.from([1, 2])
+    const request$ = xs.from([1, 2])
       .map(num => ({ num, lazy: true }))
     return {
-      driver: readRequest$,
-      result: sources.driver.select<number>().compose(flattenSequentially)
+      driver: request$,
+      result: sources.driver.select<number>()
+        .compose(flattenSequentially)
     }
   }, {
       driver,
@@ -325,4 +327,93 @@ test('Sequential lazy requests run', (t) => {
         }
       })
     })
+})
+
+test('Sequential non-lazy requests run', (t) => {
+  const actions: string[] = []
+  const driver = makeTaskDriver<{ num: number }, number, any>({
+    getResponse: ((request, cb) => {
+      actions.push('request' + request.num)
+      setTimeout(() => {
+        cb(null, request.num)
+      }, 50)
+    })
+  })
+
+  run((sources: { driver: TaskSource<{ num: number }, number> }) => {
+    const request$ = xs.from([1, 2])
+      .map(num =>
+        concat(xs.of({ num }), sources.driver
+          .filter(x => x.num === num)
+          .select().take(1).flatten()
+          .mapTo(null)
+        )
+      ).compose(flattenSequentially)
+      .filter(x => !!x)
+
+    return {
+      driver: request$,
+      result: sources.driver.select<number>().compose(flattenConcurrently)
+    }
+  }, {
+      driver,
+      result: (result$) => result$.addListener({
+        next: (res: number) => {
+          actions.push('response' + res)
+          if (res === 2) {
+            t.deepEqual(actions, [
+              'request1', 'response1',
+              'request2', 'response2'
+            ])
+            t.end()
+          }
+        }
+      })
+    })
+})
+
+test('Sync callback driver', (t) => {
+  let requestsInDriver = 0
+  const driver = makeTaskDriver<{ num: number }, number, any>({
+    getResponse: ((request, cb) => {
+      requestsInDriver++
+      cb(null, request.num)
+    })
+  })
+  
+  run((sources: { driver: TaskSource<{ num: number }, number> }) => {
+    const request$ = xs.of({ num: 1 })
+
+    return {
+      result: sources.driver.select<number>()
+        .flatten(),
+      driver: request$,
+    }
+  }, {
+      driver,
+      result: (result$) => result$.addListener({
+        next: (res: number) => {
+          //console.log('res', res)
+          t.is(requestsInDriver, 1)
+          t.end()
+        }
+      })
+    })
+})
+
+test('Driver with custom source', (t) => {
+  const request = { name: 'John' }
+  
+  const source = customSourceDiver(
+    xs.of(request).compose(delay(50))    
+  )
+  setTimeout(() => {
+    source.upperCase()
+      .addListener({
+        next: (x) => {
+          t.deepEqual(x, request.name.toUpperCase(), 'response correct')
+          t.end()
+        }
+      })
+  })
 })

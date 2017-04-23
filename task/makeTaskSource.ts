@@ -1,7 +1,10 @@
 import xs, { Stream, MemoryStream } from 'xstream';
 import { Driver, FantasyObservable } from '@cycle/run';
 import { adapt } from '@cycle/run/lib/adapt';
-import { MakeTaskSourceOptions, ResponsesStream } from './interfaces'
+import {
+  MakeTaskSourceOptions, ResponsesStream,
+  TaskSource
+} from './interfaces'
 
 
 type NameSpaced = { _namespace?: string[] }
@@ -32,18 +35,28 @@ export function setIsolate<Request>(
     _filterIsolatedRequest = filterIsolatedRequest
   }
 }
+export function makeTaskSource<Request, Response>(
+  response$$: ResponsesStream<Request, Response>,
+  options: MakeTaskSourceOptions<Request, Request, Response>
+): TaskSource<Request, Response>
 
 export function makeTaskSource<RequestInput, Request, Response>(
   response$$: ResponsesStream<Request, Response>,
-  options: MakeTaskSourceOptions<RequestInput, Request> = {}
-) {
+  options: MakeTaskSourceOptions<RequestInput, Request, Response>
+): TaskSource<Request, Response>
+
+export function makeTaskSource<RequestInput, Request, Response>(
+  response$$: ResponsesStream<Request, Response>,
+  options: MakeTaskSourceOptions<RequestInput, Request, Response> = {}
+): TaskSource<Request, Response> {
 
   const driverSource = {
     filter(predicate: (any)): any {
       const filteredResponse$$ = response$$.filter(
         (r$: any) => predicate(r$.request)
       )
-      return makeTaskSource(filteredResponse$$, options)
+      const makeSource = options.makeSource || makeTaskSource
+      return makeSource(filteredResponse$$, options)
     },
     isolateSink(request$: any, scope: string) {
       return request$.map((req: RequestInput | Request) => {
@@ -59,7 +72,7 @@ export function makeTaskSource<RequestInput, Request, Response>(
       }
       return source.filter(requestPredicate)
     },
-    select(category: string) {
+    select(category?: string) {
       if (!category) {
         return adapt(response$$)
       }
