@@ -19,7 +19,6 @@ script: npm run ci
 branches:
   only:
   - master
-  - unified
 cache: 
   yarn: true
   bundler: true
