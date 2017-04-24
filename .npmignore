@@ -1,4 +1,4 @@
 *.ts
 !*.d.ts
 /test
-.yloc*
+.yalc*

@@ -1,7 +1,9 @@
 {
   "name": "cycler",
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
+    "@types/fs-extra": "^2.1.0",
+    "fs-extra": "^2.1.2",
     "@cycle/isolate": "^2.1.0",
     "@cycle/most-run": "^7.1.0",
     "@cycle/run": "^3.1.0",
@@ -19,6 +21,7 @@
     "del-cli": "^0.2.1",
     "express": "^4.15.2",
     "get-port": "^2.1.0",
+    "husky": "^0.13.3",
     "minimist": "^1.2.0",
     "mocha": "^3.2.0",
     "most": "^1.0.1",
@@ -36,6 +39,7 @@
     "xstream": "^10.5.0"
   },
   "scripts": {
+    "precommit": "yalc check",
     "propagate-config": "node .scripts/propagate-config",
     "test": "node .scripts/test",
     "watch": "node .scripts/test --watch",
@@ -46,9 +50,5 @@
     "install-deps": "node .scripts/install-deps",
     "build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
     "ci": "yarn && tsc -p .scripts && yarn install-deps && tsc && yarn docker-test"
-  },
-  "dependencies": {
-    "@types/fs-extra": "^2.1.0",
-    "fs-extra": "^2.1.2"
   }
 }
