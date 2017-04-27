@@ -5,7 +5,8 @@ import delay from 'xstream/extra/delay'
 import concat from 'xstream/extra/concat'
 import flattenConcurrently from 'xstream/extra/flattenConcurrently'
 import flattenSequentially from 'xstream/extra/flattenSequentially'
-import { makeTaskDriver, TaskSource, TaskRequest } from '../index'
+import { makeTaskDriver, TaskSource, TaskRequest, setRequestOps } from '../index'
+import { requestOps } from '../requestOps'
 import isolate from '@cycle/isolate'
 import { success, failure, pair } from '../helpers'
 import * as test from 'tape'
@@ -65,6 +66,14 @@ test('Basic driver from promise', (t) => {
 })
 
 test('Basic driver - cancellation with abort (lazy requests)', (t) => {
+  // lets make requests mutable for testing abortion
+  // we probably don't need to change it back
+  setRequestOps({
+    addProperty: (request: any, name: any, value: any) => {
+      request[name] = value
+      return request
+    }
+  })
   const requests = [
     { name: 'John', category: 'john', lazy: true, aborted: false },
     { name: 'Alex', type: 'alex', lazy: true, aborted: false }

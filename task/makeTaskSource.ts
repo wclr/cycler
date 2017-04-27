@@ -6,35 +6,8 @@ import {
   TaskSource
 } from './interfaces'
 
+import { requestOps } from './requestOps'
 
-type NameSpaced = { _namespace?: string[] }
-
-let _isolateRequest = <Request>(requestToIsolate: Request & NameSpaced, scope: string):
-  Request & NameSpaced => {
-  if (scope) {
-    requestToIsolate._namespace = requestToIsolate._namespace || []
-    if (requestToIsolate._namespace.indexOf(scope) === -1) {
-      requestToIsolate._namespace.push(scope)
-    }
-  }
-  return requestToIsolate
-}
-
-let _filterIsolatedRequest =
-  <Request>(req: Request & NameSpaced, scope: string) => {
-    return Array.isArray(req._namespace) &&
-      req._namespace.indexOf(scope) !== -1
-  }
-
-export function setIsolate<Request>(
-  isolateRequest: (request: Request) => Request,
-  filterIsolatedRequest?: (request: Request, scope: string) => boolean
-) {
-  _isolateRequest = isolateRequest
-  if (filterIsolatedRequest) {
-    _filterIsolatedRequest = filterIsolatedRequest
-  }
-}
 export function makeTaskSource<Request, Response>(
   response$$: ResponsesStream<Request, Response>,
   options: MakeTaskSourceOptions<Request, Request, Response>
@@ -60,15 +33,15 @@ export function makeTaskSource<RequestInput, Request, Response>(
     },
     isolateSink(request$: any, scope: string) {
       return request$.map((req: RequestInput | Request) => {
-        const requestToIsolate: Request & NameSpaced =
+        const requestToIsolate: Request =
           options.isolateMap ? options.isolateMap(<RequestInput>req) : <Request>req
 
-        return _isolateRequest(requestToIsolate, scope)
+        return requestOps.isolateRequest(requestToIsolate, scope)
       })
     },
     isolateSource: (source: any, scope: any) => {
-      let requestPredicate = (req: Request & NameSpaced) => {
-        return _filterIsolatedRequest(req, scope)
+      let requestPredicate = (req: Request) => {
+        return requestOps.filterIsolatedRequest(req, scope)
       }
       return source.filter(requestPredicate)
     },
@@ -82,7 +55,7 @@ export function makeTaskSource<RequestInput, Request, Response>(
       const requestPredicate =
         (request: any) => request && request.category === category
       return driverSource.filter(requestPredicate).select()
-    }
+    }    
   }
   return driverSource
 }

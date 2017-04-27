@@ -29,6 +29,16 @@ export interface TaskSource<Request, Response> {
     Stream<ResponseStream<Response & Res, Request>>
   select<Res, Req>(category?: string):
     Stream<ResponseStream<Response & Res, Request & Req>>
+  // selectPair<Req, Res>(category?: string):
+  //   Stream<ResponseStream<Response & Res, Request & Req>>
+  // success<Res>(category?: string):
+  //   Stream<ResponseStream<Response & Res, Request>>
+  // failure<Res>(category?: string):
+  //   Stream<ResponseStream<Response & Res, Request>>
+  // successPair<Res, Req>(category?: string):
+  //   Stream<ResponseStream<Response & Res, Request & Req>>
+  // falurePair<Res, Req>(category?: string):
+  //   Stream<ResponseStream<Response & Res, Request & Req>>
 }
 
 export type TaskDriver<Request, Response> =

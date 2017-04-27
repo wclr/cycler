@@ -1,4 +1,4 @@
-export { default } from './makeTaskDriver'
-export * from './makeTaskDriver'
-export * from './makeTaskSource'
+export { makeTaskDriver } from './makeTaskDriver'
+export { makeTaskSource } from './makeTaskSource'
+export { setRequestOps } from './requestOps'
 export * from './interfaces'
