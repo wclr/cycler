@@ -5,15 +5,16 @@ import { adapt } from '@cycle/run/lib/adapt';
 export type ResponseStream<Response, Request> = Stream<Response> & { request: Request }
 
 export type ResponsesStream<Response, Request> =
-  Stream<Stream<Response> & { request: Request }>
+  Stream<ResponseStream<Response, Request>>
 
 export interface MakeTaskSourceOptions<RequestInput, Request, Response> {
   isolateMap?(request: RequestInput): Request,
   makeSource?(response$$: ResponsesStream<Request, Response>,
-    options: MakeTaskSourceOptions<RequestInput, Request, Response>): any
+    options: MakeTaskSourceOptions<RequestInput, Request, Response>): any,
+  createResponse$?: (request: RequestInput) => void
 }
 
-export interface MakeSource<Source, RequestInput, Request, Response> {  
+export interface MakeSource<Source, RequestInput, Request, Response> {
   (response$$: ResponsesStream<Request, Response>,
     options: MakeTaskSourceOptions<RequestInput, Request, Response>): Source
 }
@@ -24,29 +25,34 @@ export interface IsolateSource<Source, RequestInput, IsolatedRequest> {
 }
 
 export interface TaskSource<Request, Response> {
-  filter<Req>(predicate: (request: Request & Req) => boolean): TaskSource<Request & Req, Response>  
+  filter<Req>(predicate: (request: Request & Req) => boolean): TaskSource<Request & Req, Response>
   select<Res>(category?: string):
     Stream<ResponseStream<Response & Res, Request>>
   select<Res, Req>(category?: string):
     Stream<ResponseStream<Response & Res, Request & Req>>
-  // selectPair<Req, Res>(category?: string):
-  //   Stream<ResponseStream<Response & Res, Request & Req>>
-  // success<Res>(category?: string):
-  //   Stream<ResponseStream<Response & Res, Request>>
-  // failure<Res>(category?: string):
-  //   Stream<ResponseStream<Response & Res, Request>>
-  // successPair<Res, Req>(category?: string):
-  //   Stream<ResponseStream<Response & Res, Request & Req>>
-  // falurePair<Res, Req>(category?: string):
-  //   Stream<ResponseStream<Response & Res, Request & Req>>
+  pull<Res>(request: Request):
+    ResponseStream<Response & Res, Request>
+  pull<Res, Req>(request: Request):
+    ResponseStream<Response & Res, Request & Req>
+}
+
+export interface InputTaskSource<RequestInput, Request, Response> {
+  filter<Req>(predicate: (request: Request & Req) => boolean): InputTaskSource<RequestInput, Request & Req, Response>
+  select<Res>(category?: string):
+    Stream<ResponseStream<Response & Res, Request>>
+  select<Res, Req>(category?: string):
+    Stream<ResponseStream<Response & Res, Request & Req>>
+  pull<Res>(request: RequestInput):
+    ResponseStream<Response & Res, Request>
+  pull<Res, Req>(request: RequestInput):
+    ResponseStream<Response & Res, Request & Req>
 }
 
 export type TaskDriver<Request, Response> =
   (request$: Stream<Request>) => TaskSource<Request, Response>
 
 export type InputTaskDriver<RequestInput, Request, Response> =
-  (request$: Stream<RequestInput>) => TaskSource<Request, Response>
-
+  (request$: Stream<RequestInput>) => InputTaskSource<RequestInput, Request, Response>
 
 export interface Thenable<R, Error> {
   then: (resolve: (result: R) => any) => any
@@ -80,7 +86,7 @@ export type GetProgressiveResponse<Request, Response, Error> = (
   response$: FantasyObservable
 ) => any
 
-export interface DriverOptions<Source ,RequestInput, Request, Response, Error> {
+export interface DriverOptions<Source, RequestInput, Request, Response, Error> {
   getResponse?: GetResponse<Request, Response, Error>
   getProgressiveResponse?: GetProgressiveResponse<Request, Response, Error>
   normalizeRequest?(request: RequestInput): Request

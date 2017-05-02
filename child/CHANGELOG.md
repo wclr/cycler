@@ -1,6 +1,7 @@
 # @cycler/child change log
 
 ## 1.0.0-pre.1
+- support @cycle/task `InputTaskSource`
 
 ## 1.0.0-pre.0 (2017-04-23)
 

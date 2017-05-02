@@ -1,7 +1,7 @@
 import xs, { Stream } from 'xstream'
 import {
   makeTaskDriver, makeTaskSource,
-  TaskSource, TaskRequest, GetResponse
+  TaskSource, InputTaskSource, TaskRequest, GetResponse
 } from '../index'
 
 export type Request = {

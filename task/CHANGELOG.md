@@ -1,5 +1,10 @@
 # @cycler/task change log
 
+## 1.0.0-pre.1
+
+- Default immutability of requests configurable via `requestsOps`
+- **Experimental** `pull` method
+
 ## 1.0.0-pre.0 (2017-04-23)
 
 - Added `setCategory`, `makeLazy` helpers

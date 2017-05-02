@@ -426,3 +426,18 @@ test('Driver with custom source', (t) => {
       })
   })
 })
+
+test('Driver pull method lazy response', (t) => {
+  const request = { name: 'John' }
+  let response$ = basicDriver(xs.empty()).pull(request)
+  
+  setTimeout(() => {
+    response$
+      .addListener({
+        next: (x) => {
+          t.deepEqual(x, 'async ' + request.name, 'response correct')
+          t.end()
+        }
+      })
+  }, 50)
+})

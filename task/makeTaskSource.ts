@@ -3,7 +3,7 @@ import { Driver, FantasyObservable } from '@cycle/run';
 import { adapt } from '@cycle/run/lib/adapt';
 import {
   MakeTaskSourceOptions, ResponsesStream,
-  TaskSource
+  TaskSource, InputTaskSource
 } from './interfaces'
 
 import { requestOps } from './requestOps'
@@ -16,12 +16,12 @@ export function makeTaskSource<Request, Response>(
 export function makeTaskSource<RequestInput, Request, Response>(
   response$$: ResponsesStream<Request, Response>,
   options: MakeTaskSourceOptions<RequestInput, Request, Response>
-): TaskSource<Request, Response>
+): InputTaskSource<RequestInput, Request, Response>
 
 export function makeTaskSource<RequestInput, Request, Response>(
   response$$: ResponsesStream<Request, Response>,
   options: MakeTaskSourceOptions<RequestInput, Request, Response> = {}
-): TaskSource<Request, Response> {
+): InputTaskSource<RequestInput, Request, Response> {
 
   const driverSource = {
     filter(predicate: (any)): any {
@@ -55,9 +55,14 @@ export function makeTaskSource<RequestInput, Request, Response>(
       const requestPredicate =
         (request: any) => request && request.category === category
       return driverSource.filter(requestPredicate).select()
-    }    
+    },
+    pull(request: RequestInput) {
+      return options.createResponse$!(
+        requestOps.addProperty(request, 'lazy', true)
+      )
+    }
   }
-  return driverSource
+  return driverSource as any
 }
 
 export default makeTaskSource

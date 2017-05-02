@@ -6,7 +6,7 @@
     "@cycle/most-run": "^7.1.0",
     "@cycle/run": "^3.1.0",
     "@cycle/rxjs-run": "^7.0.0",
-    "@cycler/task": "file:task",
+    "@cycler/task": "file:.yalc/@cycler/task",
     "@types/express": "^4.0.32",
     "@types/fs-extra": "^2.1.0",
     "@types/minimist": "^1.2.0",
@@ -39,7 +39,8 @@
     "xstream": "^10.5.0"
   },
   "scripts": {
-    "precommit": "yalc check",
+    "precommit": "yalc retreat && yalc check",
+    "postcommit": "yalc",
     "propagate-config": "node .scripts/propagate-config",
     "test": "node .scripts/test",
     "watch": "node .scripts/test --watch",
@@ -50,5 +51,6 @@
     "install-deps": "node .scripts/install-deps",
     "build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
     "ci": "yarn && tsc -p .scripts && yarn install-deps && tsc && yarn docker-test"
-  }
+  },
+  "devDependencies": {}
 }

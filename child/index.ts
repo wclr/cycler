@@ -1,7 +1,7 @@
 import * as cp from 'child_process'
 import {
   makeTaskDriver, makeTaskSource,
-  TaskSource, TaskRequest
+  InputTaskSource, TaskRequest
 } from '@cycler/task'
 import xs, { Stream, MemoryStream } from 'xstream'
 const execa = require('execa')
@@ -67,9 +67,9 @@ export interface SpawnRequest extends ExecRequestBase {
 
 export type ChildRequest = ExecRequest | SpawnRequest | ExecaRequest | ShellRequest
 
-type ChildRequestInput = ChildRequest | string
+export type ChildRequestInput = ChildRequest | string
 
-export interface ChildSource extends TaskSource<ChildRequest, string> {
+export interface ChildSource extends InputTaskSource<ChildRequestInput, ChildRequest, string> {
   stdout(catetory?: string): Stream<MemoryStream<string>>
   stderr(catetory?: string): Stream<MemoryStream<string>>
 }
@@ -156,7 +156,7 @@ export function makeChildDriver(options: ExecDriverOptions = {}) {
         const promise = new Promise((resolve, reject) => {
           let stdout = ''
           let stderr = ''
-          
+
           if (child.stdout) {
             child.stdout.on('data', (data: string) => {
               stdout$.shamefullySendNext(data.toString())
@@ -192,7 +192,8 @@ export function makeChildDriver(options: ExecDriverOptions = {}) {
       }
     },
     makeSource: (response$$, options) => {
-      const source = makeTaskSource(response$$, options)
+      const source = makeTaskSource<ChildRequestInput, ChildRequest, ChildResponse>
+        (response$$, options)
       return Object.assign(source, {
         stdout: (category?: string) =>
           xs.from(source.select(category))

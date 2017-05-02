@@ -12,7 +12,7 @@ const empty = () => { }
 const emptySubscribe = (stream: Stream<any>) =>
   stream.subscribe({ next: empty, error: empty, complete: empty })
 
-import {
+import {  
   DriverOptions,
   TaskDriver,
   InputTaskDriver,
@@ -126,7 +126,7 @@ export interface MakeTaskDriver {
 }
 
 export const makeTaskDriver: MakeTaskDriver = function
-  <Source, RequestInput, Request, Response, Error>(options: DriverOptions<Source,
+  <Source, RequestInput, Request extends TaskRequest, Response, Error>(options: DriverOptions<Source,
     RequestInput & TaskRequest,
     Request & TaskRequest,
     Response, Error>):
@@ -134,7 +134,7 @@ export const makeTaskDriver: MakeTaskDriver = function
   let {
     getResponse,
     getProgressiveResponse,
-    normalizeRequest = (_: any) => _,
+    normalizeRequest = (_: RequestInput): Request & TaskRequest => (_ as any),
     isolateMap,
     lazy = false,
     makeSource
@@ -148,7 +148,7 @@ export const makeTaskDriver: MakeTaskDriver = function
   }
 
   const createResponse$ = (request: RequestInput & TaskRequest) => {
-    const normalizedRequest = normalizeRequest(request)
+    const normalizedRequest: Request = normalizeRequest(request)    
     const isLazyRequest = typeof normalizedRequest.lazy === 'boolean'
       ? normalizedRequest.lazy : lazy
 
@@ -186,22 +186,24 @@ export const makeTaskDriver: MakeTaskDriver = function
         isFunction(this.dispose) && this.dispose()
       }
     }).remember()
+    // should adapt response$ here before attaching request
+    response$ = adapt(response$)    
+    attachRequest(response$, normalizedRequest)    
     
-    response$ = adapt(response$)
-    attachRequest(response$, normalizedRequest)
-    // first we adapt, then attach request, then start stream
-    // thus in getRequest response$ will be put in final version
     if (!isLazyRequest) {
       emptySubscribe(response$)
     }
     return response$
   }
 
-  return (request$) => {
-    const response$$ = request$.map(createResponse$)
-    emptySubscribe(response$$)
+  return (request$: Stream<RequestInput>) => {
+    const response$$ = request$.map(createResponse$)    
     makeSource = makeSource || (makeTaskSource as any)
-    const source = makeSource!(response$$, { makeSource, isolateMap })
+    const source = makeSource!(response$$ as any, {
+      makeSource, isolateMap,
+      createResponse$      
+    })
+    emptySubscribe(response$$)
     if (options.dispose) {
       (source as any).dispose = options.dispose
     }

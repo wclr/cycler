@@ -6,8 +6,11 @@
     "declaration": true,
     "target": "es5",
     "preserveConstEnums": true,
-    "noImplicitAny": true,    
-    "lib": ["dom", "es6"],    
+    "noImplicitAny": true,
+    "lib": [
+      "dom",
+      "es6"
+    ],
     "traceResolution": false,
     "inlineSourceMap": true,
     "inlineSources": true,
@@ -15,14 +18,14 @@
     "noImplicitThis": true,
     "noImplicitReturns": true
   },
-    "formatCodeOptions": {
+  "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
-  },    
-	"include": [
-		"**/*",
-		".scripts/**/*"
-	],
+  },
+  "include": [
+    "**/*",
+    ".scripts/**/*"
+  ],
   "exclude": [
     "**/node_modules/*"
   ]
