@@ -33,7 +33,7 @@
     "tap-browser-color": "^0.1.2",
     "tape": "^4.4.0",
     "tslint": "^4.5.1",
-    "typescript": "2.2.2",
+    "typescript": "^2.3.2",
     "validate-commit-msg": "^2.8.2",
     "watchify": "^3.7.0",
     "xstream": "^10.5.0"
