@@ -1,4 +1,4 @@
-import {TaskRequest} from '@cycler/task'
+import { TaskRequest } from '@cycler/task'
 
 export interface Attachment {
   name: string
@@ -11,16 +11,19 @@ export interface HTTPRequest extends TaskRequest {
   method?: string
   query?: Object
   send?: Object
-  headers?: {[index: string]: string}
+  headers?: { [index: string]: string }
   accept?: string
+  auth?: {
+    user: string
+    password: string
+  }
   type?: string
-  user?: string
-  password?: string
-  field?: {[index: string]: string}
+  field?: { [index: string]: string }
   progress?: boolean
   attach?: Attachment[]
   withCredentials?: boolean
-  redirects?: number
+  redirects?: number,
+  responseType?: string
 }
 
 export type HTTPRequestInput = HTTPRequest | string
