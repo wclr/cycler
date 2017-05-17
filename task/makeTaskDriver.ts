@@ -12,7 +12,7 @@ const empty = () => { }
 const emptySubscribe = (stream: Stream<any>) =>
   stream.subscribe({ next: empty, error: empty, complete: empty })
 
-import {  
+import {
   DriverOptions,
   TaskDriver,
   InputTaskDriver,
@@ -148,25 +148,25 @@ export const makeTaskDriver: MakeTaskDriver = function
   }
 
   const createResponse$ = (request: RequestInput & TaskRequest) => {
-    const normalizedRequest: Request = normalizeRequest(request)    
+    const normalizedRequest: Request = normalizeRequest(request)
     const isLazyRequest = typeof normalizedRequest.lazy === 'boolean'
       ? normalizedRequest.lazy : lazy
 
     let response$ = xs.create<Response>({
       start: function (this: any, observer) {
         const disposeCallback = (_: any) => this.dispose = _
-        
+
         if (getProgressiveResponse) {
           getProgressiveResponse(
             normalizedRequest, observer, disposeCallback, response$
           )
         } else if (getResponse) {
           let syncCallback = true
-          const callback = (err: Error | null, result: Response) => {
+          const callback = (err: Error | null, result?: Response) => {
             if (err) {
               observer.error(err)
             } else {
-              observer.next(result)
+              observer.next(result!)
               syncCallback
                 ? Promise.resolve().then(() => observer.complete())
                 : observer.complete()
@@ -177,8 +177,14 @@ export const makeTaskDriver: MakeTaskDriver = function
           )
           syncCallback = false
           if (res && isFunction(res.then)) {
-            res.then((result: Response) => callback(null, result))
-              .catch(callback)
+            const promiseCb = (result: Response) => callback(null, result)
+            // handle old promises
+            if (isFunction(res.catch)) {
+              res.then(promiseCb)
+                .catch(callback)
+            } else {
+              (res as any).then(promiseCb, callback)
+            }
           }
         }
       },
@@ -187,9 +193,9 @@ export const makeTaskDriver: MakeTaskDriver = function
       }
     }).remember()
     // should adapt response$ here before attaching request
-    response$ = adapt(response$)    
-    attachRequest(response$, normalizedRequest)    
-    
+    response$ = adapt(response$)
+    attachRequest(response$, normalizedRequest)
+
     if (!isLazyRequest) {
       emptySubscribe(response$)
     }
@@ -197,11 +203,11 @@ export const makeTaskDriver: MakeTaskDriver = function
   }
 
   return (request$: Stream<RequestInput>) => {
-    const response$$ = request$.map(createResponse$)    
+    const response$$ = request$.map(createResponse$)
     makeSource = makeSource || (makeTaskSource as any)
     const source = makeSource!(response$$ as any, {
       makeSource, isolateMap,
-      createResponse$      
+      createResponse$
     })
     emptySubscribe(response$$)
     if (options.dispose) {
