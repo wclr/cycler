@@ -8,7 +8,7 @@ export type Reducer<T> = (state: T) => T
 
 export interface ZoomIn {
   <P extends string>(prop: P):
-    <R>(state$: Stream<{[K in P]: R}>) => Stream<R>
+    <R>(state$: Stream<{[K in P]?: R}>) => Stream<R>
   <P extends number>(index: P):
     <R>(state$: Stream<R[]>) => Stream<R>
   <R>(path: (string | number)[]):
@@ -17,7 +17,7 @@ export interface ZoomIn {
 
 export interface ZoomOut {
   <P extends string>(prop: P):
-    <R, T extends {[K in P]: R}>(reducer$: Stream<Reducer<R>>) => Stream<Reducer<T>>
+    <R, T extends {[K in P]?: R}>(reducer$: Stream<Reducer<R>>) => Stream<Reducer<T>>
   <P extends number>(index: P):
     <R, T extends R[]>(reducer$: Stream<Reducer<R>>) => Stream<Reducer<T>>
   <T>(path: (string | number)[]):
@@ -28,11 +28,11 @@ const _zoomIn = <R>(idx: StatePath) =>
   <T>(state$: Stream<T>) => state$.map(state => path(idx, state))
     .compose(dropRepeats()) as Stream<R>
 
-export const _zoomOut = <R>(idx: StatePath) =>
+const _zoomOut = <R>(idx: StatePath) =>
   <T>(reducer$: Stream<Reducer<R>>) => reducer$
     .map(reducer =>
       (state: T) => assocPath(idx, reducer(path(idx, state)), state)
-    ) as Stream<Reducer<T>>
+    ) as Stream<Reducer<T>> 
 
 export const zoomIn = _zoomIn as ZoomIn
 export const zoomOut = _zoomOut as ZoomOut
