@@ -8,12 +8,12 @@ export type Module = {
   id: number | null
 }
 
-export type supportedFormat = 'cjs'
+export type SupportedFormat = 'cjs'
 
 export interface LoaderOptions extends ProxyOptions {
   testExportName?: string,
   importFrom?: string,
-  format?: supportedFormat
+  format?: SupportedFormat
 }
 
 export interface LoaderContext {

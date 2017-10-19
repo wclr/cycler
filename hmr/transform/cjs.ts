@@ -14,14 +14,18 @@ export const transformer: Transformer = (source: string, options) => {
     debug: options.debug
   }
   const sourceIdentifier = options.sourceIdentifier
+  const noHmr = source.match(/@(no-hmr|hmr-disabled)/)
+  if (noHmr) {
+    return source
+  }
   if (!proxyOptions.debug) {
-    var debugMatch = source.match(/@hmr-debug (\w*)/)
+    const debugMatch = source.match(/@hmr-debug (\w*)/)
     if (debugMatch) {
       proxyOptions.debug = debugMatch[1] || true
     }
   }
 
-  const regEx = /\nexports\.(\S*) = |\nexports() = /g
+  const regEx = /\nexports\.(\S*) = |\nexports() = |\nexport\s(\S*) = |\nexport (default) /g
   const exportsToAdd: string[] = []
   const testExportName = options.testExportName
     ? new RegExp(options.testExportName) : null

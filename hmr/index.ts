@@ -21,6 +21,7 @@ type DebugHelper = ((message?: string) => void) & {
 }
 
 type ProxyObserver = FantasyObserver & {
+  _sinkKeepAliveSubscription?: FantasySubscription
   dispose: () => void
 }
 
@@ -40,7 +41,6 @@ export interface HmrEnabledDataflow {
 
 type StreamProxy = {
   key: string,
-  //subs: any[],
   observers: any[],
   sink: Sink
   stream: FantasyObservable
@@ -70,14 +70,11 @@ type ProxiesStore = {
 const proxiesStore: ProxiesStore = {}
 let cycleHmrEnabled = true
 
-const anyGlobal = global as any
+const anyGlobal: any = typeof window === 'object' ? window : global
 
-if (typeof global !== 'undefined') {
-  anyGlobal.cycleHmrProxiesStore = proxiesStore
-  if (anyGlobal.noCycleHmr) {
-    console.warn('[Cycle HMR] disabled')
-    cycleHmrEnabled = false
-  }
+if (anyGlobal && anyGlobal.noCycleHmr) {
+  console.warn('[Cycle HMR] disabled')
+  cycleHmrEnabled = false
 }
 
 const getDebugMethod = (value: string | boolean): string | undefined => {
@@ -103,10 +100,10 @@ export const hmrProxy = <Df>
   if (typeof proxyId !== 'string') {
     throw Error('You should provide string value of proxy id')
   }
-  
+
   let debug: DebugHelper = () => { }
   const debugOption = options.debug === undefined
-    ? anyGlobal.cycleHmrDebug
+    ? anyGlobal && anyGlobal.cycleHmrDebug
     : options.debug
   if (debugOption) {
     const debugMethod = getDebugMethod(debugOption)
@@ -117,7 +114,8 @@ export const hmrProxy = <Df>
   debug.error = makeDebugOutput('error', proxyId)
 
   const subscribeObserver = (proxy: StreamProxy, observer: ProxyObserver) => {
-    const subscribtion = (proxy.sink as FantasyObservable).subscribe({
+    const sink = (proxy.sink as FantasyObservable)
+    const subscribtion = sink.subscribe({
       next: observer.next.bind(observer),
       error: (err: Error) => {
         debug.error!(`sink ${proxy.key} error: ${err.message}`)
@@ -126,8 +124,15 @@ export const hmrProxy = <Df>
         debug(`sink ${proxy.key} completed`)
       }
     })
-    // here we mutate observer, probably should not cause problems
+    // here we mutate observer, should not cause problems
+    if (observer._sinkKeepAliveSubscription) {
+      observer._sinkKeepAliveSubscription.unsubscribe()
+    }
     observer.dispose = () => {
+      const empty = () => { }
+      observer._sinkKeepAliveSubscription = sink.subscribe({
+        next: empty, error: empty, complete: empty
+      })
       subscribtion.unsubscribe()
     }
   }
@@ -145,21 +150,21 @@ export const hmrProxy = <Df>
           start: function (this: { observer: ProxyObserver }, observer: ProxyObserver) {
             this.observer = observer
             proxy.observers.push(observer)
-            // TODO: maybe return subscribtion and get rid of observer mutation
-            let sub = subscribeObserver(proxy, observer)
-            //proxy.subs.push(sub)
+            const sub = subscribeObserver(proxy, observer)
             debug(`stream for sink ${proxy.key} created, observers: ${proxy.observers.length}`)
           },
           stop: function (this: { observer: ProxyObserver }) {
             this.observer.dispose()
-            let index = proxy.observers.indexOf(this.observer)
+            if (this.observer._sinkKeepAliveSubscription) {
+              this.observer._sinkKeepAliveSubscription.unsubscribe()
+            }
+            const index = proxy.observers.indexOf(this.observer)
             proxy.observers.splice(index, 1)
             debug(`stream for sink ${proxy.key} disposed, observers: ${proxy.observers.length}`)
           }
         }))
         proxy = {
           key: keyPrefix + key,
-          //subs: [],
           observers: [],
           sink, stream
         }
@@ -185,7 +190,7 @@ export const hmrProxy = <Df>
 
   const getProxySinks = (proxies: SinkProxies) => {
     return Object.keys(proxies).reduce((obj: any, key) => {
-      let proxy: any = proxies[key]
+      const proxy: any = proxies[key]
       obj[key] =
         proxy && (
           proxy.stream || proxy.fn
@@ -193,6 +198,40 @@ export const hmrProxy = <Df>
         ) || proxy
       return obj
     }, {})
+  }
+
+  // const UnsubscribeProxies = (proxies: SinkProxies) => {
+  //   Object.keys(proxies).forEach((key) => {
+  //     const proxy = proxies[key]
+  //     if (!proxy) {
+  //       return
+  //     }
+  //     if ((proxy as ObjProxy).obj) {
+  //       UnsubscribeProxies((proxy as ObjProxy).obj!)
+  //     } if ((proxy as StreamProxy).observers) {
+  //       (proxy as StreamProxy).observers.map(observer => {
+  //         observer.dispose()
+  //       })
+  //     }
+  //   })
+  // }
+
+  const CheckProxiesObserved = (proxies: SinkProxies): boolean => {
+    return Object.keys(proxies).reduce((result, key) => {
+      if (result) {
+        return result
+      }
+      const proxy = proxies[key]
+      if (!proxy) {
+        return false
+      }
+      if ((proxy as ObjProxy).obj) {
+        return CheckProxiesObserved((proxy as ObjProxy).obj!)
+      } if ((proxy as StreamProxy).observers) {
+        return (proxy as StreamProxy).observers.length > 0
+      }
+      return false
+    }, false)
   }
 
   const SubscribeProxies = (proxies: SinkProxies, sinks: Sinks) => {
@@ -209,12 +248,23 @@ export const hmrProxy = <Df>
       } else if ((proxy as ObjProxy).obj) {
         SubscribeProxies((proxy as ObjProxy).obj!, sinks[key] as any)
       } if ((proxy as StreamProxy).observers) {
-        (proxy as StreamProxy).sink = sinks[key]
-          ; (proxy as StreamProxy).observers.map(observer => {
-            const dispose = observer.dispose
+        const streamProxy = proxy as StreamProxy
+        streamProxy.sink = sinks[key]
+        streamProxy.observers.map(observer => {
+          const waitForNextTick = (fn: () => any) => Promise.resolve().then(fn)
+          observer.dispose()
+          // We subscribe dataflow listeners (observers)
+          // to new sink only after entire subscription chain is disposed,
+          // so we should wait for all dataflows reloaded in current global reload
+          // (which will be done in sync in current tick -
+          // that is why we wait for the next tick with Promise, 
+          // setTimeout could be used instead)
+          // _sinkKeepAliveSubscription is used to keep dataflow input streams alive 
+          // while we wait.
+          waitForNextTick(() =>
             subscribeObserver((proxy as StreamProxy), observer)
-            dispose()
-          })
+          )
+        })
       }
     })
   }
@@ -224,10 +274,27 @@ export const hmrProxy = <Df>
   if (proxiedInstances) {
     proxiedInstances.forEach(({ proxies, sources, rest }) => {
       debug('reload')
-      //UnsubscribeProxies(proxies)
+      // UnsubscribeProxies(proxies)
       const sinks = dataflow(sources, ...rest)
       sinks && SubscribeProxies(proxies, sinks)
     })
+    // We chean up unused dataflows (which lost all of their listeners)
+    // so we don't re-execute them in vain
+    // theoretically there can be problem edge cases 
+    // of dataflows that have late subscribers, 
+    // maybe this case could be handled in future
+    const cleanUpTimeout = (anyGlobal && anyGlobal.cycleHmrCleanupTimeout) || 1000
+    setTimeout(() => {
+      let i = -1
+      while (++i < proxiedInstances.length) {
+        const instance = proxiedInstances[i]
+        if (!CheckProxiesObserved(instance.proxies)) {
+          const index = proxiedInstances.indexOf(instance)
+          proxiedInstances.splice(index, 1)
+          debug(`clean up not observed instance ${proxyId}`)
+        }
+      }
+    }, cleanUpTimeout)
   } else {
     proxiedInstances = proxiesStore[proxyId] = []
   }
@@ -244,7 +311,7 @@ export const hmrProxy = <Df>
       sinks = { default: sinks }
     }
     if (typeof sinks === 'object') {
-      let proxies = makeSinkProxies(sinks)
+      const proxies = makeSinkProxies(sinks)
       if (!proxies) {
         debug('sink not a stream result')
         return sinks
