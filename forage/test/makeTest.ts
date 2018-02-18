@@ -20,7 +20,8 @@ const testValue = (t: test.Test, testValue: any, testName?: string) =>
 
 export const makeTest = (forageDriver: any, t: test.Test, isLocalStorage?: boolean) => {
   let vals = { a: 'A', b: 'B' }
-  const Main = ({ forage }: Sources): Sinks => {
+  const Main = ({ forage }: Sources): Sinks => {    
+    
     return {
       forage: xs.merge(
         xs.of({

@@ -15,7 +15,7 @@ import { ResponseStream } from '../rxjs'
 */
 export function success<Response, Request>(r$: ResponseStream<Response, Request>)
   : ResponseStream<Response, Request> {
-  return attachRequest(r$.catch(Observable.empty), r$.request)
+  return attachRequest(r$.catch(Observable.empty) as ResponseStream<Response, Request>, r$.request)
 }
 
 export function failure<Error, Request>(r$: ResponseStream<any, Request>)

@@ -4,6 +4,7 @@ import { setAdapt } from '@cycle/run/lib/adapt'
 import delay from 'xstream/extra/delay'
 import concat from 'xstream/extra/concat'
 import flattenConcurrently from 'xstream/extra/flattenConcurrently'
+import dropUntil from 'xstream/extra/dropUntil'
 import flattenSequentially from 'xstream/extra/flattenSequentially'
 import { makeTaskDriver, TaskSource, TaskRequest, setRequestOps } from '../index'
 import { requestOps } from '../requestOps'
@@ -34,6 +35,11 @@ test('Responses stream is hot and not remembered', (t) => {
         .compose(delay(50))
     ]).compose(flattenConcurrently)
   )
+  // source.select().addListener({
+  //   next: ((r) => {
+  //     console.log('r')
+  //   })
+  // })
   setTimeout(() => {
     source.select()
       .compose(flattenConcurrently)
@@ -44,6 +50,48 @@ test('Responses stream is hot and not remembered', (t) => {
         }
       })
   })
+})
+
+const skipRemembered = dropUntil(xs.fromPromise(Promise.resolve()))
+
+test('Responses stream is hot and not remembered with @cycle/run', (t) => {
+  const request = { name: 'John' }
+  const response = 'async John'
+  let countInFirstDriver = 0
+  const Main = ({ source }: { source: TaskSource<Request, Response> }) => {    
+    setTimeout(() => {
+      source.select()
+        .compose(skipRemembered)
+        .compose(flattenConcurrently)
+        .addListener({
+          next: (x) => {
+            t.deepEqual(x, response, 'response correct')
+            t.is(countInFirstDriver, 2, 'first subscriber gets two r$')
+            t.end()
+          }
+        })
+    })
+    return {
+      first: source.select(),
+      source: xs.from([
+        xs.of({ name: 'Jane' }),
+        xs.of(request)
+          .compose(delay(50))
+      ]).compose(flattenConcurrently)
+    }
+  }
+
+  run(Main, {
+    source: basicDriver,
+    first: (res$$) => {
+      res$$.addListener({
+        next: () => {
+          countInFirstDriver++
+        }
+      })
+    }
+  })
+
 })
 
 test('Basic driver from promise', (t) => {
@@ -75,8 +123,8 @@ test('Basic driver - cancellation with abort (lazy requests)', (t) => {
     }
   })
   const requests = [
-    { name: 'John', category: 'john', lazy: true, aborted: false },
-    { name: 'Alex', type: 'alex', lazy: true, aborted: false }
+    { name: 'John', category: 'john', lazy: true, props: {aborted: false} },
+    { name: 'Alex', type: 'alex', lazy: true, props: {aborted: false} }
   ]
   const response = 'async Alex'
   const source = basicDriver(xs.fromArray(requests).compose(delay(0)))
@@ -85,7 +133,7 @@ test('Basic driver - cancellation with abort (lazy requests)', (t) => {
     .flatten()
     .addListener({
       next: x => {
-        t.ok(requests[0].aborted, 'fist request was aborted')
+        t.ok(requests[0].props.aborted, 'fist request was aborted')
         t.deepEqual(x, response, 'response is correct')
         t.end()
       }
@@ -139,7 +187,8 @@ test('Lazy driver - should make request when subscribed to response$', (t) => {
   const request = { name: 'John' }
   const source = lazyDriver(xs.of(request).compose(delay(0)))
   let res1: any
-  // first subsriber to response
+  // first subsriber to response  
+  
   source.select()
     .compose(flattenConcurrently)
     .addListener({
@@ -150,18 +199,16 @@ test('Lazy driver - should make request when subscribed to response$', (t) => {
 
   // second subsriber to response, 
   // after some delay to ensure first response completed
-  setTimeout(() => {
-    source.select()
-      .compose(flattenConcurrently)
-      .compose(delay(100))
-      .addListener({
-        next: res2 => {
-          console.log(res1, res2)
-          t.notEqual(res1, res2, 'response are different')
-          t.end()
-        }
-      })
-  }, 50)
+  source.select()
+    .compose(delay(100))
+    .compose(flattenConcurrently)
+    .addListener({
+      next: res2 => {
+        console.log(res1, res2)
+        t.notEqual(res1, res2, 'response are different')
+        t.end()
+      }
+    })
 })
 
 
@@ -239,21 +286,26 @@ test('Progressive response driver', (t) => {
 })
 
 test('xstream run (isolation, cancellation)', (t) => {
-  const requests0 = [{ name: 'John', lazy: true, aborted: false }, { name: 'Alex', lazy: true, aborted: false }]
-  const requests1 = [{ name: 'Jane', aborted: false }]
+  const requests0 = [
+    { name: 'John', lazy: true, props: { aborted: false } },
+    { name: 'Alex', lazy: true, props: { aborted: false } }
+  ]
+  const requests1 = [{ name: 'Jane', props: { aborted: false } }]
   const Dataflow = ({ source, request$ }: { source: any, request$: any }, num: number) => {
     return {
       result: source.select()
-        .flatten().map((data: any) => ({
+        .flatten()
+        .map((data: any) => ({
           num, data
-        })).debug('source$'),
+        })),
       source: request$
     }
   }
 
   const Main = ({ source }: { source: any }) => {
     const dataflow0 = isolate(Dataflow, 'scope0')({
-      request$: xs.fromArray(requests0).compose(delay(0)),
+      request$: xs.fromArray(requests0)
+        .compose(delay(0)),
       source
     }, '0')
     const dataflow1 = isolate(Dataflow, 'scope1')({
@@ -283,9 +335,9 @@ test('xstream run (isolation, cancellation)', (t) => {
           if (count >= 2) {
             setTimeout(() => {
               t.is(count, 2, 'two requests done')
-              t.ok(requests0[0].aborted, 'first lazy request aborted')
-              t.notOk(requests0[1].aborted, 'second not aborted')
-              t.notOk(requests1[0].aborted, 'third not aborted')
+              t.ok(requests0[0].props.aborted, 'first lazy request aborted')
+              t.notOk(requests0[1].props.aborted, 'second not aborted')
+              t.notOk(requests1[0].props.aborted, 'third not aborted')
               dispose()
               t.ok((isolationDiver as any).__disposeCalled,
                 'source disposed method called when when cycle disposed')
@@ -389,7 +441,7 @@ test('Sync callback driver', (t) => {
       cb(null, request.num)
     })
   })
-  
+
   run((sources: { driver: TaskSource<{ num: number }, number> }) => {
     const request$ = xs.of({ num: 1 })
 
@@ -412,9 +464,9 @@ test('Sync callback driver', (t) => {
 
 test('Driver with custom source', (t) => {
   const request = { name: 'John' }
-  
+
   const source = customSourceDiver(
-    xs.of(request).compose(delay(50))    
+    xs.of(request).compose(delay(50))
   )
   setTimeout(() => {
     source.upperCase()
@@ -430,7 +482,7 @@ test('Driver with custom source', (t) => {
 test('Driver pull method lazy response', (t) => {
   const request = { name: 'John' }
   let response$ = basicDriver(xs.empty()).pull(request)
-  
+
   setTimeout(() => {
     response$
       .addListener({

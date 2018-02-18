@@ -1,5 +1,5 @@
-import { ResponseStream, MakeSource } from './interfaces'
-import xs, { Stream } from 'xstream'
+import { ResponseStream, ResponsesStream, MakeSource } from './interfaces'
+import xs, { Stream, MemoryStream } from 'xstream'
 import { adapt } from '@cycle/run/lib/adapt'
 import { FantasyObservable } from '@cycle/run'
 import makeTaskSource from './makeTaskSource'
@@ -172,7 +172,7 @@ export const makeTaskDriver: MakeTaskDriver = function
                 : observer.complete()
             }
           }
-          let res = getResponse(
+          const res = getResponse(
             normalizedRequest, callback, disposeCallback, response$
           )
           syncCallback = false
@@ -194,22 +194,35 @@ export const makeTaskDriver: MakeTaskDriver = function
     }).remember()
     // should adapt response$ here before attaching request
     response$ = adapt(response$)
-    attachRequest(response$, normalizedRequest)
+    const responseWithRequest$ = attachRequest(response$, normalizedRequest)
 
     if (!isLazyRequest) {
       emptySubscribe(response$)
     }
-    return response$
+    return responseWithRequest$
   }
-
-  return (request$: Stream<RequestInput>) => {
+  //
+  return (sink$: Stream<RequestInput>) => {
+    // convert MemoryStream sink$ to just Stream
+    // TOTO: remove this after update of @cycle/run
+    const request$ = xs.create<RequestInput>()
+    
+    sink$.addListener({
+      next: (r) => request$.shamefullySendNext(r),
+      error: (e) => request$.shamefullySendError(e),
+      complete: () => request$.shamefullySendComplete()
+    })
+        
     const response$$ = request$.map(createResponse$)
     makeSource = makeSource || (makeTaskSource as any)
-    const source = makeSource!(response$$ as any, {
-      makeSource, isolateMap,
+    const source = makeSource!(response$$, {
+      // TODO: fix typings
+      makeSource: makeSource as any,
+      isolateMap,
       createResponse$
     })
     emptySubscribe(response$$)
+    
     if (options.dispose) {
       (source as any).dispose = options.dispose
     }

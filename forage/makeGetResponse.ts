@@ -1,7 +1,7 @@
 const localforage = require('localforage')
 const getItems = require('localforage-getitems')
 const setItems = require('localforage-setitems')
-const removeItems = require('localforage-removeitems');
+const removeItems = require('localforage-removeitems')
 
 const extendLocaforage = (obj: any) => 
   obj.extendPrototype(localforage)

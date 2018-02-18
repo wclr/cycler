@@ -192,13 +192,14 @@ export function makeChildDriver(options: ExecDriverOptions = {}) {
       }
     },
     makeSource: (response$$, options) => {
-      const source = makeTaskSource<ChildRequestInput, ChildRequest, ChildResponse>
-        (response$$, options)
+      // TODO: fix typings
+      const source = (makeTaskSource as any)
+        (response$$, options)      
       return Object.assign(source, {
-        stdout: (category?: string) =>
+        stdout: (category?: string): Stream<string> =>
           xs.from(source.select(category))
             .map((r$: any) => r$.stdout),
-        stderr: (category?: string) =>
+        stderr: (category?: string): Stream<string> =>
           xs.from(source.select(category))
             .map((r$: any) => adapt(r$.stdout))
       })

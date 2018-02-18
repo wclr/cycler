@@ -1,6 +1,7 @@
-import { zoomIn, zoomOut, Reducer } from '..'
+import { Reducer } from '..'
 import xs, { Stream } from 'xstream'
 import * as test from 'tape'
+import * as R from 'ramda'
 
 type State = {
   name: string
@@ -9,33 +10,18 @@ type State = {
 
 const state: State = { name: 'Jesus', age: 33 }
 
-test('string prop', () => {
-  const state$: Stream<State> = xs.create<State>()
-  state$.compose(zoomIn('name'))
-    .map(x => x.anchor) // x should be string
+export const map = <T, R>(mapFn: (t: T) => R) =>
+(items: T[]) => items.map(mapFn)
 
-  const reducer$ = xs.create<Reducer<Date>>()
-  reducer$.compose(zoomOut('name'))
-    .map(x => x(state)) // x should be Reducer<State>
-})
+// test('string prop', () => {
+//   const state$: Stream<State> = xs.create<State>()
+//   const lens = R.lensProp<string>('age')
+//   zoomIn(R.view(lens))
+//   state$.compose(zoomIn(R.prop('age')))
+//     .map(x => x) // x should be string
 
-test('optional string prop', () => {
-  const state$: Stream<State> = xs.create<State>()
-  state$.compose(zoomIn<number>('age'))
-    .map(x => x.toExponential) // x should be number | undefined
+//   const reducer$ = xs.create<Reducer<Date>>()
 
-  const reducer$ = xs.create<Reducer<number>>()
-  reducer$.compose(zoomOut<State, number, 'age'>('age'))
-    .map(x => x(state)) // x should be Reducer<State>
-})
-
-
-test('path - manual typing', () => {
-  const state$: Stream<State> = xs.create<State>()
-  state$.compose(zoomIn<string>(['name']))
-    .map(x => x) // x should be Date
-
-  const reducer$ = xs.create<Reducer<Date>>()
-  zoomOut<State>(['name'])(reducer$)
-    .map(x => x(state)) // x should be Reducer<State>
-})
+//   reducer$.map(R.over(R.lensProp('age')))
+//     .map(x => x(state)) // x should be Reducer<State>
+// })

@@ -1,6 +1,6 @@
 {
   "name": "@cycler/logger",
-  "version": "1.0.0-unified.2",
+  "version": "1.0.0-pre.0",
   "publishConfig": {
     "tags": "latest"
   },

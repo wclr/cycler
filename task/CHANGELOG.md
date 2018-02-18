@@ -4,6 +4,9 @@
 
 - Default immutability of requests configurable via `requestsOps`
 - **Experimental** `pull` method
+- Handle old promises
+- Typescript 2.4
+- Not remembered stream
 
 ## 1.0.0-pre.0 (2017-04-23)
 

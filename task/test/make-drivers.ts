@@ -1,13 +1,17 @@
 import xs, { Stream } from 'xstream'
 import {
   makeTaskDriver, makeTaskSource,
+  setRequestOps,
   TaskSource, InputTaskSource, TaskRequest, GetResponse
 } from '../index'
 
 export type Request = {
   name: string
-  type?: string
-  aborted?: boolean
+  type?: string,
+  // nested props is not immutable
+  props?: {
+    aborted?: boolean
+  }, 
   _namespace?: string[]
 } & TaskRequest
 
@@ -17,14 +21,14 @@ export type RequestInput = Request | string
 export const getResponse: GetResponse<Request, Response, any> =
   (request, _, onDispose) => {
     let completed = false
-    onDispose(() => completed ? '' : request.aborted = true)
+    onDispose(() => !completed && request.props ? request.props!.aborted = true : '')
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         request.name
           ? resolve('async ' + request.name)
           : reject('async error')
         completed = true
-      }, 10)
+      }, 100)
     })
   }
 
@@ -74,10 +78,10 @@ export const customSourceDiver =
       }, 50)
     },
     makeSource: (response$$, options) => {
-      const source = makeTaskSource(response$$, options)
+      const source = makeTaskSource<Request, Response>(response$$, options)
       return Object.assign(
-        makeTaskSource(response$$, options), {
-          upperCase: (category?: string) => source
+        source, {
+          upperCase: (category?: string): Stream<string> => source
             .select().map<Stream<string>>((r$: any) => r$.upperCase$)
             .flatten()
         }

@@ -2,57 +2,40 @@ import { Stream } from 'xstream'
 
 export type LogParams = any[]
 
-export type ObjectLoggerMessage = {
+export type LogMessageRequest = {
   method: string
-  message?: string
   params?: LogParams
 }
 
-export type LoggerMessage = string | ObjectLoggerMessage | {
-  log: LogParams
-} | {
-    warn: LogParams
-  } | {
-    error: LogParams
-  } | {
-    info: LogParams
-  } | {
-    dir: LogParams
-  } | LogParams
+export type LoggerMessage = string | LogMessageRequest | LogParams
 
 export interface LoggerDriverOptions {
   logger?: Object
 }
 
-let normalizeMessage = (m: LoggerMessage, logger: any): ObjectLoggerMessage => {
-  if (typeof m === 'string') {
-    return { method: 'log', message: m }
-  }
+const normalizeMessage = (m: LoggerMessage, logger: any): LogMessageRequest => {
   if (Array.isArray(m)) {
     return { method: 'log', params: m }
-  }
-  if (!(<any>m).method) {
-    let method: string = Object.keys(m).reduce(
-      (found: string, key: string) =>
-        found || (typeof logger[key] === 'function' && key) || ''
-      , '')
-    if (!method) {
-      throw Error(`Method not found on logger`)
+  } else {
+    const request = m as LogMessageRequest
+    if (request && typeof request.method === 'string' && request.params) {
+      return request
     }
-    return { method: method, params: <LogParams>((<any>m)[method]) }
+    return { method: 'log', params: [m] }
   }
-  return <ObjectLoggerMessage>m
 }
 
 export const makeLoggerDriver =
   (options: LoggerDriverOptions = {}) => {
-    let logger: any = options.logger || console
+    const logger: any = options.logger || console
     return (message$: Stream<LoggerMessage>) => {
       message$.addListener({
         next: (m) => {
           m = normalizeMessage(m, logger)
-          logger[m.method].apply(
-            logger, (m.message ? [m.message] : []).concat(m.params || []))
+          if (typeof logger[m.method] !== 'function') {
+            throw new Error(`Illegal method on logger \`${m.method}\``)
+          }
+          logger[m.method].apply(logger, m.params)
         }
       })
     }

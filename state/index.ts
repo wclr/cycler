@@ -1,56 +1,23 @@
-import { FantasyObservable } from '@cycle/run'
+import { FantasyObservable, FantasySubscription } from '@cycle/run'
 import { adapt } from '@cycle/run/lib/adapt'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import xs, { Stream, MemoryStream } from 'xstream'
-import { path, assocPath, StatePath } from './utils'
+import { DebugableStateStream } from './debug'
 
 export type Reducer<T> = (state: T | undefined) => T
 
-export interface ZoomIn {
-  <P extends string>(prop: P):
-    <S extends {[K in P]: {}}>(state$: Stream<S>) => Stream<S[P]>
-  <R>(prop: string):
-    <S>(state$: Stream<S>) => Stream<R>
-  <P extends number>(index: P):
-    <R>(state$: Stream<R[]>) => Stream<R>
-  <R>(path: (string | number)[]):
-    (state$: Stream<any>) => Stream<R>
+export interface Options<State> {
+  initialValue?: State
 }
 
-export interface ZoomOut {
-  <T extends {[K in P]?: R}, R = R, P extends string = P>(prop: P):
-    (reducer$: Stream<Reducer<R>>) => Stream<Reducer<T>>
-  // <P extends string>(prop: P):
-  //   <R, T extends {[K in P]?: R}>(reducer$: Stream<Reducer<R>>) => Stream<Reducer<T>>
-  <T extends R[], R, P extends number>(index: number):
-    (reducer$: Stream<Reducer<R>>) => Stream<Reducer<T>>
-  // <P extends number>(index: P):
-  //   <R, T extends R[]>(reducer$: Stream<Reducer<R>>) => Stream<Reducer<T>>
-  <T>(path: (string | number)[]):
-    (reducer$: Stream<Reducer<any>>) => Stream<Reducer<T>>
-}
+export type StateDriver<State> = (reducer$: Stream<Reducer<State>>) => MemoryStream<State>
+export type MakeStateDriver<State> = (options?: Options<State>) => StateDriver<State>
 
-const _zoomIn = <R>(idx: StatePath) =>
-  <T>(state$: Stream<T>) => state$.map(state => path(idx, state))
-    .compose(dropRepeats()) as Stream<R>
-
-const _zoomOut = <R>(idx: StatePath) =>
-  <T>(reducer$: Stream<Reducer<R>>) => reducer$
-    .map(reducer =>
-      (state: T) => assocPath(idx, reducer(path(idx, state)), state)
-    ) as Stream<Reducer<T>>
-
-export const zoomIn = _zoomIn as ZoomIn
-export const zoomOut = _zoomOut as ZoomOut
-
-export const makeStateDriver = <State>(initialValue?: State) => {
+export const makeStateDriver = <State>(options: Options<State> = {}) => {
   return (reducer$: Stream<Reducer<State>>) => {
-    // return reducer$.fold<State>(
-    //   (state, reducer: Reducer<State>) => reducer(state), initialValue!)
-    //   .drop(initialValue === undefined ? 1 : 0).compose(dropRepeats())
 
-    const state$ = xs.createWithMemory<State>()
-    let stateVal= initialValue
+    const state$ = xs.createWithMemory<State>() as DebugableStateStream<State>
+    let stateVal = options.initialValue
     let prevStateVal: State | undefined = undefined
     let locked = false
     const sendState = (stateVal: State) => {
@@ -59,8 +26,15 @@ export const makeStateDriver = <State>(initialValue?: State) => {
         state$.shamefullySendNext(stateVal)
       }
     }
+    state$._setLastVal = (val: State) => {
+      stateVal = val
+      state$.shamefullySendNext(val)
+    }
     const reduceState = (reducer: Reducer<State>) => {
       stateVal = reducer(stateVal!)
+      if (state$._onNewVal) {
+        state$._onNewVal(stateVal, reducer)
+      }
       if (!locked) {
         locked = true
         sendState(stateVal)
@@ -75,6 +49,6 @@ export const makeStateDriver = <State>(initialValue?: State) => {
     })
 
     state$.addListener({})
-    return state$
+    return state$ as MemoryStream<State>
   }
 }

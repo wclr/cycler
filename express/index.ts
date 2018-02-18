@@ -56,7 +56,7 @@ class RouterSourceObject implements RouterSource {
           req.id = id
           return req
         }
-        const anyRouter = <any>this._router
+        const anyRouter = this._router as any
         anyRouter[method](path, (req: ExpressRequest, res: ExpressResponse) => {
           let id = cuid()
           this._responses[id] = res

@@ -1,6 +1,6 @@
-import xs, { Stream, MemoryStream } from 'xstream';
-import { Driver, FantasyObservable } from '@cycle/run';
-import { adapt } from '@cycle/run/lib/adapt';
+import xs, { Stream, MemoryStream } from 'xstream'
+import { Driver, FantasyObservable } from '@cycle/run'
+import { adapt } from '@cycle/run/lib/adapt'
 import {
   MakeTaskSourceOptions, ResponsesStream,
   TaskSource, InputTaskSource
@@ -9,7 +9,7 @@ import {
 import { requestOps } from './requestOps'
 
 export function makeTaskSource<Request, Response>(
-  response$$: ResponsesStream<Request, Response>,
+  response$$: ResponsesStream<Response, Request>,
   options: MakeTaskSourceOptions<Request, Request, Response>
 ): TaskSource<Request, Response>
 

@@ -15,7 +15,7 @@ export interface MakeTaskSourceOptions<RequestInput, Request, Response> {
 }
 
 export interface MakeSource<Source, RequestInput, Request, Response> {
-  (response$$: ResponsesStream<Request, Response>,
+  (response$$: ResponsesStream<Response, Request>,
     options: MakeTaskSourceOptions<RequestInput, Request, Response>): Source
 }
 

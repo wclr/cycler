@@ -1,10 +1,10 @@
 {
-  "name": "@cycler/state",
+  "name": "@cycler/dom",
   "version": "1.0.0-pre.0",
   "description": "",
   "author": "whitecolor",
   "repository": "",
-  "dependencies": {
-    "jsondiffpatch": "^0.2.5"
+  "devDependencies": {
+    "@cycle/dom": "^17.3.0"
   }
 }
