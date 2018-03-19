@@ -25,11 +25,10 @@ export const transformer: Transformer = (source: string, options) => {
     }
   }
 
-  const regEx = /\nexports\.(\S*) = |\nexports() = |\nexport\s(\S*) = |\nexport (default) /g
+  const regEx = /\nexport(?:s\.|\s(?:(?:var|let|const)\s)?)(\S*) = /g
   const exportsToAdd: string[] = []
   const testExportName = options.testExportName
     ? new RegExp(options.testExportName) : null
-
   source = source.replace(regEx,
     (exportAssign: string, exportName: string): string => {
       exportName = exportName || 'default'
