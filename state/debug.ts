@@ -21,17 +21,17 @@ export type DebugableStateStream<State> = MemoryStream<State> & {
 
 class StateDebugObject<State> {
   private maxLogCount: number
-  private stateLog: { state: State, reducer: Reducer<State> }[]
+  private stateLog: { state: State; reducer: Reducer<State> }[]
   private state$: DebugableStateStream<State>
   // private debugSubscription: FantasySubscription
   public patcher = patcher
   private debugMode = false
   constructor(options: {
-    maxLogCount?: number,
+    maxLogCount?: number
     state$: DebugableStateStream<State>
   }) {
-    this.maxLogCount = options.maxLogCount !== undefined
-      ? options.maxLogCount : 50
+    this.maxLogCount =
+      options.maxLogCount !== undefined ? options.maxLogCount : 50
     this.stateLog = []
     this.state$ = options.state$
     if (localStorage && localStorage.getItem(debugStorageKey)) {
@@ -43,15 +43,16 @@ class StateDebugObject<State> {
       const last = this.stateLog[this.stateLog.length - 1]
       if (last) {
         const delta = patcher.diff(last.state, state)
-        const formated = format(delta, last.state)
-          .filter((d: any) => d.op !== 'unchanged')
+        const formated = format(delta, last.state).filter(
+          (d: any) => d.op !== 'unchanged'
+        )
         console.log('State delta', formated)
       }
     }
     if (this.maxLogCount > 0) {
       this.stateLog.push({ state, reducer })
     }
-    const exceed = this.maxLogCount - this.stateLog.length
+    const exceed = this.stateLog.length - this.maxLogCount
     if (exceed > 0) {
       this.stateLog.splice(0, exceed)
     }
@@ -60,8 +61,14 @@ class StateDebugObject<State> {
     const last = this.stateLog[this.stateLog.length - 1]
     return last && path(statePath || [], last.state)
   }
-  public set(statePath: string | string[], value: any) {
-    const newState = assocPath(statePath, value, this.get())
+  public set(...args: any[]) {
+    if (!args.length) return
+    const newState =
+      args.length === 1
+        ? typeof args[0] === 'string'
+          ? JSON.parse(args[0])
+          : args[0]
+        : assocPath(args[0], args[1], this.get())
     this.state$._setLastVal(newState)
   }
   public debug(val?: boolean) {
@@ -97,7 +104,8 @@ export interface DebugStateOptions {
 
 export const debugState = <State>(
   MakeStateDriver: MakeStateDriver<State>,
-  options: DebugStateOptions = {}): MakeStateDriver<State> => {
+  options: DebugStateOptions = {}
+): MakeStateDriver<State> => {
   return (driverOptions: Options<State>) => {
     return (reducer$: Stream<Reducer<State>>) => {
       const driver = makeStateDriver(driverOptions)
@@ -109,11 +117,10 @@ export const debugState = <State>(
         state$
       })
       if (typeof window === 'object') {
-        (window as any)[debugObjectName] = stateDebugObject
+        ;(window as any)[debugObjectName] = stateDebugObject
       }
-      state$._onNewVal = ((stateVal, reducer) =>
+      state$._onNewVal = (stateVal, reducer) =>
         stateDebugObject.push(stateVal, reducer)
-      )
       return state$ as MemoryStream<State>
     }
   }

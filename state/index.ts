@@ -7,7 +7,11 @@ import { DebugableStateStream } from './debug'
 export type Reducer<T> = (state: T | undefined) => T
 
 export interface Options<State> {
-  initialValue?: State
+  initialValue?: State,
+  /**
+   * allows sequential sync updates to state
+   */
+  syncUpdate?: boolean
 }
 
 export type StateDriver<State> = (reducer$: Stream<Reducer<State>>) => MemoryStream<State>
@@ -36,9 +40,10 @@ export const makeStateDriver = <State>(options: Options<State> = {}) => {
         state$._onNewVal(stateVal, reducer)
       }
       if (!locked) {
-        locked = true
+        locked = !options.syncUpdate
         sendState(stateVal)
-        Promise.resolve().then(() => {
+        // tslint:disable-next-line:no-unused-expression
+        locked && Promise.resolve().then(() => {
           locked = false
           sendState(stateVal!)
         })

@@ -1,11 +1,11 @@
 import { h } from 'snabbdom/h';
-import { VNode, VNodeData as _VNodeData } from 'snabbdom/vnode'
+import { VNode, VNodeData as _VNodeData } from 'snabbdom/vnode';
 import { Hooks } from 'snabbdom/hooks'
 import hh, {
   SVGHelperFn
 } from '@cycle/dom/lib/hyperscript-helpers';
-import * as props from './HtmlProperties'
-import { HtmlTagName, SvgTagName } from './HtmlTagNames'
+import * as props from './HtmlProperties';
+import { HtmlTagName, SvgTagName } from './HtmlTagNames';
 
 // fixed VNodeStyle
 // https://github.com/snabbdom/snabbdom/commit/4adbd971cba738c38d6158b38fdb81a6509d1553
@@ -23,10 +23,6 @@ export type VNodeStyle = {
   [prop: string]: string | {
     [prop: string]: string
   } | undefined
-}
-
-const st: VNodeStyle = {
-
 }
 
 export interface VNodeData<Props> extends _VNodeData {

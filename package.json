@@ -1,12 +1,17 @@
 {
   "name": "cycler",
   "license": "ISC",
+  "private": true,
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
   "dependencies": {
     "@cycle/isolate": "^2.1.0",
     "@cycle/most-run": "^7.1.0",
     "@cycle/run": "^4.1.0",
     "@cycle/rxjs-run": "^7.0.0",
-    "@cycler/task": "link:task",
+    "@cycler/task": "file:.yalc/@cycler/task",
     "@types/express": "^4.0.32",
     "@types/fs-extra": "^2.1.0",
     "@types/minimist": "^1.2.0",
