@@ -1,6 +1,10 @@
 {
   "name": "@cycler/http",
   "version": "1.0.0-unified.0",
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
   "publishConfig": {
     "tag": "latest"
   },

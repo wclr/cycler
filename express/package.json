@@ -4,6 +4,10 @@
   "publishConfig": {
     "tag": "latest"
   },
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
   "description": "Express driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
   "dependencies": {

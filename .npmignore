@@ -1,7 +1,0 @@
-*.ts
-!*.d.ts
-/test
-.yalc
-yalc.lock
-yarn.lock
-.*

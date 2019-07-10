@@ -1,6 +1,10 @@
 {
   "name": "@cycler/logger",
   "version": "1.0.0-pre.0",
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
   "publishConfig": {
     "tags": "latest"
   },

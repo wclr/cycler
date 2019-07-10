@@ -77,5 +77,5 @@ export interface CreateForageOptions {
   description?: string
 }
 
-export interface ForageDriverOptions extends CreateForageOptions { }
+export type ForageDriverOptions = CreateForageOptions 
 

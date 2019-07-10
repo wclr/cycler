@@ -1,6 +1,10 @@
 {
   "name": "@cycler/hmr",
   "version": "1.0.0-unified.3",
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
   "publishConfig": {
     "tag": "latest"
   },

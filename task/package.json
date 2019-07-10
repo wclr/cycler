@@ -1,6 +1,10 @@
 {
   "name": "@cycler/task",
   "version": "1.0.0-pre.1",
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
   "publishConfig": {
     "tag": "latest",
     "access": "public"

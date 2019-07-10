@@ -21,11 +21,7 @@
   "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
-  },
-  "include": [
-    "**/*",
-    ".scripts/**/*"
-  ],
+  },  
   "exclude": [
     "**/node_modules/*"
   ]

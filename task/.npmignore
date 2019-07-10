@@ -1,4 +1,1 @@
-*.ts
-!*.d.ts
-/test
-.yloc*
+test

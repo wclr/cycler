@@ -4,6 +4,10 @@
   "description": "",
   "author": "whitecolor",
   "repository": "",
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
   "dependencies": {
     "jsondiffpatch": "^0.2.5"
   }
