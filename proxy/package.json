@@ -1,9 +1,0 @@
-{
-  "name": "@cycler/proxy",
-  "version": "1.0.0-pre.0",
-  "description": "Create streams that mimic (proxy) other.",
-  "author": "whitecolor",
-  "repository": "",  
-  "devDependencies": {
-  }
-}

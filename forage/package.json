@@ -1,11 +1,15 @@
 {
   "name": "@cycler/forage",
   "version": "1.0.0-unified.0",
-  "publishConfig": {    
+  "publishConfig": {
     "tag": "latest"
   },
   "description": "Mozilla localForage driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
   "scripts": {
     "test:browser": "../node_modules/.bin/budo test/browser.js --live --open"
   },

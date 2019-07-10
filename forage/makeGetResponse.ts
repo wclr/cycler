@@ -29,7 +29,7 @@ const getStoreInstanceKey = (options: CreateForageOptions) => {
   ].filter(_ => _).join('_')
 }
 
-const initalizedStoreInstances: { [index: string]: any } = {}
+const initializedStoreInstances: { [index: string]: any } = {}
 
 let geStoreOptionsForRequest =
   (options: ForageDriverOptions, request: ForageRequest): CreateForageOptions => {
@@ -59,10 +59,10 @@ let geStoreOptionsForRequest =
 
 export const getStoreInstance = (options: CreateForageOptions): any => {
   var key = getStoreInstanceKey(options)
-  if (!initalizedStoreInstances[key]) {
-    initalizedStoreInstances[key] = (<any>localforage).createInstance(options)
+  if (!initializedStoreInstances[key]) {
+    initializedStoreInstances[key] = (<any>localforage).createInstance(options)
   }
-  return initalizedStoreInstances[key]
+  return initializedStoreInstances[key]
 }
 
 let methods = [
@@ -75,7 +75,7 @@ export const makeGetResponse = (options: ForageDriverOptions) => {
   return (request: ForageRequest) => {
     const storeOptions = geStoreOptionsForRequest(options, request)
     const storeInstance: any = getStoreInstance(storeOptions)
-    let method = methods
+    const method = methods
       .reduce((found, method) => found
         || (request.hasOwnProperty(method) ? method : ''), '')
     if (!method) {
