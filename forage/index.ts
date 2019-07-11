@@ -1,5 +1,4 @@
 import { makeTaskDriver, TaskSource } from '@cycler/task'
-import { Stream } from 'xstream'
 import {
   ForageDriverOptions,
   ForageRequest,
@@ -24,3 +23,4 @@ export function makeForageDriver(options: ForageDriverOptions = {}) {
 }
 
 export * from './interfaces'
+export * from './instance'

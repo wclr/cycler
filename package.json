@@ -9,6 +9,20 @@
   "workspaces": [
     "*"
   ],
+  "scripts": {
+    "precommit": "yalc retreat --all && yalc check",
+    "postcommit": "yalc update",
+    "propagate-config": "node .scripts/propagate-config",
+    "test": "node .scripts/test",
+    "watch": "node .scripts/test --watch",
+    "release": "node .scripts/docker-run \"node .scripts/release-\"",
+    "docker-test": "node .scripts/docker-run \"node .scripts/test\"",
+    "docker-watch": "node .scripts/docker-run \"node .scripts/test --watch\"",
+    "clean-built": "del-cli **/*.js **/*.js.map **/*.d.ts \"!node_modules/**\"",
+    "install-deps": "node .scripts/install-deps",
+    "build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
+    "ci": "yarn && tsc -p .scripts && yarn install-deps && tsc && yarn docker-test"
+  },
   "dependencies": {
     "@cycle/isolate": "^2.1.0",
     "@cycle/most-run": "^7.1.0",
@@ -42,24 +56,10 @@
     "tape": "^4.4.0",
     "ts-node-dev": "^1.0.0-pre.40",
     "tslint": "^4.5.1",
-    "typescript": "^2.4.2",
+    "typescript": "^3.5.3",
     "validate-commit-msg": "^2.8.2",
     "watchify": "^3.7.0",
     "xstream": "^11.2.0"
-  },
-  "scripts": {
-    "precommit": "yalc retreat --all && yalc check",
-    "postcommit": "yalc update",
-    "propagate-config": "node .scripts/propagate-config",
-    "test": "node .scripts/test",
-    "watch": "node .scripts/test --watch",
-    "release": "node .scripts/docker-run \"node .scripts/release-\"",
-    "docker-test": "node .scripts/docker-run \"node .scripts/test\"",
-    "docker-watch": "node .scripts/docker-run \"node .scripts/test --watch\"",
-    "clean-built": "del-cli **/*.js **/*.js.map **/*.d.ts \"!node_modules/**\"",
-    "install-deps": "node .scripts/install-deps",
-    "build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
-    "ci": "yarn && tsc -p .scripts && yarn install-deps && tsc && yarn docker-test"
   },
   "devDependencies": {}
 }

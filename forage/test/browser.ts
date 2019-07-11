@@ -3,28 +3,28 @@ import { makeTest } from './makeTest'
 import { makeForageDriver, ForageSource, ForageRequest } from '../.'
 import { forageDrivers } from '../'
 
-const indexeddbForageDriver = makeForageDriver({
-  name: 'test',
+const indexedDbDriver = makeForageDriver({
+  name: 'test'
 })
 
-test('INDEXEDDB: setItems, getItems, removeItems', (t) => {
-  makeTest(indexeddbForageDriver, t)
+test('INDEXEDDB: setItems, getItems, removeItems', t => {
+  makeTest(indexedDbDriver, t)
 })
 
-const localstorageForageDriver = makeForageDriver({
+const localStorageDriver = makeForageDriver({
   driver: forageDrivers.localStorage,
-  name: 'test',
+  name: 'test'
 })
 
-test('LOCALSTORAGE: setItems, getItems, removeItems', (t) => {
-  makeTest(localstorageForageDriver, t, true)
+test('LOCALSTORAGE: setItems, getItems, removeItems', t => {
+  makeTest(localStorageDriver, t, true)
 })
 
-const websqlForageDriver = makeForageDriver({
+const websqlDriver = makeForageDriver({
   driver: forageDrivers.webSQL,
-  name: 'test',
+  name: 'test'
 })
 
-test('WEBSQL: setItems, getItems, removeItems', (t) => {
-  makeTest(websqlForageDriver, t)
+test('WEBSQL: setItems, getItems, removeItems', t => {
+  makeTest(websqlDriver, t)
 })

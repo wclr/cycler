@@ -1,4 +1,5 @@
-import { ForageRequest, ForageMethod, KeyValue, Iterator } from './interfaces'
+import { KeyValue } from './instance'
+import { ForageRequest } from './interfaces'
 
 /**
  * Creates request for getting single item from store by key.
@@ -35,7 +36,6 @@ export function setItem(...args: any[]): ForageRequest {
     item = { key: args[0], value: args[1] }
   } else {
     item = args[0]
-
   }
   //return {method: 'setItem', item}
   return { setItem: item }
