@@ -49,8 +49,7 @@
     "@cycle/run" "3.x"
 
 "@cycler/task@link:task":
-  version "0.0.0"
-  uid ""
+  version "1.0.0-pre.1"
 
 "@most/multicast@^1.2.3":
   version "1.2.4"
@@ -2984,28 +2983,28 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-localforage-getitems@^1.3.0:
+localforage-getitems@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/localforage-getitems/-/localforage-getitems-1.4.2.tgz#bddd3e716e7df339dc5a5cc26e2dd1decec76606"
   integrity sha512-3Y1DAAlRjGlhWAXoD1DR8M+7WF9DC6t8CvYZ7YKVnIJBpima8j4RsWUv1ryJKB+fTPozfDxeqrN7ooqzBPyB4g==
   dependencies:
     localforage ">=1.4.0"
 
-localforage-removeitems@^1.0.0:
+localforage-removeitems@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/localforage-removeitems/-/localforage-removeitems-1.4.0.tgz#41fc8685b17782584575a247180dfebcfdc82ca8"
   integrity sha1-QfyGhbF3glhFdaJHGA3+vP3ILKg=
   dependencies:
     localforage ">=1.4.0"
 
-localforage-setitems@^1.2.0:
+localforage-setitems@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/localforage-setitems/-/localforage-setitems-1.4.0.tgz#36b8590d507dfb5c804033e287ece58d88996d5f"
   integrity sha1-NrhZDVB9+1yAQDPih+zljYiZbV8=
   dependencies:
     localforage ">=1.4.0"
 
-localforage@>=1.4.0, localforage@^1.4.2:
+localforage@>=1.4.0, localforage@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.7.3.tgz#0082b3ca9734679e1bd534995bdd3b24cf10f204"
   integrity sha512-1TulyYfc4udS7ECSBT2vwJksWbkwwTX8BzeUIiq8Y07Riy7bDAAnxDaPU/tWyOVmQAcWJIEIFP9lPfBGqVoPgQ==
@@ -3298,9 +3297,10 @@ minimist@0.0.8, minimist@~0.0.1:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
 
-minimist@^1.1.0, minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0, minimist@~1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
+minimist@^1.1.0, minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.2, minimist@~1.2.0:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.2.tgz#b00a00230a1108c48c169e69a291aafda3aacd63"
+  integrity sha512-rIqbOrKb8GJmx/5bc2M0QchhUouMXSpd1RTclXsB41JdL+VtnojfaJR+h7F9k18/4kHUsBFgk80Uk+q569vjPA==
 
 minipass@^2.2.1, minipass@^2.3.5:
   version "2.3.5"
