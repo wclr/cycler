@@ -1,11 +1,10 @@
 import { ProxyOptions } from '../.'
 
 export interface TransformOptions extends ProxyOptions {
-  testExportName?: string,
-  importFrom?: string,
-  sourceIdentifier: string,
+  testExportName?: string
+  importFrom?: string
+  sourceIdentifier: string
   addHotAccept?: boolean
 }
 
-export type Transformer =
-  (source: string, options: TransformOptions) => string
+export type Transformer = (source: string, options: TransformOptions) => string

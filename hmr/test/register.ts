@@ -22,10 +22,11 @@ if (!fs.existsSync(jsFileDir)) {
 }
 fs.writeFileSync(jsFilePath, originalJsSource)
 
-test('register', (t) => {
+test('register', t => {
   require('../register')
   const { Dataflow, something } = require(jsFilePath) as {
-    Dataflow: HmrEnabledDataflow, something: HmrEnabledDataflow
+    Dataflow: HmrEnabledDataflow
+    something: HmrEnabledDataflow
   }
 
   t.ok(Dataflow.__hmrOriginalDataflow, 'exported dataflow wrapped with hmr')

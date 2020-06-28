@@ -11,9 +11,10 @@ export type Module = {
 export type SupportedFormat = 'cjs'
 
 export interface LoaderOptions extends ProxyOptions {
-  testExportName?: string,
-  importFrom?: string,
+  testExportName?: string
+  importFrom?: string
   format?: SupportedFormat
+  onlyEnabled?: boolean
 }
 
 export interface LoaderContext {
@@ -34,15 +35,25 @@ export default function (this: LoaderContext, source: string) {
     const queryObj: LoaderOptions = this.query || {}
     options = { ...queryObj }
   }
+  if (options.onlyEnabled && !source.match(/@(cycle-hmr|hmr-enabled)/)) {
+    return source
+  }
 
+  const noHmr = source.match(/@(no-hmr|hmr-disabled)/)
+
+  if (noHmr) {
+    return source
+  }
   const format = options.format || 'cjs'
-  const transformer: Transformer =
-    require('../transform/' + format).transformer
+  const transformer: Transformer = require('../transform/' + format).transformer
 
-  const transformOptions = Object.assign({
-    sourceIdentifier: 'module.id',
-    addHotAccept: true
-  }, options)
+  const transformOptions = Object.assign(
+    {
+      sourceIdentifier: 'module.id',
+      addHotAccept: true,
+    },
+    options
+  )
 
   return transformer(source, transformOptions)
 }
