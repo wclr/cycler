@@ -2,7 +2,7 @@ import { FantasyObservable, FantasySubscription } from '@cycle/run'
 import { adapt } from '@cycle/run/lib/adapt'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import xs, { Stream, MemoryStream } from 'xstream'
-import { DebugableStateStream } from './debug'
+import { DebuggableStateStream } from './debug'
 
 export type Reducer<T> = (state: T | undefined) => T
 
@@ -20,7 +20,7 @@ export type MakeStateDriver<State> = (options?: Options<State>) => StateDriver<S
 export const makeStateDriver = <State>(options: Options<State> = {}) => {
   return (reducer$: Stream<Reducer<State>>) => {
 
-    const state$ = xs.createWithMemory<State>() as DebugableStateStream<State>
+    const state$ = xs.createWithMemory<State>() as DebuggableStateStream<State>
     let stateVal = options.initialValue
     let prevStateVal: State | undefined = undefined
     let locked = false

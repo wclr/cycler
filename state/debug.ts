@@ -5,7 +5,7 @@ import {
   Reducer,
   MakeStateDriver,
   Options,
-  makeStateDriver
+  makeStateDriver,
 } from './index'
 
 const debugStorageKey = 'cycler_state_debug'
@@ -14,21 +14,21 @@ const { DiffPatcher } = require('jsondiffpatch/src/diffpatcher')
 const { format } = require('jsondiffpatch/src/formatters/jsonpatch')
 const patcher = new DiffPatcher()
 
-export type DebugableStateStream<State> = MemoryStream<State> & {
+export type DebuggableStateStream<State> = MemoryStream<State> & {
   _setLastVal: (val: State) => void
-  _onNewVal?: ((val: State, reducer: Reducer<State>) => void)
+  _onNewVal?: (val: State, reducer: Reducer<State>) => void
 }
 
 class StateDebugObject<State> {
   private maxLogCount: number
   private stateLog: { state: State; reducer: Reducer<State> }[]
-  private state$: DebugableStateStream<State>
+  private state$: DebuggableStateStream<State>
   // private debugSubscription: FantasySubscription
   public patcher = patcher
   private debugMode = false
   constructor(options: {
     maxLogCount?: number
-    state$: DebugableStateStream<State>
+    state$: DebuggableStateStream<State>
   }) {
     this.maxLogCount =
       options.maxLogCount !== undefined ? options.maxLogCount : 50
@@ -101,20 +101,21 @@ export interface DebugStateOptions {
   debugObjectName?: string
   maxLogCount?: number
 }
+type MakeStateDriver1<State> = (options?: Options<State>) => StateDriver<State>
 
 export const debugState = <State>(
   MakeStateDriver: MakeStateDriver<State>,
   options: DebugStateOptions = {}
-): MakeStateDriver<State> => {
-  return (driverOptions: Options<State>) => {
+): MakeStateDriver1<State> => {
+  return (driverOptions?: Options<State>) => {
     return (reducer$: Stream<Reducer<State>>) => {
       const driver = makeStateDriver(driverOptions)
-      const state$ = driver(reducer$) as DebugableStateStream<State>
+      const state$ = driver(reducer$) as DebuggableStateStream<State>
 
       const debugObjectName = options.debugObjectName || 'state'
       const stateDebugObject = new StateDebugObject({
         maxLogCount: options.maxLogCount,
-        state$
+        state$,
       })
       if (typeof window === 'object') {
         ;(window as any)[debugObjectName] = stateDebugObject
