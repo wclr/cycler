@@ -129,7 +129,8 @@ export const hmrProxy = <Df>(
     const subscribtion = sink.subscribe({
       next: observer.next.bind(observer),
       error: (err: Error) => {
-        debug.error!(`sink ${proxy.key} error: ${err.message}`)
+        debug.error!(`sink ${ proxy.key } error: ${ err.message }`)
+        console.error(err)
       },
       complete: () => {
         debug(`sink ${proxy.key} completed`)
