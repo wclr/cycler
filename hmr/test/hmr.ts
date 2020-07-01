@@ -34,6 +34,33 @@ test('xstream: Dataflow returning single steam', t => {
   })
 })
 
+test.only('xstream: proxy handles memory stream', t => {
+  const func = ({ input$ }: { input$: Stream<number> }) => {
+    return input$.map(x => x * 2).remember()
+  }
+
+  const funcProxy = proxy(func, getRandomId(), { debug: true })
+  const input$ = xs.of(1)
+  const sink = funcProxy({ input$ })
+  setTimeout(() => {
+    sink.addListener({
+      next: y => {
+        t.is(y, 2, 'first subscriber got signal')
+      },
+      error: t.error,
+    })
+    sink.addListener({
+      next: y => {
+        setTimeout(() => {
+          t.is(y, 2, 'second subscriber got signal')
+          t.end()
+        }, 100)
+      },
+      error: t.error,
+    })
+  }, 100)
+})
+
 test('xstream: run dataflow with disposal', t => {
   let count = 0
   let sinkCount = 0
@@ -102,7 +129,7 @@ test('xstream: run dataflow with disposal', t => {
 
 // emulation of hot reload of dataflows that are in one file
 // and one executes another
-test('Nestes datfalows reload', t => {
+test('Nested dataflows reload', t => {
   // (global as any).cycleHmrDebug = true
   const nestedFuncProxyId = 'nestedFunc_' + getRandomId()
   const funcProxyId = 'func_' + getRandomId()
@@ -121,7 +148,6 @@ test('Nestes datfalows reload', t => {
       output$: input$.map(x => x * 20),
     }
   }
-  const nestedFuncReloadedProxy = proxy(nestedFuncReloaded, nestedFuncProxyId)
 
   const func = ({ input$ }: XsInputSource) => {
     return {
@@ -130,6 +156,7 @@ test('Nestes datfalows reload', t => {
   }
 
   const funcReload = ({ input$ }: XsInputSource) => {
+    const nestedFuncReloadedProxy = proxy(nestedFuncReloaded, nestedFuncProxyId)
     return {
       output$: nestedFuncReloadedProxy({ input$ }).output$,
     }
@@ -142,6 +169,7 @@ test('Nestes datfalows reload', t => {
   const results: number[] = []
   sink.output$.addListener({
     next: y => {
+      console.warn('got push', y)
       results.push(y)
     },
     error: t.error,
@@ -149,7 +177,7 @@ test('Nestes datfalows reload', t => {
   input$.shamefullySendNext(1)
   setTimeout(() => {
     console.log('reload start')
-    proxy(nestedFuncReloaded, nestedFuncProxyId)
+    //proxy(nestedFuncReloaded, nestedFuncProxyId)
     proxy(funcReload, funcProxyId)
     console.log('reload end')
     setTimeout(() => {

@@ -63,6 +63,7 @@ exports.smallCaseFun = function (_a) {
 }
 `,
   },
+
   {
     name: 'ES6 exports',
     loader,
@@ -97,14 +98,35 @@ export default = ${defaultExported};
 ${hotAccept}
 `,
   },
+  {
+    name: 'skips exports',
+    loader,
+    context,
+    original: `
+export let smallCaseFun = 'xxx'
+
+// @hmr-skip
+export const SomeFunction = 'fun'
+
+`,
+    tranformed: `
+export let smallCaseFun = 'xxx'
+
+// @hmr-skip
+export const SomeFunction = 'fun'
+
+`,
+  },
 ]
 
-samples.forEach(sample => {
-  test('webpack loader: ' + sample.name, t => {
-    const actual = loader.call(sample.context, sample.original)
-    const expected = sample.tranformed
-    const removeLineBreaks = (s: string) => s.replace(/\n+/g, '\n')
-    t.is(removeLineBreaks(actual), removeLineBreaks(expected))
-    t.end()
+test('Webpack transform', (t) => {
+  samples.forEach(sample => {
+    t.test('webpack loader transform: ' + sample.name, t => {
+      const actual = loader.call(sample.context, sample.original)
+      const expected = sample.tranformed
+      const removeLineBreaks = (s: string) => s.replace(/\n+/g, '\n')
+      t.is(removeLineBreaks(actual), removeLineBreaks(expected))
+      t.end()
+    })
   })
 })

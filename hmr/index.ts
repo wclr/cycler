@@ -1,4 +1,4 @@
-import xs, { Stream } from 'xstream'
+import xs, { Stream, MemoryStream } from 'xstream'
 import {
   FantasyObserver,
   FantasyObservable,
@@ -71,6 +71,9 @@ type ProxiesStore = {
 }
 
 const proxiesStore: ProxiesStore = {}
+
+const dataflowsLatest: { [ID: string]: any } = {}
+
 let cycleHmrEnabled = true
 
 const anyGlobal: any = typeof window === 'object' ? window : global
@@ -108,6 +111,7 @@ export const hmrProxy = <Df>(
   if (typeof proxyId !== 'string') {
     throw Error('You should provide string value of proxy id')
   }
+  dataflowsLatest[proxyId] = dataflow
 
   let debug: DebugHelper = () => {}
   const debugOption =
@@ -158,18 +162,21 @@ export const hmrProxy = <Df>(
       if (isObservable(sink)) {
         validSinks = true
         let proxy: StreamProxy
+        // we need consistent method to determine if memory stream is here
+        // also "memory" streams of other libraries than xstream will not be handled
+        const isWithMemory = typeof (sink as any)._has === 'boolean'
         const stream = adapt(
-          xs.create({
-            // @ts-ignore
-            start: function (
-              this: { observer: ProxyObserver },
-              observer: ProxyObserver
-            ) {
-              this.observer = observer
-              proxy.observers.push(observer)
-              const sub = subscribeObserver(proxy, observer)
+          (isWithMemory ? xs.createWithMemory : xs.create)({
+            start: function (this: { observer: ProxyObserver }, observer) {
+              // observer will be mutated in subscribeObserver
+              this.observer = observer as ProxyObserver
+              proxy.observers.push(this.observer)
+              debug(`subscribing to stream sink ${proxy.key}`)
+              subscribeObserver(proxy, this.observer)
               debug(
-                `stream for sink ${proxy.key} created, observers: ${proxy.observers.length}`
+                `proxy stream${isWithMemory ? ' with memory' : ''} for sink ${
+                  proxy.key
+                } created, observers: ${proxy.observers.length}`
               )
             },
             stop: function (this: { observer: ProxyObserver }) {
@@ -307,7 +314,7 @@ export const hmrProxy = <Df>(
       const sinks = dataflow(sources, ...rest)
       sinks && SubscribeProxies(proxies, sinks)
     })
-    // We chean up unused dataflows (which lost all of their listeners)
+    // We clean up unused dataflows (which lost all of their listeners)
     // so we don't re-execute them in vain
     // theoretically there can be problem edge cases
     // of dataflows that have late subscribers,
@@ -331,7 +338,7 @@ export const hmrProxy = <Df>(
 
   const proxiedDataflow: any = (sources: any, ...rest: any[]) => {
     debug('execute')
-    let sinks = dataflow(sources, ...rest) as Sinks
+    let sinks = dataflowsLatest[proxyId](sources, ...rest) as Sinks
 
     if (!sinks) {
       return sinks
@@ -355,6 +362,6 @@ export const hmrProxy = <Df>(
       return sinks
     }
   }
-  proxiedDataflow.__hmrOriginalDataflow = dataflow
+  proxiedDataflow.__hmrOriginalDataflow = dataflowsLatest[proxyId]
   return proxiedDataflow
 }
