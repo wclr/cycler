@@ -3,8 +3,8 @@ import { hmrProxy as proxy } from '../.'
 import { run } from '@cycle/run'
 import { setAdapt } from '@cycle/run/lib/adapt'
 import xs, { Stream } from 'xstream'
-import * as Rxjs from 'rxjs'
-import * as test from 'tape'
+import Rxjs from 'rxjs'
+import test from 'tape'
 
 declare const global: any
 

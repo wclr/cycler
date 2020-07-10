@@ -7,19 +7,22 @@ import { DebuggableStateStream } from './debug'
 export type Reducer<T> = (state: T | undefined) => T
 
 export interface Options<State> {
-  initialValue?: State,
+  initialValue?: State
   /**
    * allows sequential sync updates to state
    */
   syncUpdate?: boolean
 }
 
-export type StateDriver<State> = (reducer$: Stream<Reducer<State>>) => MemoryStream<State>
-export type MakeStateDriver<State> = (options?: Options<State>) => StateDriver<State>
+export type StateDriver<State> = (
+  reducer$: Stream<Reducer<State>>
+) => MemoryStream<State>
+export type MakeStateDriver<State> = (
+  options?: Options<State>
+) => StateDriver<State>
 
 export const makeStateDriver = <State>(options: Options<State> = {}) => {
   return (reducer$: Stream<Reducer<State>>) => {
-
     const state$ = xs.createWithMemory<State>() as DebuggableStateStream<State>
     let stateVal = options.initialValue
     let prevStateVal: State | undefined = undefined
@@ -43,14 +46,15 @@ export const makeStateDriver = <State>(options: Options<State> = {}) => {
         locked = !options.syncUpdate
         sendState(stateVal)
         // tslint:disable-next-line:no-unused-expression
-        locked && Promise.resolve().then(() => {
-          locked = false
-          sendState(stateVal!)
-        })
+        locked &&
+          Promise.resolve().then(() => {
+            locked = false
+            sendState(stateVal!)
+          })
       }
     }
     reducer$.addListener({
-      next: reduceState
+      next: reduceState,
     })
 
     state$.addListener({})

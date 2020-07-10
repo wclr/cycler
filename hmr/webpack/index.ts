@@ -1,6 +1,6 @@
-import * as webpack from 'webpack'
-import * as qs from 'querystring'
-import * as fs from 'fs'
+import webpack from 'webpack'
+import qs from 'querystring'
+import fs from 'fs'
 import { ProxyOptions } from '../.'
 import { Transformer } from '../transform'
 
@@ -20,9 +20,10 @@ export interface LoaderOptions extends ProxyOptions {
 export interface LoaderContext {
   _module: Module
   query: string | LoaderOptions
+  resourcePath: string,
 }
 
-export default function (this: LoaderContext, source: string) {
+export default function (this: LoaderContext, source: string) {  
   let options: LoaderOptions = {}
   if (typeof this.query === 'string') {
     const queryStr = this.query.slice(1)
@@ -51,6 +52,7 @@ export default function (this: LoaderContext, source: string) {
     {
       sourceIdentifier: 'module.id',
       addHotAccept: true,
+      resourcePath: this.resourcePath
     },
     options
   )

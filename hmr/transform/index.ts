@@ -4,6 +4,7 @@ export interface TransformOptions extends ProxyOptions {
   testExportName?: string
   importFrom?: string
   sourceIdentifier: string
+  resourcePath?: string
   addHotAccept?: boolean
 }
 

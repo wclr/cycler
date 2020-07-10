@@ -1,4 +1,4 @@
-import xs, { Stream, MemoryStream } from 'xstream'
+import xs from 'xstream'
 import {
   FantasyObserver,
   FantasyObservable,
@@ -78,7 +78,7 @@ let cycleHmrEnabled = true
 
 const anyGlobal: any = typeof window === 'object' ? window : global
 
-if (anyGlobal && anyGlobal.noCycleHmr) {
+if (anyGlobal && anyGlobal.cycleHmrDisabled) {
   console.warn('[Cycle HMR] disabled')
   cycleHmrEnabled = false
 }
@@ -126,10 +126,10 @@ export const hmrProxy = <Df>(
 
   const subscribeObserver = (proxy: StreamProxy, observer: ProxyObserver) => {
     const sink = proxy.sink as FantasyObservable<any>
-    const subscribtion = sink.subscribe({
+    const subscription = sink.subscribe({
       next: observer.next.bind(observer),
       error: (err: Error) => {
-        debug.error!(`sink ${ proxy.key } error: ${ err.message }`)
+        debug.error!(`sink ${proxy.key} error: ${err.message}`)
         console.error(err)
       },
       complete: () => {
@@ -147,7 +147,7 @@ export const hmrProxy = <Df>(
         error: empty,
         complete: empty,
       })
-      subscribtion.unsubscribe()
+      subscription.unsubscribe()
     }
   }
 
@@ -233,22 +233,6 @@ export const hmrProxy = <Df>(
       return obj
     }, {})
   }
-
-  // const UnsubscribeProxies = (proxies: SinkProxies) => {
-  //   Object.keys(proxies).forEach((key) => {
-  //     const proxy = proxies[key]
-  //     if (!proxy) {
-  //       return
-  //     }
-  //     if ((proxy as ObjProxy).obj) {
-  //       UnsubscribeProxies((proxy as ObjProxy).obj!)
-  //     } if ((proxy as StreamProxy).observers) {
-  //       (proxy as StreamProxy).observers.map(observer => {
-  //         observer.dispose()
-  //       })
-  //     }
-  //   })
-  // }
 
   const CheckProxiesObserved = (proxies: SinkProxies): boolean => {
     return Object.keys(proxies).reduce<boolean>((result, key) => {

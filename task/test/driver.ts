@@ -10,7 +10,7 @@ import { makeTaskDriver, TaskSource, TaskRequest, setRequestOps } from '../index
 import { requestOps } from '../requestOps'
 import isolate from '@cycle/isolate'
 import { success, failure, pair } from '../helpers'
-import * as test from 'tape'
+import test from 'tape'
 import {
   Request, RequestInput, Response,
   basicDriver,
@@ -238,8 +238,10 @@ test('Basic driver isolation', (t) => {
   }
   const request$ = xs.create<RequestInput>()
   const source = isolationDiver(request$)
-  isolate(dataflow, 'scope0')({ source })
+  const isolated = isolate(dataflow, 'scope0')
+  isolated({ source })
     .source.addListener({
+      // @ts-ignore
       next: (request: Request) => {
         request$.shamefullySendNext(request)
       }

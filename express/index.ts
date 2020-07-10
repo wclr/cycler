@@ -1,12 +1,18 @@
-import { Router, Request as ExpressRequest, Response as ExpressResponse } from 'express'
+import {
+  Router,
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from 'express'
 import cuid = require('cuid')
 import { Driver } from '@cycle/run'
-import xs, { Stream } from 'xstream';
-import { adapt } from '@cycle/run/lib/adapt';
+import xs, { Stream } from 'xstream'
+import { adapt } from '@cycle/run/lib/adapt'
 import {
-  RoutePath, RouterRequest, RouterResponse,
+  RoutePath,
+  RouterRequest,
+  RouterResponse,
   RouterSource,
-  RouterOptions
+  RouterOptions,
 } from './interfaces'
 
 export * from './interfaces'
@@ -20,14 +26,15 @@ const terminateMethods = [
   'render',
   'send',
   'sendFile',
-  'sendStatus'
+  'sendStatus',
 ]
 
-const terminateMethodsIndexMap = terminateMethods
-  .reduce<{ [index: string]: true }>((methods, m) => {
-    methods[m] = true
-    return methods
-  }, {})
+const terminateMethodsIndexMap = terminateMethods.reduce<{
+  [index: string]: true
+}>((methods, m) => {
+  methods[m] = true
+  return methods
+}, {})
 
 const isTerminateMethod = (methodName: string) => {
   return !!terminateMethodsIndexMap[methodName]
@@ -40,9 +47,7 @@ class RouterSourceObject implements RouterSource {
     private _router: Router,
     private _responses: ResponsesIndexMap = {},
     private routerOptions: any
-  ) {
-
-  }
+  ) {}
   public route(path: RoutePath, options?: any): any {
     const opts = options | this.routerOptions
     const router = Router(opts)
@@ -51,7 +56,7 @@ class RouterSourceObject implements RouterSource {
   }
   public method(method: string, path: RoutePath) {
     const request$ = xs.create<RouterRequest>({
-      start: (observer) => {
+      start: observer => {
         const setId = (req: any, id: string): RouterRequest => {
           req.id = id
           return req
@@ -63,9 +68,9 @@ class RouterSourceObject implements RouterSource {
           observer.next(setId(req, id))
         })
       },
-      stop: () => { }
+      stop: () => {},
     })
-    return adapt(request$)
+    return adapt(request$ as any)
   }
   handleResponse(response: RouterResponse) {
     let res = <any>this._responses[response.id]
@@ -117,15 +122,16 @@ class RouterSourceObject implements RouterSource {
 
 //const isExpressRouter = (router: any) => router && typeof router.use === 'function'
 
-export const makeRouterDriver =
-  (router: Router, options?: Object) => {
-    return (response$: Stream<RouterResponse>): RouterSource => {
-      const source = new RouterSourceObject(router, {}, options)
-      response$.addListener({
-        next: (response) => { source.handleResponse(response) },
-        error: () => { },
-        complete: () => { },
-      })
-      return source
-    }
+export const makeRouterDriver = (router: Router, options?: Object) => {
+  return (response$: Stream<RouterResponse>): RouterSource => {
+    const source = new RouterSourceObject(router, {}, options)
+    response$.addListener({
+      next: response => {
+        source.handleResponse(response)
+      },
+      error: () => {},
+      complete: () => {},
+    })
+    return source
   }
+}

@@ -5,8 +5,6 @@ import { FantasyObservable } from '@cycle/run'
 import makeTaskSource from './makeTaskSource'
 import attachRequest from './attachRequest'
 
-export type Stream<T> = Stream<T>
-
 const isFunction = (f: any) => typeof f === 'function'
 const empty = () => {}
 const emptySubscribe = (stream: Stream<any>) =>

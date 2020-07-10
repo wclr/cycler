@@ -1,10 +1,10 @@
 import xs, {Stream} from 'xstream'
-import * as most from 'most'
+import most from 'most'
 import { run } from '@cycle/most-run'
 import { setAdapt } from '@cycle/run/lib/adapt'
 
 import isolate from '@cycle/isolate'
-import * as test from 'tape'
+import test from 'tape'
 import { basicDriver } from './make-drivers'
 
 test('Set most adapt', (t) => {

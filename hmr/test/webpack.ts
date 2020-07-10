@@ -1,7 +1,8 @@
 import loader, { LoaderContext } from '../webpack'
-import * as test from 'tape'
+import test from 'tape'
 
 const context: LoaderContext = {
+  resourcePath:  '/path/to/this/file.js',
   _module: {
     id: 123,
   },

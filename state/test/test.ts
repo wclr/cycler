@@ -1,7 +1,7 @@
 import { Reducer } from '..'
 import xs, { Stream } from 'xstream'
-import * as test from 'tape'
-import * as R from 'ramda'
+import test from 'tape'
+import R from 'ramda'
 
 type State = {
   name: string

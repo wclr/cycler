@@ -1,5 +1,5 @@
 import { Transformer, TransformOptions } from '../transform'
-import * as fs from 'fs'
+import fs from 'fs'
 
 export type Options = {
   testExportName?: string
