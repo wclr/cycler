@@ -9,9 +9,11 @@ export type Reducer<T> = (state: T | undefined) => T
 export interface Options<State> {
   initialValue?: State
   /**
-   * allows sequential sync updates to state
+   * Allows custom schedule fo state updates
+   * or sequential sync updates (if set to `false`)
+   * by default uses Promise.resolve based schedule
    */
-  syncUpdate?: boolean
+  scheduleUpdate?: ((update: () => void) => void) | boolean
 }
 
 export type StateDriver<State> = (
@@ -27,6 +29,14 @@ export const makeStateDriver = <State>(options: Options<State> = {}) => {
     let stateVal = options.initialValue
     let prevStateVal: State | undefined = undefined
     let locked = false
+
+    const scheduleUpdate =
+      options.scheduleUpdate == true
+        ? (update: any) => {
+            Promise.resolve().then(update)
+          }
+        : options.scheduleUpdate
+
     const sendState = (stateVal: State) => {
       if (stateVal !== prevStateVal) {
         prevStateVal = stateVal
@@ -39,19 +49,32 @@ export const makeStateDriver = <State>(options: Options<State> = {}) => {
     }
     const reduceState = (reducer: Reducer<State>) => {
       stateVal = reducer(stateVal!)
+
+      if (scheduleUpdate) {
+        if (locked) return
+        locked = true
+        scheduleUpdate(() => {
+          locked = false
+          sendState(stateVal!)
+        })
+      } else {
+        sendState(stateVal)
+      }
+
       if (state$._onNewVal) {
         state$._onNewVal(stateVal, reducer)
       }
-      if (!locked) {
-        locked = !options.syncUpdate
-        sendState(stateVal)
-        // tslint:disable-next-line:no-unused-expression
-        locked &&
-          Promise.resolve().then(() => {
-            locked = false
-            sendState(stateVal!)
-          })
-      }
+
+      // if (!locked) {
+      //   sendState(stateVal)
+      //   if (scheduleUpdate) {
+      //     locked = true
+      //     scheduleUpdate(() => {
+      //       locked = false
+      //       sendState(stateVal!)
+      //     })
+      //   }
+      // }
     }
     reducer$.addListener({
       next: reduceState,
