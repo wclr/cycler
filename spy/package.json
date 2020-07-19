@@ -1,0 +1,10 @@
+{
+  "name": "@cycler/spy",
+  "version": "1.0.0-pre.1",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "description": "Spy for Cycle.js.",
+  "repository": "http://github.com/whitecolor/cycler",
+  "devDependencies": {}
+}
