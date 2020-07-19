@@ -8,6 +8,7 @@ import test from 'tape'
 import { basicDriver } from './make-drivers'
 
 test('Set most adapt', t => {
+  // @ts-ignore
   setAdapt(O.from)
   t.end()
 })
@@ -26,6 +27,7 @@ test('Responses stream is hot and not remembered (TestScheduler)', t => {
   )
   O.timer(0, scheduler)
     .map(() => {
+      // @ts-ignore
       O.from(source.select())
         .mergeAll()
         .subscribe({

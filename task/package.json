@@ -2,6 +2,8 @@
   "name": "@cycler/task",
   "version": "1.0.0-pre.1",
   "files": [
+    "helpers/*.js",
+    "helpers/*.d.ts",
     "*.js",
     "*.d.ts"
   ],
