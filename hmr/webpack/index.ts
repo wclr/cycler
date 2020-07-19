@@ -36,11 +36,11 @@ export default function (this: LoaderContext, source: string) {
     const queryObj: LoaderOptions = this.query || {}
     options = { ...queryObj }
   }
-  if (options.onlyEnabled && !source.match(/@(cycle-hmr|hmr-enable)/)) {
+  if (options.onlyEnabled && !/@hmr-(enable|on)/.test(source)) {
     return source
   }
 
-  const noHmr = source.match(/@(no-hmr|hmr-disable)/)
+  const noHmr = /@hmr-(disable|off)/.test(source)
 
   if (noHmr) {
     return source

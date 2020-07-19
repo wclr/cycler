@@ -142,6 +142,11 @@ export const hmrProxy = <Df>(
     }
     observer.dispose = () => {
       const empty = () => {}
+      debug(
+        'observer for sink ' +
+          proxy.key +
+          'disposed, creating keep alive subscription'
+      )
       observer._sinkKeepAliveSubscription = sink.subscribe({
         next: empty,
         error: empty,
