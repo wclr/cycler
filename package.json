@@ -50,7 +50,7 @@
     "fs-extra": "^2.1.2",
     "get-port": "^2.1.0",
     "husky": "^0.13.3",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.3",
     "mocha": "^8.0.1",
     "most": "^1.0.1",
     "node-dev": "^3.1.3",
