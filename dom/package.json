@@ -4,7 +4,5 @@
   "description": "",
   "author": "whitecolor",
   "repository": "",
-  "devDependencies": {
-    "@cycle/dom": "^17.3.0"
-  }
+  "devDependencies": {}
 }

@@ -1,28 +1,26 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "removeComments": false,
-    "strictNullChecks": true,    
-    "declaration": true,
     "target": "es5",
+    "module": "commonjs",
+    "lib": ["dom", "es6"],
+    "esModuleInterop": true,
+    "strict": true,
+    // "strictFunctionTypes": false,
+    "declaration": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "preserveConstEnums": true,
     "noImplicitAny": true,
-    "lib": [
-      "dom",
-      "es6"
-    ],
-    "traceResolution": false,
+    "newLine": "LF",
     "inlineSourceMap": true,
-    "inlineSources": true,
-    "skipLibCheck": true,
+    "inlineSources": true,    
     "noImplicitThis": true,
     "noImplicitReturns": true
   },
   "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
-  },  
-  "exclude": [
-    "**/node_modules/*"
-  ]
+  },
+  "include": [".scripts/**/*", "spy/**/*", "hmr/**/*", "state/**/*", "task/**/*"],
+  "exclude": ["**/node_modules/*"]
 }

@@ -9,5 +9,5 @@ import {
 
 const packagesToTest = packageName ? [packageName] : packages 
 
-installDeps(packagesToTest)
+// installDeps(packagesToTest)
 packagesToTest.forEach(testPackage)
