@@ -1,0 +1,21 @@
+{
+  "name": "@cycler/telegraf",
+  "version": "1.0.0",
+  "files": [
+    "!test",
+    "**/*.js",
+    "**/*.d.ts"
+  ],
+  "publishConfig": {
+    "tag": "latest",
+    "access": "public"
+  },
+  "description": "",
+  "repository": "http://github.com/whitecolor/cycler",
+  "dependencies": {
+    "telegraf": "^3.38.0"
+  },
+  "devDependencies": {
+    "@cycler/task": "workspace:*"
+  }
+}
