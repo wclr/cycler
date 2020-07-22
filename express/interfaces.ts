@@ -1,25 +1,24 @@
 import { Stream } from 'xstream'
-import {
-  Request as ExpressRequest,
-} from 'express'
+import * as express from 'express'
 
-export type RoutePath = string | RegExp | (string | RegExp)[];
+export type RoutePath = string | RegExp | (string | RegExp)[]
 export type RequestId = string & { __RequestId: true }
-export type RouterRequest = ExpressRequest & { id: RequestId }
+export type RouterRequest = express.Request & { id: RequestId }
 
 export interface RouterResponseParams {
   id: RequestId
   charset?: string
   status?: number
+  handle?: (res: express.Response) => void
 }
 
-export interface RouterOptions { }
+export interface RouterOptions {}
 
 export type RouterResponse =
-  RouterResponseParams |
-  RouterResponseParams & { send: any } |
-  RouterResponseParams & { end: any } |
-  RouterResponseParams & { sendStatus: number }
+  | RouterResponseParams  
+  | (RouterResponseParams & { send: any })
+  | (RouterResponseParams & { end: any })
+  | (RouterResponseParams & { sendStatus: number })
 
 export interface RouterSource {
   /**
@@ -48,14 +47,14 @@ export interface RouterSource {
    */
   delete<R>(path: string | RegExp): Stream<RouterRequest & R>
   /**
- * Returns the stream of request for given HTTP method
- * @param  {string|RegExp} path
- */
+   * Returns the stream of request for given HTTP method
+   * @param  {string|RegExp} path
+   */
   method<R>(name: string, path: string | RegExp): Stream<RouterRequest & R>
   /**
- * Returns returns new router source for given path
- * @param  {string|RegExp} path
- * @param  {} options Options passed to created express router   
- */
+   * Returns returns new router source for given path
+   * @param  {string|RegExp} path
+   * @param  {} options Options passed to created express router
+   */
   route(path: string | RegExp, options?: any): RouterSource
 }

@@ -49,7 +49,7 @@ class RouterSourceObject implements RouterSource {
     private routerOptions: any
   ) {}
   public route(path: RoutePath, options?: any): any {
-    const opts = options | this.routerOptions
+    const opts = options || this.routerOptions
     const router = Router(opts)
     this._router.use(path, router)
     return new RouterSourceObject(router, this._responses, opts)
@@ -73,8 +73,15 @@ class RouterSourceObject implements RouterSource {
     return adapt(request$ as any)
   }
   handleResponse(response: RouterResponse) {
-    let res = <any>this._responses[response.id]
+    const res: any = this._responses[response.id]
     if (res) {
+      const handle = response.handle
+      if (handle) {
+        handle(res)
+        delete this._responses[response.id]
+        return
+      }
+      // probably should remove all this logic?
       let terminateMethod: string = ''
       let methods: string[] = []
       for (let key in response) {

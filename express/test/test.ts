@@ -1,11 +1,10 @@
-import * as test from 'tape'
-import { Observable } from 'rxjs'
-import * as express from 'express'
-import { Sinks } from '@cycle/run'
-import { run } from '@cycle/rxjs-run'
-import { makeRouterDriver, RouterRequest, RouterResponse, RequestId } from '../index'
-import { RouterSource } from '../rxjs'
-import * as request from 'supertest'
+import test from 'tape'
+import xs, { Stream } from 'xstream'
+import express from 'express'
+import { run } from '@cycle/run'
+import { makeRouterDriver, RouterRequest, RouterResponse } from '../index'
+import { RouterSource } from '..'
+import request from 'supertest'
 
 const app = express()
 
@@ -13,41 +12,42 @@ interface Sources {
   router: RouterSource
 }
 
-interface MainSinks extends Sinks {
-  router: Observable<RouterResponse>
+interface MainSinks {
+  router: Stream<RouterResponse>
 }
-interface MyRequest extends RouterRequest {
-  
-}
+interface MyRequest extends RouterRequest {}
 
-const Main = ({router}: Sources): MainSinks => {
+const Main = ({ router }: Sources): MainSinks => {
   return {
-    router: Observable.merge<RouterResponse>(
-      router.all('/all').map(x => ({
+    router: xs.merge<RouterResponse>(
+      router.all('/all').map<RouterResponse>(x => ({
         id: x.id,
-        send: { all: 'John' }
+        send: { all: 'John' },
       })),
-      router.get('/user').map(r => ({
+      router.get('/user').map<RouterResponse>(r => ({
         id: r.id,
-        send: { name: 'John' }
+        send: { name: 'John' },
       })),
-      router.route('/nested')
-        .method('options', '/something').map(({id}) => ({
+      router
+        .route('/nested')
+        .method('options', '/something')
+        .map<RouterResponse>(({ id }) => ({
           id,
-          status: 201,
-          send: { nested: true }
+          handle: res => {
+            res.status(201).send({ nested: true })
+          },
+          // status: 201,
+          // send: { nested: true },
         }))
-    )
+    ),
   }
 }
 
-run<Sources, MainSinks>(Main, {
-  router: makeRouterDriver(app)
+run(Main, {
+  router: makeRouterDriver(app),
 })
 
-
-
-test('get request', (t) => {
+test('get request', t => {
   request(app)
     .get('/user')
     .expect(200)
@@ -61,7 +61,7 @@ test('get request', (t) => {
     })
 })
 
-test('all method', (t) => {
+test('all method', t => {
   request(app)
     .put('/all')
     .expect(200)
@@ -75,7 +75,7 @@ test('all method', (t) => {
     })
 })
 
-test('nested router and custom method', (t) => {
+test('nested router and custom method', t => {
   request(app)
     .options('/nested/something')
     .expect(201)
@@ -87,4 +87,4 @@ test('nested router and custom method', (t) => {
       t.pass()
       t.end()
     })
-}) 
+})
