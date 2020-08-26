@@ -1,7 +1,9 @@
 import xs, { Stream, MemoryStream } from 'xstream'
 import { FantasyObservable } from '@cycle/run'
 
-export type ResponseStreamWithRequest<Response, Request> = MemoryStream<Response> & {
+export type ResponseStreamWithRequest<Response, Request> = MemoryStream<
+  Response
+> & {
   request: Request
 }
 
@@ -13,11 +15,6 @@ export type ResponsesStream<Response, Request> = Stream<
 
 export interface MakeTaskSourceOptions<RequestInput, Request, Response> {
   isolateMap?(request: RequestInput): Request
-  makeSource?(
-    response$$: ResponsesStream<Request, Response>,
-    options: MakeTaskSourceOptions<RequestInput, Request, Response>
-  ): any
-  createResponse$?: (request: RequestInput) => void
 }
 
 export interface MakeSource<Source, RequestInput, Request, Response> {
@@ -45,10 +42,10 @@ export interface TaskSource<Request, Response> {
   select<Res, Req>(
     category?: string
   ): Stream<ResponseStream<Response & Res, Request & Req>>
-  pull<Res>(request: Request): ResponseStream<Response & Res, Request>
-  pull<Res, Req>(
-    request: Request
-  ): ResponseStream<Response & Res, Request & Req>
+  // pull<Res>(request: Request): ResponseStream<Response & Res, Request>
+  // pull<Res, Req>(
+  //   request: Request
+  // ): ResponseStream<Response & Res, Request & Req>
 }
 
 export interface InputTaskSource<RequestInput, Request, Response> {
@@ -61,10 +58,10 @@ export interface InputTaskSource<RequestInput, Request, Response> {
   select<Res, Req>(
     category?: string
   ): Stream<ResponseStream<Response & Res, Request & Req>>
-  pull<Res>(request: RequestInput): ResponseStream<Response & Res, Request>
-  pull<Res, Req>(
-    request: RequestInput
-  ): ResponseStream<Response & Res, Request & Req>
+  // pull<Res>(request: RequestInput): ResponseStream<Response & Res, Request>
+  // pull<Res, Req>(
+  //   request: RequestInput
+  // ): ResponseStream<Response & Res, Request & Req>
 }
 
 export type TaskDriver<Request, Response> = (
@@ -116,5 +113,4 @@ export interface DriverOptions<Source, RequestInput, Request, Response, Error> {
   isolateMap?(request: RequestInput): Request
   lazy?: boolean
   dispose?(): any
-  makeSource?: MakeSource<Source, RequestInput, Request, Response>
 }

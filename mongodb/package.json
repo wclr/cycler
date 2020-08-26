@@ -2,9 +2,9 @@
   "name": "@cycler/mongodb",
   "version": "1.0.0",
   "files": [
-    "!test",
     "**/*.js",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "!test"
   ],
   "publishConfig": {
     "tag": "latest",
@@ -12,6 +12,12 @@
   },
   "description": "",
   "repository": "http://github.com/whitecolor/cycler",
+  "peerDependencies": {
+    "xstream": "*",
+    "@cycle/run": "*",
+    "@cycler/task": "*",
+    "mongodb": "^3.5.9"
+  },
   "devDependencies": {
     "@cycler/task": "workspace:*",
     "@types/mongodb": "^3.5.25",

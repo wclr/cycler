@@ -6,9 +6,14 @@
   "repository": "",
   "files": [
     "*.js",
-    "*.d.ts"
+    "*.d.ts",
+    "!test"
   ],
   "dependencies": {
     "jsondiffpatch": "^0.2.5"
+  },
+  "peerDependencies": {
+    "xstream": "*",
+    "@cycle/run": "*"
   }
 }

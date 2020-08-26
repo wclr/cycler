@@ -1,19 +1,19 @@
 {
   "name": "@cycler/task",
-  "version": "1.0.0-pre.1",
+  "version": "1.0.0",
+  "description": "Factory for creating async task cycle.js driver",
+  "repository": "http://github.com/whitecolor/cycler",
   "files": [
-    "helpers/*.js",
-    "helpers/*.d.ts",
-    "*.js",
-    "*.d.ts"
+    "**/*.js",
+    "**/*.d.ts",
+    "!test"
   ],
   "publishConfig": {
     "tag": "latest",
     "access": "public"
-  },
-  "description": "Factory for creating async task cycle.js driver",
-  "repository": "http://github.com/whitecolor/cycler",
+  },  
   "peerDependencies": {
-    "xstream": "*"
-  }
+    "xstream": "*",
+    "@cycle/run": "*"
+  }  
 }

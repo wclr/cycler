@@ -3,9 +3,9 @@ import * as mongodb from 'mongodb'
 import { Db } from 'mongodb'
 import { makeTaskDriver } from '@cycler/task'
 
-export type MongoRequest = {
+export type MongoRequest<T = any> = {
   db?: string
-  task: (client: mongodb.MongoClient) => Promise<any>
+  task: (client: mongodb.MongoClient) => Promise<T>
 }
 
 export type MongoSource = ReturnType<ReturnType<typeof makeMongoDriver>>
@@ -28,10 +28,12 @@ export const makeMongoDriver = ({
       useUnifiedTopology: true,
     })
 
-    const taskDriver = makeTaskDriver<MongoRequest, any>(async (r) => {
-      const client = await clientP
-      return r.task(client)
-    })
+    const taskDriver = makeTaskDriver<MongoRequest, unknown, unknown>(
+      async (r) => {
+        const client = await clientP
+        return r.task(client)
+      }
+    )
 
     const getMethodsForDbName = (name?: string) => {
       type Self = { _dbOff: () => void }

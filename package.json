@@ -1,32 +1,32 @@
 {
-  "name": "cycler",
-  "license": "MIT",
   "private": true,
   "prettier": {
     "semi": false,
-    "singleQuote": true,
-    "arrowParens": "avoid"
+    "singleQuote": true
   },
-  "workspaces": [
-    "*"
-  ],
   "scripts": {
     "commit": "git-cz",
     "cm": "git-cz",
-    "_build:watch": "concurrently \"ts-purify -w\" \"tsc -p tsconfig.build.json -w\"",
-    "build:watch": "concurrently \"tsc --w\" \"ts-cleaner -w -v\"",
+    "preinstall": "pnpx only-allow pnpm",
     "propagate-config": "node .scripts/propagate-config",
-    "test": "node .scripts/test",
-    "test-watch": "node .scripts/test --watch",
+    "test-dev": "ts-node test-run.ts --watch",
+    "test": "ts-node test-run.ts",
     "release": "node .scripts/docker-run \"node .scripts/release-\"",
     "docker-test": "node .scripts/docker-run \"node .scripts/test\"",
     "docker-watch": "node .scripts/docker-run \"node .scripts/test --watch\"",
-    "_clean": "del-cli **/*.js **/*.js.map **/*.d.ts \"!node_modules/**\"",
     "clean": "ts-clean-built --old",
     "install-deps": "node .scripts/install-deps",
     "build-watch": ".scripts/cleanup-built-files.sh && .scripts/wait-install-deps.sh && .scripts/fix-tsc-watch.sh && tsc -w",
     "ci": "yarn && tsc -p .scripts && yarn install-deps && tsc && yarn docker-test",
     "preyalc": "ts-clean-built"
+  },
+  "dependencies": {
+    "@cycle/dom": "^22.7.0",
+    "@cycle/isolate": "^5.2.0",
+    "@cycle/most-run": "^8.4.0",
+    "@cycle/run": "^5.4.0",
+    "isolate": "^0.14.0",
+    "ts-node": "^8.10.2"
   },
   "devDependencies": {
     "@cycle/rxjs-run": "^10.5.0",
@@ -34,7 +34,7 @@
     "@types/express": "^4.0.32",
     "@types/fs-extra": "^2.1.0",
     "@types/minimist": "^1.2.0",
-    "@types/mocha": "^7.0.2",
+    "@types/mocha": "github:whitecolor/mocha-types",
     "@types/ramda": "^0.27.6",
     "@types/superagent": "^2.0.32",
     "@types/supertest": "^1.1.30",
@@ -61,12 +61,25 @@
     "supertest": "^2.0.0",
     "tap-browser-color": "^0.1.2",
     "tape": "^4.4.0",
-    "ts-node-dev": "^1.0.0-pre.40",
-    "tslint": "^4.5.1",
+    "ts-clean-built": "^1.2.1",
+    "ts-node-dev": "^1.0.0-pre.52",
     "typescript": "^3.9.5",
     "validate-commit-msg": "^2.8.2",
     "watchify": "^3.7.0",
     "xstream": "^11.12.0"
+  },
+  "eslintDependencies": {
+    "eslint": "^7.6.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-only-warn": "^1.0.2",
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "typescript-eslint-language-service": "^3.0.0"
+  },
+  "tslintDependencies": {
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript-tslint-plugin": "^0.5.5"
   },
   "config": {
     "commitizen": {
@@ -75,13 +88,5 @@
     "cz-customizable": {
       "config": "./.cz-config.js"
     }
-  },
-  "dependencies": {
-    "@cycle/dom": "^22.7.0",
-    "@cycle/isolate": "^5.2.0",
-    "@cycle/most-run": "^8.4.0",
-    "@cycle/run": "^5.4.0",
-    "isolate": "^0.14.0",
-    "ts-clean-built": "file:.yalc/ts-clean-built"
   }
 }

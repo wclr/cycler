@@ -9,7 +9,12 @@ import {
 } from './index'
 
 const debugStorageKey = 'cycler_state_debug'
-const localStorage = typeof window === 'object' && window.localStorage
+let localStorage: Storage | undefined = undefined
+
+try {
+  localStorage = typeof window === 'object' ? window.localStorage : undefined
+} catch (e) {}
+
 const { DiffPatcher } = require('jsondiffpatch/src/diffpatcher')
 const { format } = require('jsondiffpatch/src/formatters/jsonpatch')
 const patcher = new DiffPatcher()

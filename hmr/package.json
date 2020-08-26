@@ -1,11 +1,17 @@
 {
   "name": "@cycler/hmr",
-  "version": "1.0.0-unified.3",  
-  "publishConfig": {
-    "tag": "latest"
-  },
+  "version": "1.0.0-unified.3",
+  "files": [
+    "**/*.js",
+    "**/*.d.ts",
+    "!test"
+  ],
   "description": "HMR for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
+  "peerDependencies": {
+    "xstream": "*",
+    "@cycle/run": "*"
+  },
   "devDependencies": {
     "@types/webpack": "^2.2.12",
     "webpack": "^2.3.0"

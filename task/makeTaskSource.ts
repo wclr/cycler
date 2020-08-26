@@ -2,8 +2,10 @@ import xs, { Stream, MemoryStream } from 'xstream'
 import { Driver, FantasyObservable } from '@cycle/run'
 import { adapt } from '@cycle/run/lib/adapt'
 import {
-  MakeTaskSourceOptions, ResponsesStream,
-  TaskSource, InputTaskSource
+  MakeTaskSourceOptions,
+  ResponsesStream,
+  TaskSource,
+  InputTaskSource,
 } from './interfaces'
 
 import { requestOps } from './requestOps'
@@ -22,25 +24,25 @@ export function makeTaskSource<RequestInput, Request, Response>(
   response$$: ResponsesStream<Request, Response>,
   options: MakeTaskSourceOptions<RequestInput, Request, Response> = {}
 ): InputTaskSource<RequestInput, Request, Response> {
-
   const driverSource = {
-    filter(predicate: (any)): any {
-      const filteredResponse$$ = response$$.filter(
-        (r$: any) => predicate(r$.request)
+    filter(predicate: any): any {
+      const filteredResponse$$ = response$$.filter((r$: any) =>
+        predicate(r$.request)
       )
-      const makeSource = options.makeSource || makeTaskSource
+      const makeSource = makeTaskSource
       return makeSource(filteredResponse$$, options)
     },
     isolateSink(request$: any, scope: string) {
       return request$.map((req: RequestInput | Request) => {
-        const requestToIsolate: Request =
-          options.isolateMap ? options.isolateMap(<RequestInput>req) : <Request>req
+        const requestToIsolate: Request = options.isolateMap
+          ? options.isolateMap(<RequestInput>req)
+          : <Request>req
 
         return requestOps.isolateRequest(requestToIsolate, scope)
       })
     },
     isolateSource: (source: any, scope: any) => {
-      let requestPredicate = (req: Request) => {
+      const requestPredicate = (req: Request) => {
         return requestOps.filterIsolatedRequest(req, scope)
       }
       return source.filter(requestPredicate)
@@ -52,15 +54,10 @@ export function makeTaskSource<RequestInput, Request, Response>(
       if (typeof category !== 'string') {
         throw new Error(`category should be a string`)
       }
-      const requestPredicate =
-        (request: any) => request && request.category === category
+      const requestPredicate = (request: any) =>
+        request && request.category === category
       return driverSource.filter(requestPredicate).select()
-    },
-    pull(request: RequestInput) {
-      return options.createResponse$!(
-        requestOps.addProperty(request, 'lazy', true)
-      )
-    }
+    }    
   }
   return driverSource as any
 }

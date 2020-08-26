@@ -1,3 +1,4 @@
+import { describe, it } from 'mocha'
 import { transformer } from '../transform/cjs'
 import { expect } from 'chai'
 
@@ -14,7 +15,6 @@ const compare = (transformed: string, expected: string) => {
 const spyFn = '_spyProxy'
 
 describe('[Cycle Spy] file CJS transform', () => {
-  
   it('skips commented @spy', () => {
     const source = `"use strict";
       /* // @spy */

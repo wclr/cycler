@@ -4,7 +4,7 @@ import dropRepeats from 'xstream/extra/dropRepeats'
 import xs, { Stream, MemoryStream } from 'xstream'
 import { DebuggableStateStream } from './debug'
 
-export type Reducer<T> = (state: T | undefined) => T
+export type Reducer<T> = (state: T) => T
 
 export interface Options<State> {
   initialValue?: State

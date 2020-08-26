@@ -1,5 +1,13 @@
 import { TaskRequest } from '@cycler/task'
 import { KeyValue, ForageInstance, IndexedItems } from './instance'
+import type localforage from 'localforage'
+
+type Arguments<F extends (...x: any[]) => any> = F extends (
+  ...x: infer A
+) => any
+  ? A
+  : never
+
 export type ForageDriverName =
   | 'localStorageWrapper'
   | 'webSQLStorage'
@@ -12,7 +20,7 @@ export type ForageMethod =
   | 'keys'
   | 'length'
   | 'clear'
-  | 'iterage'
+  | 'iterate'
   | 'getItems'
   | 'setItems'
   | 'removeItems'
@@ -64,8 +72,15 @@ export interface SetItemsIndexedRequest extends StoreRequest, TaskRequest {
   setItems: IndexedItems<any>
 }
 
+// remove
 export interface ExecuteRequest extends StoreRequest, TaskRequest {
-  execute: (store: ForageInstance) => Promise<any>
+  execute: (storage: ForageInstance) => Promise<any>
+}
+
+export interface ForageTaskRequest<T = unknown>
+  extends StoreRequest,
+    TaskRequest {
+  task: (storage: ForageInstance) => T
 }
 
 export type ForageRequest =
@@ -82,17 +97,21 @@ export type ForageRequest =
   | SetItemsRequest
   | SetItemsIndexedRequest
 
-export type ForageResponse = {}
+export type ForageResponse = unknown
 
-export type ForageDriverOption = ForageDriverName | { _driver: string }
+export type LocalForageDriver = Arguments<typeof localforage.defineDriver>[0]
 
-export interface CreateForageOptions {
-  driver?: ForageDriverOption | ForageDriverOption[]
+export type ForageDriverOption = ForageDriverName | string | LocalForageDriver
+
+export interface LocalForageOptions {
   name?: string
   storeName?: string
+  driver?: string | string[]
   size?: number
-  version?: string
+  version?: number
   description?: string
 }
 
-export type ForageDriverOptions = CreateForageOptions
+export interface Options extends Omit<LocalForageOptions, 'driver'> {
+  driver?: ForageDriverOption
+}

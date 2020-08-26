@@ -1,6 +1,6 @@
 {
   "name": "@cycler/http",
-  "version": "1.0.0-unified.0",
+  "version": "1.0.0",
   "files": [
     "*.js",
     "*.d.ts"
@@ -16,7 +16,9 @@
     "superagent": "^3.5.1"
   },
   "peerDependencies": {
-    "@cycler/task": "*"
+    "@cycler/task": "*",
+    "xstream": "*",
+    "@cycle/run": "*"
   },
   "devDependencies": {
     "@types/superagent": "^2.0.36",

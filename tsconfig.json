@@ -5,22 +5,29 @@
     "lib": ["dom", "es6"],
     "esModuleInterop": true,
     "strict": true,
-    // "strictFunctionTypes": false,
     "declaration": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "preserveConstEnums": true,
-    "noImplicitAny": true,
     "newLine": "LF",
     "inlineSourceMap": true,
-    "inlineSources": true,    
-    "noImplicitThis": true,
-    "noImplicitReturns": true
+    "inlineSources": true
   },
   "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
   },
-  "include": [".scripts/**/*", "spy/**/*", "hmr/**/*", "state/**/*", "task/**/*"],
-  "exclude": ["**/node_modules/*"]
+  "include": [
+    ".scripts/**/*",
+    "express/**/*",
+    "hmr/**/*",
+    "forage/**/*",
+    "mongodb/**/*",
+    "logger/**/*",
+    "state/**/*",
+    "spy/**/*",
+    "task/**/*",
+    "telegraf/**/*"
+  ],
+  "_exclude": ["**/node_modules/*"]
 }

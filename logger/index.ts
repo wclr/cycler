@@ -1,42 +1,22 @@
-import { Stream } from 'xstream'
+import xs, { Stream, MemoryStream } from 'xstream'
+export type LogRequest =
+  | string
+  | { args: any[] }
+  | any[]
+  | ((console: Console) => any)
 
-export type LogParams = any[]
-
-export type LogMessageRequest = {
-  method: string
-  params?: LogParams
-}
-
-export type LoggerMessage = string | LogMessageRequest | LogParams
-
-export interface LoggerDriverOptions {
-  logger?: Object
-}
-
-const normalizeMessage = (m: LoggerMessage, logger: any): LogMessageRequest => {
-  if (Array.isArray(m)) {
-    return { method: 'log', params: m }
-  } else {
-    const request = m as LogMessageRequest
-    if (request && typeof request.method === 'string' && request.params) {
-      return request
-    }
-    return { method: 'log', params: [m] }
-  }
-}
-
-export const makeLoggerDriver =
-  (options: LoggerDriverOptions = {}) => {
-    const logger: any = options.logger || console
-    return (message$: Stream<LoggerMessage>) => {
-      message$.addListener({
-        next: (m) => {
-          m = normalizeMessage(m, logger)
-          if (typeof logger[m.method] !== 'function') {
-            throw new Error(`Illegal method on logger \`${m.method}\``)
-          }
-          logger[m.method].apply(logger, m.params)
+export const makeLoggerDriver = () => {
+  const logger = console
+  return (request$: Stream<LogRequest>) => {
+    request$.addListener({
+      next: (r) => {
+        if (typeof r === 'function') {
+          r(logger)
+          return
         }
-      })
-    }
+        const args = typeof r === 'string' ? [r] : Array.isArray(r) ? r : r.args
+        logger.log(...args)
+      },
+    })
   }
+}

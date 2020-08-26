@@ -1,13 +1,11 @@
 {
   "name": "@cycler/logger",
-  "version": "1.0.0-pre.0",
+  "version": "1.0.0",
   "files": [
-    "*.js",
-    "*.d.ts"
+    "**/*.js",
+    "**/*.d.ts",
+    "!test"
   ],
-  "publishConfig": {
-    "tags": "latest"
-  },
   "description": "Logger driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
   "peerDependencies": {

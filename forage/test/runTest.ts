@@ -1,4 +1,4 @@
-import * as test from 'tape'
+import test from 'tape'
 import { makeTest } from './makeTest'
 import { makeForageDriver, ForageSource, ForageRequest } from '../.'
 import { forageDrivers } from '../'

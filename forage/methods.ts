@@ -60,11 +60,8 @@ export function store(storeName: string): StoreRequestHelper
 export function store(name: string, storeName: string): StoreRequestHelper
 
 export function store(...args: any[]): StoreRequestHelper {
-  let [name, storeName] = args
-  if (args.length === 1) {
-    storeName = name
-  }
-  let addStore = (request: ForageRequest): ForageRequest => {
+  const [name, storeName = name] = args
+  const addStore = (request: ForageRequest): ForageRequest => {
     if (name) {
       request.name = name
     }
@@ -74,6 +71,6 @@ export function store(...args: any[]): StoreRequestHelper {
   return {
     getItem: (...args: any[]) => addStore((<any>getItem)(...args)),
     removeItem: (...args: any[]) => addStore((<any>removeItem)(...args)),
-    getItems: (...args: any[]) => addStore((<any>getItems)(...args))
+    getItems: (...args: any[]) => addStore((<any>getItems)(...args)),
   }
 }

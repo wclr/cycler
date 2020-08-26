@@ -1,28 +1,31 @@
 {
   "name": "@cycler/forage",
-  "version": "1.0.0-unified.0",
-  "publishConfig": {
-    "tag": "latest"
-  },
+  "version": "1.0.0",
   "description": "Mozilla localForage driver for Cycle.js.",
   "repository": "http://github.com/whitecolor/cycler",
   "files": [
-    "*.js",
-    "*.d.ts"
+    "**/*.js",
+    "**/*.d.ts",
+    "!test"
   ],
   "scripts": {
     "test:browser": "budo test/browser.js --live --open"
   },
   "dependencies": {
-    "localforage": "^1.7.3",
+    "localforage": "^1.9.0",
     "localforage-getitems": "^1.4.2",
     "localforage-removeitems": "^1.4.0",
     "localforage-setitems": "^1.4.0"
   },
   "peerDependencies": {
-    "@cycler/task": "*"
+    "@cycle/run": "*",
+    "@cycler/task": "*",
+    "xstream": "*"
   },
   "devDependencies": {
-    "node-localstorage": "^1.3.0"
+    "@cycle/run": "*",
+    "@cycler/task": "workspace:*",
+    "node-localstorage": "^2.1.6",
+    "xstream": "*"
   }
 }

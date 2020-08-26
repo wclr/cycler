@@ -331,7 +331,7 @@ test('Dataflow connected to to multicasted source', t => {
   }, t.error)
 })
 
-test('Datfalow double reload', t => {
+test('Dataflow double reload', t => {
   const proxyId = getRandomId()
 
   const func = ({ input$ }: RxInputSource, rest: string, rest2: string) => {

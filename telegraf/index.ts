@@ -5,12 +5,13 @@ import {
   LaunchWebhookOptions,
   LaunchPollingOptions,
 } from 'telegraf/typings/telegraf'
+import crypto from 'crypto'
 
 import { TelegramOptions } from 'telegraf/typings/telegram'
 
-export type TelegrafRequest = {
+export type TelegrafRequest<T = any> = {
   ctx?: Context
-  task: (bot: Telegraf<Context>) => Promise<any>
+  task: (bot: Telegraf<Context>) => Promise<T>
 }
 
 export type TelegrafSource = ReturnType<ReturnType<typeof makeTelegrafDriver>>
@@ -21,21 +22,49 @@ type Arguments<F extends (...x: any[]) => any> = F extends (
   ? A
   : never
 
+const enableTelegrafDebug = () => {
+  const debug = require('debug')
+  debug.enable('telegraf*')
+}
+
+const modWebhook = (
+  webhook: LaunchWebhookOptions & { addRandomPath?: boolean }
+): LaunchWebhookOptions => {
+  const { addRandomPath, hookPath } = webhook || {}
+  return {
+    ...webhook,
+    ...(addRandomPath && typeof hookPath === 'string'
+      ? {
+          hookPath:
+            hookPath.replace(/\/$/, '') +
+            '/' +
+            crypto.randomBytes(32).toString('hex'),
+        }
+      : {}),
+  }
+}
+
 export const makeTelegrafDriver = ({
   token,
   telegram,
   username,
   webhook,
   polling,
+  debug,
   launch = true,
 }: {
   launch?: boolean
   token: string
   telegram?: TelegramOptions
   username?: string
+  debug?: boolean
   polling?: LaunchPollingOptions
-  webhook?: LaunchWebhookOptions
+  webhook?: LaunchWebhookOptions & { addRandomPath?: boolean }
 }) => {
+  if (debug) {
+    enableTelegrafDebug()
+  }
+
   return (request$: Stream<TelegrafRequest>) => {
     const waitingUpdates: { [UpdateId: number]: () => void } = {}
 
@@ -46,18 +75,18 @@ export const makeTelegrafDriver = ({
     const launchP = launch
       ? bot.launch({
           polling,
-          webhook,
+          webhook: webhook && modWebhook(webhook),
         })
       : new Promise(() => {})
 
     if (!launch && webhook) {
-      const { port, host, tlsOptions, cb, hookPath = '/' } = webhook
+      const { port, host, tlsOptions, cb, hookPath = '/' } = modWebhook(webhook)
       bot.startWebhook(hookPath, tlsOptions, port, host, cb)
     }
 
     const webhookReply = webhook && telegram?.webhookReply !== false
 
-    const taskDriver = makeTaskDriver<TelegrafRequest, any>(r => {
+    const taskDriver = makeTaskDriver<TelegrafRequest, unknown, unknown>((r) => {
       return r.task(bot).finally(() => {
         const id = r.ctx && r.ctx.update.update_id
         const resolveWaiting = id && waitingUpdates[id]
@@ -83,7 +112,7 @@ export const makeTelegrafDriver = ({
               next()
 
               if (webhookReply) {
-                return new Promise(resolve => {
+                return new Promise((resolve) => {
                   if (opts.waitForTask) {
                     const id = ctx.update.update_id
                     const existingResolve = waitingUpdates[id]
@@ -119,7 +148,7 @@ export const makeTelegrafDriver = ({
               .then(() => {
                 listener.next(bot)
               })
-              .catch(e => {
+              .catch((e) => {
                 listener.error(e)
               })
           },

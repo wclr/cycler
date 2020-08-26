@@ -1,4 +1,4 @@
-import { ResponseStream, ResponsesStream, MakeSource } from './interfaces'
+import { ResponseStream, ResponsesStream } from './interfaces'
 import xs, { Stream, MemoryStream } from 'xstream'
 import { adapt } from '@cycle/run/lib/adapt'
 import { FantasyObservable } from '@cycle/run'
@@ -22,16 +22,6 @@ import {
 } from './interfaces'
 
 export interface MakeTaskDriver {
-  /**
-   *  Task driver with custom source.
-   */
-  <Source, Request, Response, Error>(params: {
-    getResponse: GetResponse<Request, Response, Error>
-    lazy?: boolean
-    dispose?(): void
-    makeSource: MakeSource<Source, Request, Request, Response>
-  }): (request$: Stream<Request>) => Source
-
   /**
    *  Task driver.
    */
@@ -59,16 +49,6 @@ export interface MakeTaskDriver {
   }): TaskDriver<Request, Response>
 
   /**
-   *  Task driver with progressive response and custom source.
-   */
-  <Source, Request, Response, Error = any>(params: {
-    getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
-    lazy?: boolean
-    dispose?(): void
-    makeSource: MakeSource<Source, Request, Request, Response>
-  }): (request$: Stream<Request>) => Source
-
-  /**
    *  Task driver with request input that should be normalized.
    */
   <RequestInput, Request, Response, Error = any>(params: {
@@ -78,18 +58,6 @@ export interface MakeTaskDriver {
     lazy?: boolean
     dispose?(): void
   }): InputTaskDriver<RequestInput, Request, Response>
-
-  /**
-   *  Task driver with request input that should be normalized and custom source.
-   */
-  <Source, RequestInput, Request, Response, Error = any>(params: {
-    getResponse: GetResponse<Request, Response, Error>
-    normalizeRequest(request: RequestInput): Request
-    isolateMap?(request: RequestInput): RequestInput
-    lazy?: boolean
-    dispose?(): void
-    makeSource: MakeSource<Source, RequestInput, Request, Response>
-  }): (request$: Stream<RequestInput>) => Source
 
   /**
    *  Task driver with progressive response and request input
@@ -102,23 +70,9 @@ export interface MakeTaskDriver {
     lazy?: boolean
     dispose?(): void
   }): InputTaskDriver<RequestInput, Request, Response>
-
-  /**
-   *  Task driver with progressive response and request input
-   *  that should be normalized and custom source.
-   */
-  <Source, RequestInput, Request, Response, Error = any>(params: {
-    getProgressiveResponse: GetProgressiveResponse<Request, Response, Error>
-    normalizeRequest(request: RequestInput): Request
-    isolateMap?(request: RequestInput): Request
-    lazy?: boolean
-    dispose?(): void
-    makeSource: MakeSource<Source, RequestInput, Request, Response>
-  }): (request$: Stream<RequestInput>) => Source
 }
 
 export const makeTaskDriver: MakeTaskDriver = function <
-  Source,
   RequestInput,
   Request extends TaskRequest,
   Response,
@@ -130,7 +84,6 @@ export const makeTaskDriver: MakeTaskDriver = function <
     normalizeRequest = (_: RequestInput): Request & TaskRequest => _ as any,
     isolateMap,
     lazy = false,
-    makeSource,
   } = options
 
   if (normalizeRequest && !isolateMap) {
@@ -210,18 +163,15 @@ export const makeTaskDriver: MakeTaskDriver = function <
     const request$ = xs.create<RequestInput>()
 
     sink$.addListener({
-      next: r => request$.shamefullySendNext(r),
-      error: e => request$.shamefullySendError(e),
+      next: (r) => request$.shamefullySendNext(r),
+      error: (e) => request$.shamefullySendError(e),
       complete: () => request$.shamefullySendComplete(),
     })
 
     const response$$ = request$.map(createResponse$)
-    makeSource = makeSource || (makeTaskSource as any)
-    const source = makeSource!(response$$, {
-      // TODO: fix typings
-      makeSource: makeSource as any,
+    const makeSource = makeTaskSource
+    const source = makeSource(response$$ as any, {
       isolateMap,
-      createResponse$,
     })
     emptySubscribe(response$$)
 

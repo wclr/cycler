@@ -1,24 +1,28 @@
 import { makeTaskDriver, TaskSource } from '@cycler/task'
 import {
-  ForageDriverOptions,
+  Options,
   ForageRequest,
   ForageResponse,
-  ForageDriverName
+  ForageDriverName,
+  ForageTaskRequest,
 } from './interfaces'
 
-import { makeGetResponse } from './makeGetResponse'
+import { makeGetResponse as makeDriverParams } from './makeGetResponse'
 
 export const forageDrivers = {
   localStorage: 'localStorageWrapper' as ForageDriverName,
   webSQL: 'webSQLStorage' as ForageDriverName,
-  indexeddb: 'asyncStorage' as ForageDriverName
+  indexeddb: 'asyncStorage' as ForageDriverName,
 }
 
-export type ForageSource = TaskSource<ForageRequest, ForageResponse>
+export type ForageSource = TaskSource<
+  ForageRequest | ForageTaskRequest,
+  ForageResponse
+>
 
-export function makeForageDriver(options: ForageDriverOptions = {}) {
-  return makeTaskDriver<ForageRequest, ForageResponse, any>(
-    makeGetResponse(options)
+export function makeForageDriver(options: Options = {}) {
+  return makeTaskDriver<ForageRequest | ForageTaskRequest, ForageResponse, any>(
+    makeDriverParams(options)
   )
 }
 
