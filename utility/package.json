@@ -1,0 +1,17 @@
+{
+  "name": "@cycler/utility",
+  "version": "1.0.0",
+  "files": [
+    "**/*.js",
+    "**/*.d.ts",
+    "!test"
+  ],
+  "peerDependencies": {
+    "xstream": "*"
+  },
+  "devDependencies": {
+    "@cycle/dom": "^22.7.0",
+    "@cycle/isolate": "^5.2.0",
+    "xstream": "*"
+  }
+}
