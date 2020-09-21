@@ -13,7 +13,7 @@ export type ForageDriverName =
   | 'webSQLStorage'
   | 'asyncStorage'
 
-export type ForageMethod =
+export type ForageMethodName =
   | 'getItem'
   | 'setItem'
   | 'removeItem'
@@ -34,6 +34,11 @@ export type Iterator = (
 export interface StoreRequest {
   name?: string
   storeName?: string
+}
+
+export interface ForageMethodRequest extends StoreRequest, TaskRequest {
+  method: ForageMethodName
+  args: string[]
 }
 
 export interface GetItemRequest extends StoreRequest, TaskRequest {
@@ -80,11 +85,10 @@ export interface ExecuteRequest extends StoreRequest, TaskRequest {
 export interface ForageTaskRequest<T = unknown>
   extends StoreRequest,
     TaskRequest {
-  task: (storage: ForageInstance) => T
+  task: (storage: ForageInstance) => Promise<T>
 }
 
-export type ForageRequest =
-  | ExecuteRequest
+export type ForageNamedRequest =
   | GetItemRequest
   | RemoveItemRequest
   | SetItemRequest
@@ -96,6 +100,12 @@ export type ForageRequest =
   | RemoveItemsRequest
   | SetItemsRequest
   | SetItemsIndexedRequest
+
+export type ForageRequest =
+  | ForageMethodRequest
+  | ForageNamedRequest
+  | ExecuteRequest
+  | ForageTaskRequest
 
 export type ForageResponse = unknown
 

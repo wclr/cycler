@@ -16,6 +16,8 @@ import {
   ForageDriverOption,
   ExecuteRequest,
   ForageTaskRequest,
+  ForageNamedRequest,
+  ForageMethodRequest,
 } from './interfaces'
 
 const getDriverName = (
@@ -112,11 +114,34 @@ const defineDrivers = (driver: ForageDriverOption | ForageDriverOption[]) => {
   })
 }
 
+const getParamsFromNamedRequest = (
+  request: ForageNamedRequest
+): [string, string[]] | undefined => {
+  const method = methods.reduce(
+    (found, method) => found || (request.hasOwnProperty(method) ? method : ''),
+    ''
+  )
+  const param = (<any>request)[method]
+  let params = [param]
+  if (method === 'setItem') {
+    params = [param.key, param.value]
+  }
+  return method ? [method, params] : undefined
+}
+
+const getParamsFromMethodRequest = (
+  request: ForageMethodRequest
+): [string, string[]] | undefined => {
+  const method = request.method
+  const params = request.args
+  return method && params ? [method, params] : undefined
+}
+
 export const makeGetResponse = (options: Options) => {
   options.driver && defineDrivers(options.driver)
 
   return {
-    getResponse: (request: ForageRequest | ForageTaskRequest) => {
+    getResponse: (request: ForageRequest) => {
       const storeOptions = geStoreOptionsForRequest(options, request)
       const instance = getStoreInstance(storeOptions)
       const task =
@@ -125,32 +150,25 @@ export const makeGetResponse = (options: Options) => {
       if (task) {
         return task(instance)
       }
-      const method = methods.reduce(
-        (found, method) =>
-          found || (request.hasOwnProperty(method) ? method : ''),
-        ''
-      )
+      const [method, params] =
+        getParamsFromMethodRequest(request as ForageMethodRequest) ||
+        getParamsFromNamedRequest(request as ForageNamedRequest) ||
+        []
+
       if (!method) {
         throw new Error(`No valid method found in request`)
       }
-      const param = (<any>request)[method]
-      let params = [param]
-      if (method === 'setItem') {
-        params = [param.key, param.value]
-      }
+
       if (!instance[method]) {
         throw new Error(`Method ${method} is absent on localforage instance.`)
       }
+      if (!params) {
+        throw Error(
+          `Could not find params in localforage request for method ${method}`
+        )
+      }
       return instance[method](...params)
     },
-    dispose: () => {
-      const instances = storeInstances
-      Object.keys(instances).forEach((key) => {
-        const instance = instances[key]
-        if (typeof instance.dropInstance === 'function') {
-          instance.dropInstance().catch(() => {})
-        }
-      })
-    },
+    dispose: () => {},
   }
 }
