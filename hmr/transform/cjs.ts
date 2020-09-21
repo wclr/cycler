@@ -1,5 +1,5 @@
 import { ProxyOptions } from '../.'
-import { Transformer, TransformOptions } from '.'
+import { Transform } from '.'
 
 export const hotAcceptCode = () => {
   return (
@@ -11,7 +11,7 @@ export const hotAcceptCode = () => {
   )
 }
 
-export const transformer: Transformer = (source: string, options) => {
+export const transform: Transform = (source: string, options) => {
   const proxyOptions: ProxyOptions = {
     debug: options.debug,
   }
@@ -41,6 +41,9 @@ export const transformer: Transformer = (source: string, options) => {
   const containsOnlyExports = testOnly(source)
   const containsSkipExports = testSkip(source)
 
+  const makeExport =
+    options.makeExport || ((a: string, e: string) => a + e + ';\n')
+
   source = source
     .split('\n')
     .map((line, i, sourceLines) => {
@@ -64,9 +67,11 @@ export const transformer: Transformer = (source: string, options) => {
           const hmrName = getHmrHame(exportName)
           exportedNames.push(exportName)
           exportsToAdd.push(
-            exportAssign +
+            makeExport(
+              exportAssign,
               `_hmrProxy(${hmrName}, ${sourceIdentifier} + "${hmrName}_",` +
-              ` ${JSON.stringify(proxyOptions)});\n`
+                ` ${JSON.stringify(proxyOptions)})`
+            )
           )
           return `var ${hmrName} = `
         }
@@ -76,35 +81,10 @@ export const transformer: Transformer = (source: string, options) => {
     })
     .join('\n')
 
-  // source = source.replace(
-  //   regEx,
-  //   (exportAssign: string, exportName: string): string => {
-  //     exportName = exportName || 'default'
-  //     const validExportName = !testExportName || testExportName.test(exportName)
-  //     if (validExportName) {
-  //       const hmrName = getHmrHame(exportName)
-  //       exportedNames.push(exportName)
-  //       exportsToAdd.push(
-  //         exportAssign +
-  //           `_hmrProxy(${hmrName}, ${sourceIdentifier} + "${hmrName}_",` +
-  //           ` ${JSON.stringify(proxyOptions)});\n`
-  //       )
-  //       return `\nvar ${hmrName} = `
-  //     }
-  //     return exportAssign
-  //   }
-  // )
-
-  // // replace used cases of exported name in the source with new one
-  // exportedNames.forEach(name => {
-  //   const regEx = new RegExp(name + '\\s*(', 'g')
-  //   source = source.replace(regEx, getHmrHame(name) + '(')
-  // })
-
   if (exportsToAdd.length) {
     const importFrom = options.importFrom || '@cycler/hmr'
     source =
-      source.replace(/^("use strict";)?/, whole => {
+      source.replace(/^("use strict";)?/, (whole) => {
         return whole + `\nvar _hmrProxy = require("${importFrom}").hmrProxy;\n`
       }) +
       '\n' +

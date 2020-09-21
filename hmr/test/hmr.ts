@@ -34,7 +34,7 @@ test('xstream: Dataflow returning single steam', t => {
   })
 })
 
-test.only('xstream: proxy handles memory stream', t => {
+test('xstream: proxy handles memory stream', t => {
   const func = ({ input$ }: { input$: Stream<number> }) => {
     return input$.map(x => x * 2).remember()
   }

@@ -5,7 +5,8 @@ export interface TransformOptions extends ProxyOptions {
   importFrom?: string
   sourceIdentifier: string
   resourcePath?: string
-  addHotAccept?: boolean
+  addHotAccept?: boolean,
+  makeExport?: (exportAssign: string, str: string) => string
 }
 
-export type Transformer = (source: string, options: TransformOptions) => string
+export type Transform = (source: string, options: TransformOptions) => string

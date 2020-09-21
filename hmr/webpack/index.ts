@@ -1,8 +1,6 @@
-import webpack from 'webpack'
 import qs from 'querystring'
-import fs from 'fs'
 import { ProxyOptions } from '../.'
-import { Transformer } from '../transform'
+import { Transform } from '../transform'
 
 export type Module = {
   id: number | null
@@ -10,7 +8,7 @@ export type Module = {
 
 export type SupportedFormat = 'cjs'
 
-export interface LoaderOptions extends ProxyOptions {
+export interface HmrLoaderOptions extends ProxyOptions {
   testExportName?: string
   importFrom?: string
   format?: SupportedFormat
@@ -19,12 +17,12 @@ export interface LoaderOptions extends ProxyOptions {
 
 export interface LoaderContext {
   _module: Module
-  query: string | LoaderOptions
-  resourcePath: string,
+  query: string | HmrLoaderOptions
+  resourcePath: string
 }
 
-export default function (this: LoaderContext, source: string) {  
-  let options: LoaderOptions = {}
+export default function (this: LoaderContext, source: string) {
+  let options: HmrLoaderOptions = {}
   if (typeof this.query === 'string') {
     const queryStr = this.query.slice(1)
     try {
@@ -33,7 +31,7 @@ export default function (this: LoaderContext, source: string) {
       options = qs.parse(queryStr)
     }
   } else {
-    const queryObj: LoaderOptions = this.query || {}
+    const queryObj: HmrLoaderOptions = this.query || {}
     options = { ...queryObj }
   }
   if (options.onlyEnabled && !/@hmr-(enable|on)/.test(source)) {
@@ -46,16 +44,16 @@ export default function (this: LoaderContext, source: string) {
     return source
   }
   const format = options.format || 'cjs'
-  const transformer: Transformer = require('../transform/' + format).transformer
+  const transform: Transform = require('../transform/' + format).transform
 
   const transformOptions = Object.assign(
     {
       sourceIdentifier: 'module.id',
       addHotAccept: true,
-      resourcePath: this.resourcePath
+      resourcePath: this.resourcePath,
     },
     options
   )
 
-  return transformer(source, transformOptions)
+  return transform(source, transformOptions)
 }

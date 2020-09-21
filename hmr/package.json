@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@types/webpack": "^2.2.12",
+    "@cycler/hmr": "workspace:*",
     "webpack": "^2.3.0"
   }
 }

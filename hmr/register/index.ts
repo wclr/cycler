@@ -1,4 +1,4 @@
-import { Transformer, TransformOptions } from '../transform'
+import { Transform } from '../transform'
 import fs from 'fs'
 
 export type Options = {
@@ -14,7 +14,7 @@ const configFiles = ['.hmr', '.hmr.json', '.cycle-hmr', '.cycle-hmr.json']
 export function register(options?: Options) {
   if (!options) {
     options = {}
-    configFiles.forEach(configFile => {
+    configFiles.forEach((configFile) => {
       try {
         options = JSON.parse(fs.readFileSync(configFile, 'utf-8'))
       } catch (e) {}
@@ -31,8 +31,7 @@ export function register(options?: Options) {
   }
 
   const format = 'cjs'
-  const transformer = require('../transform/' + format)
-    .transformer as Transformer
+  const transform = require('../transform/' + format).transform as Transform
 
   const originalJsHandler = require.extensions['.js'] as (
     m: NodeModule,
@@ -41,7 +40,7 @@ export function register(options?: Options) {
 
   const testFileName = (testers: string[], fileName: string) =>
     testers
-      .map(tester => new RegExp(tester))
+      .map((tester) => new RegExp(tester))
       .reduce((prev, tester) => prev || tester.test(fileName), false)
 
   function registerExtension(ext: string) {
@@ -59,7 +58,7 @@ export function register(options?: Options) {
 
       m._compile = function (this: any, code: string, fileName: string) {
         const moduleId = fileName.replace(/\\/g, '/').replace(/\//g, '_')
-        const transformed = transformer(code, {
+        const transformed = transform(code, {
           testExportName: options!.testExportName,
           sourceIdentifier: `"${moduleId}"`,
           addHotAccept: !options!.noHotAccept,
