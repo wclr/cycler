@@ -10,14 +10,15 @@ export type Module = {
 
 export type SupportedFormat = 'cjs'
 
-export interface LoaderOptions {
+export interface SpyLoaderOptions {
+  onlyEnabled?: boolean
   importFrom?: string
   format?: SupportedFormat
 }
 
 export interface LoaderContext {
   _module: Module
-  query: string | LoaderOptions
+  query: string | SpyLoaderOptions
   resourcePath: string
 }
 const transformedComment = '@cycler/spy transformed'
@@ -30,7 +31,7 @@ export default function (this: LoaderContext, source: string) {
     return source
   }
 
-  let options: LoaderOptions = {}
+  let options: SpyLoaderOptions = {}
   if (typeof this.query === 'string') {
     const queryStr = this.query.slice(1)
     try {
@@ -39,12 +40,16 @@ export default function (this: LoaderContext, source: string) {
       options = qs.parse(queryStr)
     }
   } else {
-    const queryObj: LoaderOptions = this.query || {}
+    const queryObj: SpyLoaderOptions = this.query || {}
     options = { ...queryObj }
   }
 
   // Don't want to transform multiple times
   if (transformedCommentRegExp.test(source)) {
+    return source
+  }
+
+  if (options.onlyEnabled && !/@spy-(enable|on)/.test(source)) {
     return source
   }
 

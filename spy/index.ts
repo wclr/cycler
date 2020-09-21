@@ -6,7 +6,6 @@ import {
 } from '@cycle/run'
 
 import { adapt } from '@cycle/run/lib/adapt'
-import R from 'ramda'
 
 const isObservable = (target: any) => {
   return (
