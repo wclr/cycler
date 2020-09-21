@@ -17,7 +17,7 @@
     "indentSize": 2,
     "tabSize": 2
   },
-  "include": [
+  "_include": [
     ".scripts/**/*",
     "express/**/*",
     "hmr/**/*",

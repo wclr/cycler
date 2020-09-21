@@ -13,6 +13,9 @@ typings
 *.js.map
 *.d.ts
 
+!/.cz-config.js
+!/pnpmfile.js
+
 yarn-error.log
 npm-debug*
 
@@ -22,5 +25,6 @@ _*
 _README.md
 docker-compose.override.yml
 
-.yalc
+.yalc/*
 yalc.lock
+# !.yalc/@whitecolor

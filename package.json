@@ -25,6 +25,7 @@
     "@cycle/isolate": "^5.2.0",
     "@cycle/most-run": "^8.4.0",
     "@cycle/run": "^5.4.0",
+    "@whitecolor/eslint-config": "file:.yalc/@whitecolor/eslint-config",
     "isolate": "^0.14.0",
     "ts-node": "^8.10.2"
   },
@@ -66,20 +67,9 @@
     "typescript": "^3.9.5",
     "validate-commit-msg": "^2.8.2",
     "watchify": "^3.7.0",
-    "xstream": "^11.12.0"
-  },
-  "eslintDependencies": {
+    "xstream": "^11.12.0",
     "eslint": "^7.6.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-only-warn": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^3.7.1",
-    "@typescript-eslint/parser": "^3.7.1",
     "typescript-eslint-language-service": "^3.0.0"
-  },
-  "tslintDependencies": {
-    "tslint": "^6.1.2",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript-tslint-plugin": "^0.5.5"
   },
   "config": {
     "commitizen": {

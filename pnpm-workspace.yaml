@@ -1,2 +1,5 @@
 packages:
   - '*'
+  - '.yalc/*'
+  - '.yalc/@*/*'
+  - '!.yalc/@whitecolor/eslint-config'
