@@ -1,4 +1,4 @@
-import { ResponseStream, TaskSource } from '../interfaces'
+import { ResponseStream, TaskSource, Category } from '../interfaces'
 import xs, { Stream, MemoryStream } from 'xstream'
 import { attachRequest } from '../attachRequest'
 
@@ -29,20 +29,19 @@ type Arguments<F extends (...x: any[]) => any> = F extends (
   ? A
   : never
 
-export const makeReqResHelper = <
+export const makeReqResTaskHelper = <
   Responses extends { [K in string]: any },
   R extends { [m in M]: (...args: any[]) => Promise<any> },
   M extends string = 'task'
 >(
-  categories?: { [C in keyof Responses]: string }
+  categories?: { [C in keyof Responses]: Category }
 ) => {
   return <K extends keyof Responses>(key: K) => {
     return {
       response: <S extends TaskSource<R, unknown>>(s: S) =>
-        s.select<Responses[K]>(key as string).flatten(),
-      success: <S extends TaskSource<R, unknown>>(s: S) =>
+        s.select<Responses[K]>(key as Category).flatten(),
+      success: <S extends TaskSource<R, Category>>(s: S) =>
         s.select<Responses[K]>(key as string).map(success),
-
       failure: <S extends TaskSource<R, unknown>>(s: S) =>
         s.select<Responses[K]>(key as string).map(failure),
       request: (task: (...arg: Arguments<R[M]>) => Promise<Responses[K]>) => {

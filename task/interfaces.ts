@@ -1,5 +1,7 @@
-import xs, { Stream, MemoryStream } from 'xstream'
+import { Stream, MemoryStream } from 'xstream'
 import { FantasyObservable } from '@cycle/run'
+
+export type Category = string | symbol
 
 export type ResponseStreamWithRequest<Response, Request> = MemoryStream<
   Response
@@ -15,6 +17,9 @@ export type ResponsesStream<Response, Request> = Stream<
 
 export interface MakeTaskSourceOptions<RequestInput, Request, Response> {
   isolateMap?(request: RequestInput): Request
+  createResponse$?: (
+    request: RequestInput
+  ) => ResponseStreamWithRequest<Request, Response>
 }
 
 export interface MakeSource<Source, RequestInput, Request, Response> {
@@ -27,20 +32,17 @@ export interface MakeSource<Source, RequestInput, Request, Response> {
 export interface IsolateSource<Source, RequestInput, IsolatedRequest> {
   isolateSink(
     request$: Stream<RequestInput>,
-    scope?: string
+    scope?: Category
   ): Stream<IsolatedRequest>
-  isolateSource(source: Source, scope: string): Source
+  isolateSource(source: Source, scope: Category): Source
 }
 
 export interface TaskSource<Request, Response> {
   filter<Req>(
     predicate: (request: Request & Req) => boolean
   ): TaskSource<Request & Req, Response>
-  select<Res>(
-    category?: string
-  ): Stream<ResponseStream<Response & Res, Request>>
-  select<Res, Req>(
-    category?: string
+  select<Res = unknown, Req = unknown>(
+    category?: Category
   ): Stream<ResponseStream<Response & Res, Request & Req>>
   // pull<Res>(request: Request): ResponseStream<Response & Res, Request>
   // pull<Res, Req>(
@@ -52,10 +54,8 @@ export interface InputTaskSource<RequestInput, Request, Response> {
   filter<Req>(
     predicate: (request: Request & Req) => boolean
   ): InputTaskSource<RequestInput, Request & Req, Response>
-  select<Res>(
-    category?: string
-  ): Stream<ResponseStream<Response & Res, Request>>
-  select<Res, Req>(
+
+  select<Res = unknown, Req = unknown>(
     category?: string
   ): Stream<ResponseStream<Response & Res, Request & Req>>
   // pull<Res>(request: RequestInput): ResponseStream<Response & Res, Request>
@@ -79,7 +79,7 @@ export interface Thenable<R, Error> {
 
 export interface TaskRequest {
   lazy?: boolean
-  category?: string
+  category?: Category
 }
 export type GetResponseCallback<Response, Error> = (
   err?: Error | null,

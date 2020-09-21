@@ -169,9 +169,9 @@ export const makeTaskDriver: MakeTaskDriver = function <
     })
 
     const response$$ = request$.map(createResponse$)
-    const makeSource = makeTaskSource
-    const source = makeSource(response$$ as any, {
+    const source = makeTaskSource(response$$ as any, {
       isolateMap,
+      createResponse$
     })
     emptySubscribe(response$$)
 

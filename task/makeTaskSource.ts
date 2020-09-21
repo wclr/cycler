@@ -1,5 +1,3 @@
-import xs, { Stream, MemoryStream } from 'xstream'
-import { Driver, FantasyObservable } from '@cycle/run'
 import { adapt } from '@cycle/run/lib/adapt'
 import {
   MakeTaskSourceOptions,
@@ -51,13 +49,18 @@ export function makeTaskSource<RequestInput, Request, Response>(
       if (!category) {
         return adapt(response$$)
       }
-      if (typeof category !== 'string') {
-        throw new Error(`category should be a string`)
+      if (typeof category !== 'string' && typeof category !== 'symbol') {
+        throw new Error(`category should be a string or a symbol`)
       }
       const requestPredicate = (request: any) =>
         request && request.category === category
       return driverSource.filter(requestPredicate).select()
-    }    
+    },
+    pull(request: RequestInput) {
+      return options.createResponse$!(
+        requestOps.addProperty(request, 'lazy', true)
+      )
+    },
   }
   return driverSource as any
 }

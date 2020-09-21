@@ -2,15 +2,13 @@ export const requestOps = {
   namespaceProp: '_namespace',
   addProperty: <Request>(request: Request, name: string, value: any) => {
     const newRequest = typeof request === 'object' ? { ...request } : request
-    return Object.assign(newRequest, { [name]: value })
+    return { ...newRequest, [name]: value }
   },
   readProperty: <T>(request: any, propertyName: string) =>
     (request as any)[propertyName] as T,
   removeProperty: (request: Request, propertyName: string) => {
     const newRequest =
-      typeof request === 'object'
-        ? Object.assign({}, request)
-        : (request as any)
+      typeof request === 'object' ? { ...request } : (request as any)
     delete newRequest[propertyName]
     return newRequest
   },
@@ -48,9 +46,7 @@ export const requestOps = {
   },
 }
 
-export type Partial<T> = {
-  [P in keyof T]?: T[P]
-}
 export function setRequestOps<Request>(ops: Partial<typeof requestOps>) {
-  Object.assign(requestOps, ops)
+  const keys = Object.keys(ops) as (keyof typeof requestOps)[]
+  keys.forEach((key) => (requestOps[key] = ops[key] as any))
 }

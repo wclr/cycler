@@ -22,17 +22,15 @@ import {
   lazyDriver,
   isolationDiver,
   progressiveDriver,
-  
 } from './make-drivers'
 import { ResponseStreamWithRequest } from '../interfaces'
 
-test('Set xstream adapt', t => {
-  setAdapt(x => x)
+test('Set xstream adapt', (t) => {
+  setAdapt((x) => x)
   t.end()
 })
 
-
-test('Responses stream is hot and not remembered', t => {
+test('Responses stream is hot and not remembered', (t) => {
   const request = { name: 'John' }
   const response = 'async John'
   const source = basicDriver(
@@ -44,10 +42,10 @@ test('Responses stream is hot and not remembered', t => {
   setTimeout(() => {
     source
       .select()
-      .map(_ => _)
+      .map((_) => _)
       .compose(flattenConcurrently)
       .addListener({
-        next: x => {
+        next: (x) => {
           t.deepEqual(x, response, 'response correct')
           t.end()
         },
@@ -59,7 +57,7 @@ const skipRemembered = dropUntil<Stream<Response>>(
   xs.fromPromise(Promise.resolve())
 )
 
-test('Responses stream is hot and not remembered with @cycle/run', t => {
+test('Responses stream is hot and not remembered with @cycle/run', (t) => {
   const request = { name: 'John' }
   const response = 'async John'
   let countInFirstDriver = 0
@@ -70,7 +68,7 @@ test('Responses stream is hot and not remembered with @cycle/run', t => {
         .compose(skipRemembered)
         .compose(flattenConcurrently)
         .addListener({
-          next: x => {
+          next: (x) => {
             t.deepEqual(x, response, 'response correct')
             t.is(countInFirstDriver, 2, 'first subscriber gets two r$')
             t.end()
@@ -99,14 +97,14 @@ test('Responses stream is hot and not remembered with @cycle/run', t => {
   })
 })
 
-test('Basic driver from promise', t => {
+test('Basic driver from promise', (t) => {
   const request = { name: 'John' }
   const response = 'async John'
   const source = basicDriver(xs.of(request).compose(delay(0)))
 
   source
     .select()
-    .map(r$ => {
+    .map((r$) => {
       t.deepEqual(
         (r$ as ResponseStreamWithRequest<Response, Request>).request,
         request,
@@ -116,14 +114,14 @@ test('Basic driver from promise', t => {
     })
     .compose(flattenConcurrently)
     .addListener({
-      next: x => {
+      next: (x) => {
         t.deepEqual(x, response, 'response correct')
         t.end()
       },
     })
 })
 
-test('Basic driver - cancellation with abort (lazy requests)', t => {
+test('Basic driver - cancellation with abort (lazy requests)', (t) => {
   // lets make requests mutable for testing abortion
   // we probably don't need to change it back
   setRequestOps({
@@ -144,7 +142,7 @@ test('Basic driver - cancellation with abort (lazy requests)', t => {
     .select()
     .flatten()
     .addListener({
-      next: x => {
+      next: (x) => {
         t.ok(requests[0].props?.aborted, 'fist request was aborted')
         t.deepEqual(x, response, 'response is correct')
         t.end()
@@ -152,9 +150,10 @@ test('Basic driver - cancellation with abort (lazy requests)', t => {
     })
 })
 
-test('Basic driver - `filter` and `select` methods', t => {
+test.only('Basic driver - `filter` and `select` methods', (t) => {
+  const johnSymbol = Symbol()
   const requests: Request[] = [
-    { name: 'John', category: 'john' },
+    { name: 'John', category: johnSymbol },
     { name: 'Alex', type: 'alex' },
   ]
   const responses: Response[] = ['async John', 'async Alex']
@@ -162,8 +161,8 @@ test('Basic driver - `filter` and `select` methods', t => {
 
   source
     // this won't work
-    .select<{ addToResponse: boolean }, { addToRequest: boolean }>('john')
-    .map(r$ => {
+    .select<{ addToResponse: boolean }, { addToRequest: boolean }>(johnSymbol)
+    .map((r$) => {
       t.is(
         (r$ as any).request.addToRequest,
         undefined,
@@ -178,16 +177,16 @@ test('Basic driver - `filter` and `select` methods', t => {
     })
     .compose(flattenConcurrently)
     .addListener({
-      next: x => {
+      next: (x) => {
         t.is(x.addToResponse, undefined, 'select additional response typing ok')
         t.deepEqual(x, responses[0], 'response 1 is correct')
       },
     })
 
   source
-    .filter<{ addToRequest: boolean }>(r => r.type === 'alex')
+    .filter<{ addToRequest: boolean }>((r) => r.type === 'alex')
     .select()
-    .map(r$ => {
+    .map((r$) => {
       t.is(
         (r$ as any).request.addToRequest,
         undefined,
@@ -202,7 +201,7 @@ test('Basic driver - `filter` and `select` methods', t => {
     })
     .compose(flattenConcurrently)
     .addListener({
-      next: x => {
+      next: (x) => {
         t.deepEqual(x, responses[1], 'response 2 is correct')
       },
     })
@@ -211,13 +210,13 @@ test('Basic driver - `filter` and `select` methods', t => {
     .select()
     .compose(flattenConcurrently)
     .fold((prev, x) => prev.concat(<any>x), [])
-    .filter(x => x.length === 2)
+    .filter((x) => x.length === 2)
     .addListener({
-      next: x => t.end(),
+      next: (x) => t.end(),
     })
 })
 
-test('Lazy driver - should make request when subscribed to response$', t => {
+test('Lazy driver - should make request when subscribed to response$', (t) => {
   const request = { name: 'John' }
   const source = lazyDriver(xs.of(request).compose(delay(0)))
   let res1: any
@@ -227,7 +226,7 @@ test('Lazy driver - should make request when subscribed to response$', t => {
     .select()
     .compose(flattenConcurrently)
     .addListener({
-      next: x => {
+      next: (x) => {
         res1 = x
       },
     })
@@ -239,7 +238,7 @@ test('Lazy driver - should make request when subscribed to response$', t => {
     .compose(delay(100))
     .compose(flattenConcurrently)
     .addListener({
-      next: res2 => {
+      next: (res2) => {
         console.log(res1, res2)
         t.notEqual(res1, res2, 'response are different')
         t.end()
@@ -247,7 +246,7 @@ test('Lazy driver - should make request when subscribed to response$', t => {
     })
 })
 
-test('Basic driver isolation', t => {
+test('Basic driver isolation', (t) => {
   const request = 'John'
   const response = 'async John'
 
@@ -256,7 +255,7 @@ test('Basic driver isolation', t => {
   const dataflow = ({ source }: { source: TaskSource<Request, Response> }) => {
     source
       .select()
-      .map(r$ => {
+      .map((r$) => {
         t.same((r$ as any).request.name, 'John', 'request is correct')
         t.same(
           (r$ as any).request._namespace,
@@ -267,7 +266,7 @@ test('Basic driver isolation', t => {
       })
       .compose(flattenConcurrently)
       .addListener({
-        next: x => {
+        next: (x) => {
           t.deepEqual(x, response, 'response')
           t.end()
         },
@@ -288,31 +287,31 @@ test('Basic driver isolation', t => {
   request$.shamefullySendNext({ name: 'Alex', _namespace: ['scope1'] })
 })
 
-test('Basic driver from promise failure', t => {
+test('Basic driver from promise failure', (t) => {
   const request = { name: '' }
   const source = basicDriver(xs.of(request).compose(delay(0)))
   const expected = { name: 'asyncJohn' }
 
   source
     .select()
-    .map(r$ => r$.replaceError(() => xs.of('error')))
+    .map((r$) => r$.replaceError(() => xs.of('error')))
     .compose(flattenConcurrently)
     .addListener({
-      next: x => {
+      next: (x) => {
         t.deepEqual(x, 'error', 'error sent')
         t.end()
       },
     })
 })
 
-test('Progressive response driver', t => {
+test('Progressive response driver', (t) => {
   const request = { name: 'John' }
   const response = 'async John'
   const source = progressiveDriver(xs.of(request).compose(delay(0)))
   let values: any[] = []
   source
     .select()
-    .map(r$ => {
+    .map((r$) => {
       t.deepEqual(
         (r$ as any).request,
         request,
@@ -322,7 +321,7 @@ test('Progressive response driver', t => {
     })
     .compose(flattenConcurrently)
     .addListener({
-      next: x => {
+      next: (x) => {
         values.push(x)
         if (values.length === 3) {
           t.deepEqual(values, [1, 2, 3], 'progressive response is ok')
@@ -332,12 +331,13 @@ test('Progressive response driver', t => {
     })
 })
 
-test('xstream run (isolation, cancellation)', t => {
+test('xstream run (isolation, cancellation)', (t) => {
   const requests0 = [
     { name: 'John', lazy: true, props: { aborted: false } },
     { name: 'Alex', lazy: true, props: { aborted: false } },
   ]
   const requests1 = [{ name: 'Jane', props: { aborted: false } }]
+
   const Dataflow = (
     { source, request$ }: { source: any; request$: any },
     num: number
@@ -413,7 +413,7 @@ test('xstream run (isolation, cancellation)', t => {
   })
 })
 
-test('Sequential lazy requests run', t => {
+test('Sequential lazy requests run', (t) => {
   type Sources = { driver: TaskSource<{ num: number }, number> }
 
   const actions: string[] = []
@@ -421,16 +421,16 @@ test('Sequential lazy requests run', t => {
     getResponse: (request, cb) => {
       setTimeout(() => {
         actions.push('request' + request.num)
-      })       
+      })
       setTimeout(() => {
-        cb(null, request.num)        
-      }, (3 - request.num)*50)
+        cb(null, request.num)
+      }, (3 - request.num) * 50)
     },
   })
 
   run(
     (sources: Sources) => {
-      const request$ = xs.from([1, 2]).map(num => ({ num, lazy: true }))
+      const request$ = xs.from([1, 2]).map((num) => ({ num, lazy: true }))
       const result$ = sources.driver
         .select<number>()
         .compose(flattenSequentially)
@@ -460,7 +460,7 @@ test('Sequential lazy requests run', t => {
   )
 })
 
-test('Sequential non-lazy requests run', t => {
+test('Sequential non-lazy requests run', (t) => {
   type Sources = { driver: TaskSource<{ num: number }, number> }
 
   const actions: string[] = []
@@ -477,11 +477,11 @@ test('Sequential non-lazy requests run', t => {
     (sources: Sources) => {
       const request$ = xs
         .from([1, 2])
-        .map(num =>
+        .map((num) =>
           concat(
             xs.of({ num } as any),
             sources.driver
-              .filter(x => x.num === num)
+              .filter((x) => x.num === num)
               .select()
               .take(1)
               .flatten()
@@ -489,8 +489,8 @@ test('Sequential non-lazy requests run', t => {
           )
         )
         .compose(flattenSequentially)
-        .filter(x => !!x)
-        .map(_ => _!)
+        .filter((x) => !!x)
+        .map((_) => _!)
 
       return {
         driver: request$,
@@ -518,7 +518,7 @@ test('Sequential non-lazy requests run', t => {
   )
 })
 
-test('Sync callback driver', t => {
+test('Sync callback driver', (t) => {
   type Sources = { driver: TaskSource<{ num: number }, number> }
   let requestsInDriver = 0
   const driver = makeTaskDriver<{ num: number }, number, any>({
@@ -550,4 +550,3 @@ test('Sync callback driver', t => {
     }
   )
 })
-
