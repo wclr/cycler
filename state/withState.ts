@@ -1,11 +1,11 @@
-import xs, { Stream, MemoryStream } from 'xstream'
-import { Options, Reducer, makeStateDriver } from '.'
+import xs, { Stream } from 'xstream'
+import { Options, Reducer, makeStateDriver, StateSource } from '.'
 
 export type Omit<T, K extends keyof T> = { [P in Exclude<keyof T, K>]: T[P] }
 
 export type Forbid<T, K extends keyof T> = Omit<T, K> & { [P in K]?: never }
 
-export type OSo<T, N extends string> = { [P in N]: MemoryStream<T> }
+export type OSo<T, N extends string> = { [P in N]: StateSource<T> }
 export type OSi<T, N extends string> = { [P in N]: Stream<Reducer<T>> }
 
 type Component<So, Si> = (sources: So, ...rest: any[]) => Si
