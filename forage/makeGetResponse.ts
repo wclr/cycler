@@ -1,20 +1,11 @@
-import localforage from 'localforage'
-const getItems = require('localforage-getitems')
-const setItems = require('localforage-setitems')
-const removeItems = require('localforage-removeitems')
-
-const extendLocalForage = (obj: any) => obj.extendPrototype(localforage)
-localforage.iterate
-extendLocalForage(getItems)
-extendLocalForage(setItems)
-extendLocalForage(removeItems)
+import localforage from './localforage'
 
 import {
   ForageRequest,
   Options,
   LocalForageOptions,
   ForageDriverOption,
-  ExecuteRequest,
+  ForageExecRequest,
   ForageTaskRequest,
   ForageNamedRequest,
   ForageMethodRequest,
@@ -145,7 +136,7 @@ export const makeGetResponse = (options: Options) => {
       const storeOptions = geStoreOptionsForRequest(options, request)
       const instance = getStoreInstance(storeOptions)
       const task =
-        (request as ExecuteRequest).execute ||
+        (request as ForageExecRequest).execute ||
         (request as ForageTaskRequest).task
       if (task) {
         return task(instance)

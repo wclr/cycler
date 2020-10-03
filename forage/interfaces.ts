@@ -78,7 +78,7 @@ export interface SetItemsIndexedRequest extends StoreRequest, TaskRequest {
 }
 
 // remove
-export interface ExecuteRequest extends StoreRequest, TaskRequest {
+export interface ForageExecRequest extends StoreRequest, TaskRequest {
   execute: (storage: ForageInstance) => Promise<any>
 }
 
@@ -104,7 +104,7 @@ export type ForageNamedRequest =
 export type ForageRequest =
   | ForageMethodRequest
   | ForageNamedRequest
-  | ExecuteRequest
+  | ForageExecRequest
   | ForageTaskRequest
 
 export type ForageResponse = unknown
