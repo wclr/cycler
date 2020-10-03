@@ -32,9 +32,9 @@ export interface MakeSource<Source, RequestInput, Request, Response> {
 export interface IsolateSource<Source, RequestInput, IsolatedRequest> {
   isolateSink(
     request$: Stream<RequestInput>,
-    scope?: Category
+    scope?: string
   ): Stream<IsolatedRequest>
-  isolateSource(source: Source, scope: Category): Source
+  isolateSource(source: Source, scope: string): Source
 }
 
 export interface TaskSource<Request, Response> {
@@ -50,13 +50,14 @@ export interface TaskSource<Request, Response> {
   // ): ResponseStream<Response & Res, Request & Req>
 }
 
-export interface InputTaskSource<RequestInput, Request, Response> {
+export interface InputTaskSource<RequestInput, Request, Response>
+  extends IsolateSource<any, Request, Response> {
   filter<Req>(
     predicate: (request: Request & Req) => boolean
   ): InputTaskSource<RequestInput, Request & Req, Response>
 
   select<Res = unknown, Req = unknown>(
-    category?: string
+    category?: Category
   ): Stream<ResponseStream<Response & Res, Request & Req>>
   // pull<Res>(request: RequestInput): ResponseStream<Response & Res, Request>
   // pull<Res, Req>(

@@ -22,14 +22,7 @@ export function makeTaskSource<RequestInput, Request, Response>(
   response$$: ResponsesStream<Request, Response>,
   options: MakeTaskSourceOptions<RequestInput, Request, Response> = {}
 ): InputTaskSource<RequestInput, Request, Response> {
-  const driverSource = {
-    filter(predicate: any): any {
-      const filteredResponse$$ = response$$.filter((r$: any) =>
-        predicate(r$.request)
-      )
-      const makeSource = makeTaskSource
-      return makeSource(filteredResponse$$, options)
-    },
+  const driverSource: InputTaskSource<RequestInput, Request, Response> = {
     isolateSink(request$: any, scope: string) {
       return request$.map((req: RequestInput | Request) => {
         const requestToIsolate: Request = options.isolateMap
@@ -45,6 +38,13 @@ export function makeTaskSource<RequestInput, Request, Response>(
       }
       return source.filter(requestPredicate)
     },
+    filter(predicate: any): any {
+      const filteredResponse$$ = response$$.filter((r$: any) =>
+        predicate(r$.request)
+      )
+      const makeSource = makeTaskSource
+      return makeSource(filteredResponse$$, options)
+    },
     select(category?: string) {
       if (!category) {
         return adapt(response$$)
@@ -56,13 +56,13 @@ export function makeTaskSource<RequestInput, Request, Response>(
         request && request.category === category
       return driverSource.filter(requestPredicate).select()
     },
-    pull(request: RequestInput) {
-      return options.createResponse$!(
-        requestOps.addProperty(request, 'lazy', true)
-      )
-    },
+    // pull(request: RequestInput) {
+    //   return options.createResponse$!(
+    //     requestOps.addProperty(request, 'lazy', true)
+    //   )
+    // },
   }
-  return driverSource as any
+  return driverSource
 }
 
 export default makeTaskSource
