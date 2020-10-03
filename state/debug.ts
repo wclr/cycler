@@ -6,6 +6,7 @@ import {
   MakeStateDriver,
   Options,
   makeStateDriver,
+  StateSource,
 } from './index'
 
 const debugStorageKey = 'cycler_state_debug'
@@ -19,7 +20,7 @@ const { DiffPatcher } = require('jsondiffpatch/src/diffpatcher')
 const { format } = require('jsondiffpatch/src/formatters/jsonpatch')
 const patcher = new DiffPatcher()
 
-export type DebuggableStateStream<State> = MemoryStream<State> & {
+export type DebuggableStateStream<State> = StateSource<State> & {
   _setLastVal: (val: State) => void
   _onNewVal?: (val: State, reducer: Reducer<State>) => void
 }
@@ -106,12 +107,11 @@ export interface DebugStateOptions {
   debugObjectName?: string
   maxLogCount?: number
 }
-type MakeStateDriver1<State> = (options?: Options<State>) => StateDriver<State>
 
 export const debugState = <State>(
   MakeStateDriver: MakeStateDriver<State>,
   options: DebugStateOptions = {}
-): MakeStateDriver1<State> => {
+): MakeStateDriver<State> => {
   return (driverOptions?: Options<State>) => {
     return (reducer$: Stream<Reducer<State>>) => {
       const driver = makeStateDriver(driverOptions)
@@ -127,7 +127,7 @@ export const debugState = <State>(
       }
       state$._onNewVal = (stateVal, reducer) =>
         stateDebugObject.push(stateVal, reducer)
-      return state$ as MemoryStream<State>
+      return state$ as StateSource<State>
     }
   }
 }

@@ -16,7 +16,7 @@ export interface Options<State> {
 
 export type StateDriver<State> = (
   reducer$: Stream<Reducer<State>>
-) => MemoryStream<State>
+) => StateSource<State>
 export type MakeStateDriver<State> = (
   options?: Options<State>
 ) => StateDriver<State>
@@ -68,6 +68,6 @@ export const makeStateDriver = <State>(options: Options<State> = {}) => {
     })
 
     state$.addListener({})
-    return state$ as MemoryStream<State>
+    return state$ as StateSource<State>
   }
 }
