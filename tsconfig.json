@@ -16,18 +16,5 @@
   "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
-  },
-  "_include": [
-    ".scripts/**/*",
-    "express/**/*",
-    "hmr/**/*",
-    "forage/**/*",
-    "mongodb/**/*",
-    "logger/**/*",
-    "state/**/*",
-    "spy/**/*",
-    "task/**/*",
-    "telegraf/**/*"
-  ],
-  "_exclude": ["**/node_modules/*"]
+  }  
 }
